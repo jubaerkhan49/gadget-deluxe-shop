@@ -97,9 +97,12 @@ def checkout(request):
     subtotal = cart.get_total_price()
 
     initial_data = {}
-    if request.user.is_authenticated:
-        initial_data['full_name'] = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
-        initial_data['email'] = request.user.email
+    if request.user.is_authenticated and not request.user.is_staff and not request.user.is_superuser:
+        full_name = f"{request.user.first_name} {request.user.last_name}".strip()
+        if full_name:
+            initial_data['full_name'] = full_name
+        if request.user.email:
+            initial_data['email'] = request.user.email
 
     if request.method == 'POST':
         form = CheckoutForm(request.POST)

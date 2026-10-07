@@ -7,8 +7,8 @@ import random
 
 class Order(models.Model):
     CITY_CHOICES = [
-        ('inside_dhaka', 'Inside Dhaka (৳100)'),
-        ('outside_dhaka', 'Outside Dhaka (৳150)'),
+        ('inside_dhaka', 'Inside Dhaka'),
+        ('outside_dhaka', 'Outside Dhaka'),
     ]
 
     PAYMENT_METHOD_CHOICES = [
@@ -105,7 +105,7 @@ class Order(models.Model):
 
     @property
     def city_display_bn(self):
-        return "ঢাকা সিটির ভেতরে (৳১০০)" if self.city == 'inside_dhaka' else "ঢাকার বাইরে সারা বাংলাদেশ (৳১৫০)"
+        return "ঢাকা সিটির ভেতরে" if self.city == 'inside_dhaka' else "ঢাকার বাইরে সারা বাংলাদেশ"
 
     @property
     def payment_method_display_bn(self):
