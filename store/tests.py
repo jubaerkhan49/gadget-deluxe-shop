@@ -40,10 +40,30 @@ class StoreViewsTestCase(TestCase):
         self.assertContains(response, "iPhone 15 Pro")
 
     def test_product_detail_page(self):
+        self.product.original_price = Decimal(105000)
+        self.product.display_inspection = "120Hz ProMotion OLED: OK"
+        self.product.save()
         response = self.client.get(self.product.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Natural Titanium")
         self.assertContains(response, "98%")
+        self.assertContains(response, "120Hz ProMotion OLED: OK")
+        self.assertContains(response, "Save ৳7000")
+        self.assertContains(response, "Buy Now")
+
+    def test_heic_image_conversion(self):
+        import io
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from store.image_utils import process_image_file
+
+        buf = io.BytesIO()
+        img = Image.new('RGB', (120, 120), color='blue')
+        img.save(buf, format='JPEG')
+        buf.seek(0)
+        uploaded = SimpleUploadedFile('sample_iphone.HEIC', buf.read(), content_type='image/heic')
+        converted = process_image_file(uploaded)
+        self.assertTrue(converted.name.endswith('.jpg'))
 
     def test_faq_page(self):
         response = self.client.get(reverse('store:faq'))

@@ -17,7 +17,7 @@
         <span>/</span>
         <a href="{% url 'store:product_list' %}?model={{ product.model.slug }}" class="hover:text-black dark:hover:text-white">{{ product.model.name }}</a>
         <span>/</span>
-        <span class="text-zinc-800 dark:text-zinc-200 font-bold truncate max-w-xs">{{ product.sku }}</span>
+        <span class="text-zinc-800 dark:text-zinc-200 font-bold truncate max-w-xs">{{ product.storage }} {{ product.color }}</span>
     </nav>
 
     <!-- Product Layout: Gallery + Specs -->
@@ -25,25 +25,8 @@
         
         <!-- Left: Image Gallery (6 cols) -->
         <div class="lg:col-span-6 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 sticky top-24 transition-colors">
-            <!-- Main Photo -->
+            <!-- Main Photo (Clean with no overlay badges) -->
             <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl p-6 mb-4 flex items-center justify-center min-h-[380px] relative overflow-hidden">
-                <!-- Condition Tag -->
-                <div class="absolute top-4 left-4 z-10">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold shadow-sm backdrop-blur-md
-                        {% if product.condition == 'like_new' %}bg-emerald-500 text-white
-                        {% elif product.condition == 'excellent' %}bg-blue-500 text-white
-                        {% else %}bg-amber-500 text-white{% endif %}">
-                        {% if is_bangla %}{{ product.condition_display_bn }}{% else %}{{ product.get_condition_display }}{% endif %}
-                    </span>
-                </div>
-
-                <!-- Battery Badge -->
-                <div class="absolute top-4 right-4 z-10">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-zinc-900/90 dark:bg-zinc-950 text-emerald-400">
-                        <i class="fa-solid fa-battery-full mr-1"></i> Battery {{ product.battery_health }}%
-                    </span>
-                </div>
-
                 {% if product.primary_image %}
                 <img id="main-product-image" src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="max-h-[340px] w-auto object-contain transition duration-200">
                 {% else %}
@@ -68,12 +51,6 @@
                 {% endfor %}
             </div>
             {% endif %}
-
-            <!-- Guarantee notice under image -->
-            <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-camera text-zinc-400 dark:text-zinc-500"></i> Actual Device Photos</span>
-                <span class="flex items-center gap-1.5 font-mono text-zinc-400 dark:text-zinc-500">GD Verified Item</span>
-            </div>
         </div>
 
         <!-- Right: Specifications & Buy Box (6 cols) -->
@@ -81,13 +58,6 @@
             
             <!-- Header Info -->
             <div class="border-b border-zinc-200 dark:border-zinc-800 pb-6">
-                <div class="flex items-center justify-between text-xs text-zinc-400 dark:text-zinc-500 mb-2 font-mono">
-                    <span class="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold px-2.5 py-0.5 rounded-lg">Listing #{{ product.sku }}</span>
-                    {% if product.cycle_count %}
-                    <span class="font-sans font-medium text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-arrows-rotate mr-1"></i>{{ product.cycle_count }} Battery Cycles</span>
-                    {% endif %}
-                </div>
-
                 <h1 class="text-2xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
                     {{ product.model.name }}
                 </h1>
@@ -95,80 +65,111 @@
                     {{ product.storage }} • {% if is_bangla and product.color_bn %}{{ product.color_bn }}{% else %}{{ product.color }}{% endif %}
                 </p>
 
-                <!-- Pricing -->
-                <div class="mt-4 flex items-baseline gap-3">
+                <!-- Pricing & Save Badge with Proper Alignment -->
+                <div class="mt-4 flex items-center gap-3 flex-wrap">
                     <span class="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100">
                         ৳{{ product.price|floatformat:0 }}
                     </span>
-                    {% if product.original_price %}
-                    <span class="text-base text-zinc-400 line-through">
+                    {% if product.original_price and product.discount_amount > 0 %}
+                    <span class="text-base sm:text-lg text-zinc-400 line-through">
                         ৳{{ product.original_price|floatformat:0 }}
                     </span>
-                    <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
-                        Save ৳{{ product.original_price|add:product.price|floatformat:0 }}
+                    <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 px-3 py-1 rounded-full inline-flex items-center gap-1">
+                        Save ৳{{ product.discount_amount|floatformat:0 }}
                     </span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Key Specs Cards Grid -->
+            <!-- Key Specs Cards Grid (Battery, Condition, SIM, Cycle Count) -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">Battery Health</div>
-                    <div class="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 flex items-center gap-1.5">
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider">Battery Health</div>
+                    <div class="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1.5">
                         <i class="fa-solid fa-battery-full text-sm"></i> {{ product.battery_health }}%
                     </div>
                 </div>
 
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">Condition</div>
-                    <div class="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider">Condition</div>
+                    <div class="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-1">
                         {% if is_bangla %}{{ product.condition_display_bn }}{% else %}{{ product.get_condition_display }}{% endif %}
                     </div>
                 </div>
 
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">SIM Variant</div>
-                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 leading-snug">
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider">SIM Variant</div>
+                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1 leading-snug">
                         {% if is_bangla %}{{ product.sim_display_bn }}{% else %}{{ product.get_sim_type_display }}{% endif %}
                     </div>
                 </div>
 
                 {% if product.cycle_count %}
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">Cycle Count</div>
-                    <div class="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
-                        {{ product.cycle_count }} Cycles
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider">Cycle Count</div>
+                    <div class="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate text-xs text-zinc-400"></i> {{ product.cycle_count }} Cycles
                     </div>
                 </div>
                 {% endif %}
-
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">Authenticity</div>
-                    <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
-                        100% Genuine
-                    </div>
-                </div>
-
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <div class="text-[11px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">iCloud Status</div>
-                    <div class="text-sm font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
-                        Clean / Ready
-                    </div>
-                </div>
             </div>
 
-            <!-- Hardware Verification Checklist -->
-            <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2 text-xs text-emerald-900 dark:text-emerald-300">
+            <!-- Certified Quality Inspection (Fully Configurable Checklist) -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-3 text-xs text-emerald-900 dark:text-emerald-300">
                 <div class="font-bold flex items-center gap-2 text-emerald-800 dark:text-emerald-200 text-sm">
                     <i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i>
                     <span>Certified Quality Inspection</span>
                 </div>
-                <div class="grid grid-cols-2 gap-2 pt-1 font-medium">
-                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-[10px]"></i> Original OLED & TrueTone: <strong>Active</strong></div>
-                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-[10px]"></i> FaceID & Sensors: <strong>100% Working</strong></div>
-                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-[10px]"></i> 3uTools Score: <strong>100% Genuine</strong></div>
-                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-[10px]"></i> iCloud: <strong>Clean / Unlocked</strong></div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-medium">
+                    {% if product.display_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.display_inspection }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if product.truetone_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.truetone_inspection }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if product.faceid_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.faceid_inspection }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if product.sound_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.sound_inspection }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if product.charging_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.charging_inspection }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if product.camera_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.camera_inspection }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if product.flashlight_inspection %}
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xs"></i>
+                        <span>{{ product.flashlight_inspection }}</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -190,13 +191,13 @@
             <div class="pt-2 space-y-3">
                 {% if product.is_in_stock %}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Buy Now (Instant Checkout) -->
+                    <!-- Buy Now -->
                     <form action="{% url 'orders:cart_add' product.id %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="buy_now" value="1">
                         <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-bold text-sm transition shadow-md flex items-center justify-center gap-2">
                             <i class="fa-solid fa-bolt text-amber-400 dark:text-amber-500"></i>
-                            <span>{% if is_bangla %}সরাসরি অর্ডার করুন (Buy Now){% else %}Buy Now (Fast Checkout){% endif %}</span>
+                            <span>Buy Now</span>
                         </button>
                     </form>
 
@@ -205,7 +206,7 @@
                         {% csrf_token %}
                         <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-bold text-sm transition flex items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-700">
                             <i class="fa-solid fa-bag-shopping"></i>
-                            <span>{% if is_bangla %}কার্টে রাখুন (Add to Cart){% else %}Add to Cart{% endif %}</span>
+                            <span>Add to Cart</span>
                         </button>
                     </form>
                 </div>
@@ -221,15 +222,6 @@
                         Have questions about this phone? Call <a href="tel:{{ store_settings.phone_number }}" class="font-bold text-black dark:text-white hover:underline">{{ store_settings.phone_number }}</a> or 
                         <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}?text=Hello%2C%20I%20am%20interested%20in%20iPhone%20listing%20{{ product.sku }}" target="_blank" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline">Chat on WhatsApp</a>
                     </p>
-                </div>
-            </div>
-
-            <!-- Guarantee Notice -->
-            <div class="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-3 text-xs text-zinc-700 dark:text-zinc-300">
-                <i class="fa-solid fa-shield-halved text-xl text-black dark:text-white"></i>
-                <div>
-                    <strong class="text-zinc-900 dark:text-zinc-100 font-bold">Gadget Deluxe Assurance:</strong>
-                    <span>7 Days Replacement & Lifetime IMEI / Official Authenticity Guarantee.</span>
                 </div>
             </div>
 

@@ -112,10 +112,55 @@
             </div>
         </div>
 
-        <!-- Section 3: Pricing & Availability -->
+        <!-- Section 3: Certified Quality Inspection (Customizable Parameters) -->
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">
+            <h2 class="text-sm font-bold text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center justify-between">
+                <span class="flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-zinc-400"></i> 3. Certified Quality Inspection Status</span>
+                <span class="text-xs font-normal text-zinc-400">Modify any parameter check status</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Display / Refresh Rate</label>
+                    {{ form.display_inspection }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">TrueTone</label>
+                    {{ form.truetone_inspection }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">FaceID & Sensors</label>
+                    {{ form.faceid_inspection }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Sound & Vibration</label>
+                    {{ form.sound_inspection }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Charging Port & Battery</label>
+                    {{ form.charging_inspection }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Camera (Front & Back)</label>
+                    {{ form.camera_inspection }}
+                </div>
+
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Flashlight / Torch</label>
+                    {{ form.flashlight_inspection }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Pricing & Availability -->
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">
             <h2 class="text-sm font-bold text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center gap-2">
-                <i class="fa-solid fa-bangladeshi-taka-sign text-zinc-400"></i> 3. Pricing & Stock Status
+                <i class="fa-solid fa-bangladeshi-taka-sign text-zinc-400"></i> 4. Pricing & Stock Status
             </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">

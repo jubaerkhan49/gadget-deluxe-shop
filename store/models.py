@@ -52,7 +52,7 @@ class Product(models.Model):
         ('physical_esim', '1 Physical SIM + 1 eSIM'),
         ('dual_esim', 'Dual eSIM (USA Variant)'),
         ('dual_physical', 'Dual Physical SIM (HK/China/Global)'),
-        ('no_sim', 'No Physical SIM / eSIM Only'),
+        ('wifi_only', 'WiFi Only'),
     ]
 
     STATUS_CHOICES = [
@@ -101,6 +101,50 @@ class Product(models.Model):
         help_text="Optional masked IMEI"
     )
 
+    # Configurable Quality Inspection Checklist
+    display_inspection = models.CharField(
+        max_length=80, 
+        default="120Hz ProMotion OLED: OK", 
+        blank=True, 
+        help_text="Display inspection status"
+    )
+    truetone_inspection = models.CharField(
+        max_length=80, 
+        default="TrueTone: OK", 
+        blank=True, 
+        help_text="TrueTone status"
+    )
+    faceid_inspection = models.CharField(
+        max_length=80, 
+        default="FaceID & Sensors: Working", 
+        blank=True, 
+        help_text="FaceID & sensors status"
+    )
+    sound_inspection = models.CharField(
+        max_length=80, 
+        default="Sound & Vibration: OK", 
+        blank=True, 
+        help_text="Sound and speaker status"
+    )
+    charging_inspection = models.CharField(
+        max_length=80, 
+        default="Charging: OK", 
+        blank=True, 
+        help_text="Charging port status"
+    )
+    camera_inspection = models.CharField(
+        max_length=80, 
+        default="Camera: OK", 
+        blank=True, 
+        help_text="Camera lens and focus status"
+    )
+    flashlight_inspection = models.CharField(
+        max_length=80, 
+        default="Flashlight: OK", 
+        blank=True, 
+        help_text="Flashlight status"
+    )
+
     price = models.DecimalField(max_digits=10, decimal_places=0, help_text="Selling price in BDT (৳)")
     original_price = models.DecimalField(
         max_digits=10, 
@@ -146,6 +190,17 @@ class Product(models.Model):
         if not self.slug:
             base_slug = slugify(f"{self.model.name}-{self.storage}-{self.color}-{self.sku}")
             self.slug = base_slug
+
+        # Process / convert HEIC/HEIF primary image
+        if self.primary_image and hasattr(self.primary_image, 'file'):
+            name = getattr(self.primary_image, 'name', '')
+            if name.lower().endswith(('.heic', '.heif', '.png', '.jpeg', '.jpg', '.webp')):
+                # Only re-process if it's an uploaded file object
+                if hasattr(self.primary_image.file, 'content_type') or name.lower().endswith(('.heic', '.heif')):
+                    from .image_utils import process_image_file
+                    converted = process_image_file(self.primary_image)
+                    if converted:
+                        self.primary_image = converted
             
         super().save(*args, **kwargs)
 
@@ -155,6 +210,25 @@ class Product(models.Model):
     @property
     def is_in_stock(self):
         return self.status == 'available'
+
+    @property
+    def discount_amount(self):
+        if self.original_price and self.original_price > self.price:
+            return self.original_price - self.price
+        return 0
+
+    @property
+    def inspection_checklist(self):
+        items = [
+            self.display_inspection,
+            self.truetone_inspection,
+            self.faceid_inspection,
+            self.sound_inspection,
+            self.charging_inspection,
+            self.camera_inspection,
+            self.flashlight_inspection,
+        ]
+        return [item.strip() for item in items if item and item.strip()]
 
     @property
     def condition_display_bn(self):
@@ -170,8 +244,8 @@ class Product(models.Model):
             return '১ ফিজিক্যাল সিম + ১ ই-সিম'
         elif self.sim_type == 'dual_esim':
             return 'ডুয়াল ই-সিম (USA ভ্যারিয়েন্ট)'
-        elif self.sim_type == 'no_sim':
-            return 'নো ফিজিক্যাল সিম (ই-সিম)'
+        elif self.sim_type == 'wifi_only':
+            return 'ওয়াইফাই অনলি (WiFi Only)'
         return 'ডুয়াল ফিজিক্যাল সিম (HK/China)'
 
 
@@ -188,6 +262,18 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.product.sku}"
+
+    def save(self, *args, **kwargs):
+        if self.image and hasattr(self.image, 'file'):
+            name = getattr(self.image, 'name', '')
+            if name.lower().endswith(('.heic', '.heif', '.png', '.jpeg', '.jpg', '.webp')):
+                if hasattr(self.image.file, 'content_type') or name.lower().endswith(('.heic', '.heif')):
+                    from .image_utils import process_image_file
+                    converted = process_image_file(self.image)
+                    if converted:
+                        self.image = converted
+        super().save(*args, **kwargs)
+
 
 
 class FAQ(models.Model):

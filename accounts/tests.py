@@ -32,12 +32,26 @@ class AccountsFlowTestCase(TestCase):
             'first_name': 'Tanvir Ahmed',
             'email': 'tanvir@example.com',
             'phone': '01812345678',
-            'password1': 'MySecurePass123!',
-            'password2': 'MySecurePass123!',
+            'password1': '123456',
+            'password2': '123456',
         }
         response = self.client.post(register_url, post_data)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(User.objects.filter(username='tanvir2026').exists())
+
+    def test_registration_with_6_digit_numeric_password(self):
+        register_url = reverse('accounts:register')
+        post_data = {
+            'username': 'customer6digit',
+            'first_name': 'Six Digit User',
+            'email': 'sixdigit@example.com',
+            'phone': '01987654321',
+            'password1': '654321',
+            'password2': '654321',
+        }
+        response = self.client.post(register_url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username='customer6digit').exists())
 
     def test_logout_flow(self):
         self.client.force_login(self.user)
