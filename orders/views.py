@@ -45,12 +45,12 @@ def cart_add(request, product_id):
         return redirect('store:product_detail', slug=product.slug)
 
     cart.add(product=product, quantity=1)
-    messages.success(request, f"Added {product.title} to your cart.")
 
     # Check for 'buy_now' parameter
     if request.GET.get('buy_now') == '1' or request.POST.get('buy_now') == '1':
         return redirect('orders:checkout')
 
+    messages.success(request, f"Added {product.title} to your cart.")
     next_url = request.POST.get('next') or request.META.get('HTTP_REFERER') or 'orders:cart_detail'
     return redirect(next_url)
 

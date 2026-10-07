@@ -37,6 +37,15 @@ class OrderFlowTestCase(TestCase):
         self.assertContains(cart_res, "iPhone 16 Pro Max")
         self.assertContains(cart_res, "145000")
 
+    def test_buy_now_direct_checkout_without_cart_message(self):
+        add_url = reverse('orders:cart_add', kwargs={'product_id': self.product.id})
+        response = self.client.post(add_url, {'buy_now': '1'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        # Should redirect directly to checkout
+        self.assertIn('/orders/checkout/', response.redirect_chain[0][0])
+        # Ensure 'Added ... to your cart' message is NOT displayed
+        self.assertNotContains(response, "to your cart.")
+
     def test_guest_checkout_flow(self):
         # 1. Add product to cart
         self.client.post(reverse('orders:cart_add', kwargs={'product_id': self.product.id}))

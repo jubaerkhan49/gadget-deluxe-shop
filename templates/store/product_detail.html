@@ -20,14 +20,14 @@
         <span class="text-zinc-800 dark:text-zinc-200 font-bold truncate max-w-xs">{{ product.storage }} {{ product.color }}</span>
     </nav>
 
-    <!-- Product Layout: Gallery + Specs (Engineered for all laptop & desktop screens) -->
+    <!-- Product Layout: Gallery + Specs -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         
         <!-- Left: Image Gallery (5 cols) -->
         <div class="lg:col-span-5 bg-white dark:bg-zinc-900 p-3 sm:p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 lg:sticky lg:top-20 shadow-sm transition-colors">
             
-            <!-- Main Photo Display (Optimized height to prevent overflow) -->
-            <div class="relative w-full h-[320px] sm:h-[380px] lg:h-[410px] rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-950/60 flex items-center justify-center mb-3 group border border-zinc-100 dark:border-zinc-800/60">
+            <!-- Main Photo Display -->
+            <div class="relative w-full h-[320px] sm:h-[380px] lg:h-[420px] rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-950/60 flex items-center justify-center mb-3 group border border-zinc-100 dark:border-zinc-800/60">
                 {% if product.primary_image %}
                 <img id="main-product-image" src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-[1.02]">
                 {% else %}
@@ -54,11 +54,11 @@
             {% endif %}
         </div>
 
-        <!-- Right: Specifications & Direct Purchase Actions (7 cols) -->
-        <div class="lg:col-span-7 space-y-4">
+        <!-- Right: Specifications, Checklist & Lower Purchase Actions (7 cols) -->
+        <div class="lg:col-span-7 space-y-3.5">
             
-            <!-- Header & Price Box -->
-            <div class="bg-white dark:bg-zinc-900 p-5 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-3 transition-colors">
+            <!-- 1. Header & Price Box -->
+            <div class="bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm transition-colors">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
@@ -90,47 +90,9 @@
                         {% endif %}
                     </div>
                 </div>
-
-                <!-- Instant Action CTA Buttons (Above the Fold on All Screen Sizes) -->
-                <div class="pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                    {% if product.is_in_stock %}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <!-- Buy Now Button -->
-                        <form action="{% url 'orders:cart_add' product.id %}" method="POST">
-                            {% csrf_token %}
-                            <input type="hidden" name="buy_now" value="1">
-                            <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-extrabold text-sm transition shadow-md flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-bolt text-amber-400 dark:text-amber-500"></i>
-                                <span>Buy Now</span>
-                            </button>
-                        </form>
-
-                        <!-- Add to Cart Button -->
-                        <form action="{% url 'orders:cart_add' product.id %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-bold text-sm transition flex items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-700">
-                                <i class="fa-solid fa-bag-shopping"></i>
-                                <span>Add to Cart</span>
-                            </button>
-                        </form>
-                    </div>
-                    {% else %}
-                    <div class="p-3.5 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-center text-zinc-500 dark:text-zinc-400 font-bold text-sm">
-                        This device listing has been reserved or sold out.
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Fast Helpline & Guarantee micro-bar -->
-                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-check text-emerald-600 dark:text-emerald-400"></i> 7-Day Replacement Guarantee</span>
-                    <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}?text=Hello%2C%20I%20am%20interested%20in%20iPhone%20listing%20{{ product.sku }}" target="_blank" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
-                        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
-                    </a>
-                </div>
             </div>
 
-            <!-- Key Specs Single-Row Compact Grid -->
+            <!-- 2. Key Specs Single-Row Compact Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-sm text-center sm:text-left">
                     <div class="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider">Battery Health</div>
@@ -161,14 +123,14 @@
                 </div>
             </div>
 
-            <!-- Certified Quality Inspection (Compact 2-col checklist) -->
-            <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2.5 text-xs text-emerald-900 dark:text-emerald-300">
+            <!-- 3. Certified Quality Inspection (Compact 2-col checklist) -->
+            <div class="p-3.5 sm:p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2 text-xs text-emerald-900 dark:text-emerald-300">
                 <div class="font-bold flex items-center gap-1.5 text-emerald-800 dark:text-emerald-200 text-xs">
                     <i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i>
                     <span>Certified Quality Inspection</span>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 font-medium text-[11px]">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 font-medium text-[11px]">
                     {% if product.display_inspection %}
                     <div class="flex items-center gap-1.5">
                         <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-[10px]"></i>
@@ -220,23 +182,66 @@
                 </div>
             </div>
 
-            <!-- Description -->
-            {% if product.description %}
-            <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed space-y-1.5">
-                <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-[11px] uppercase tracking-wider">Device Note & Details</h3>
-                <p>
-                    {% if is_bangla and product.description_bn %}
-                        {{ product.description_bn }}
-                    {% else %}
-                        {{ product.description }}
-                    {% endif %}
-                </p>
+            <!-- 4. Purchase Actions (Buy Now & Add to Cart) -->
+            <div class="bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-3 transition-colors">
+                {% if product.is_in_stock %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Buy Now Button -->
+                    <form action="{% url 'orders:cart_add' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="buy_now" value="1">
+                        <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-extrabold text-sm transition shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-400 dark:text-amber-500"></i>
+                            <span>Buy Now</span>
+                        </button>
+                    </form>
+
+                    <!-- Add to Cart Button -->
+                    <form action="{% url 'orders:cart_add' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-bold text-sm transition flex items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-700">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            <span>Add to Cart</span>
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="p-3.5 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-center text-zinc-500 dark:text-zinc-400 font-bold text-sm">
+                    This device listing has been reserved or sold out.
+                </div>
+                {% endif %}
+
+                <!-- Helpline & 7-Day Guarantee micro-row -->
+                <div class="flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-check text-emerald-600 dark:text-emerald-400"></i> 7-Day Replacement Guarantee</span>
+                    <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}?text=Hello%2C%20I%20am%20interested%20in%20iPhone%20listing%20{{ product.sku }}" target="_blank" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+                    </a>
+                </div>
             </div>
-            {% endif %}
 
         </div>
 
     </div>
+
+    <!-- 2nd Row: Device Note & Details Section (Full Width) -->
+    {% if product.description %}
+    <div class="mt-6 bg-white dark:bg-zinc-900 p-5 sm:p-6 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm transition-colors">
+        <div class="flex items-center gap-2 mb-2.5">
+            <i class="fa-solid fa-note-sticky text-zinc-400 dark:text-zinc-500"></i>
+            <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm uppercase tracking-wider">
+                Device Note & Details
+            </h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+            {% if is_bangla and product.description_bn %}
+                {{ product.description_bn }}
+            {% else %}
+                {{ product.description }}
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
 
     <!-- Related Listings -->
     {% if related_products %}
