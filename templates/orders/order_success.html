@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{% if is_bangla %}অর্ডার সফল হয়েছে | গ্যাজেট ডিলাক্স{% else %}Order Confirmed #{{ order.order_number }} | Gadget Deluxe{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+
+    <div class="bg-white rounded-3xl border border-zinc-200/80 p-6 sm:p-10 shadow-sm text-center space-y-6">
+        
+        <!-- Success Check Icon -->
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto ring-8 ring-emerald-50">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Order Placed Successfully</span>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight mt-1">
+                {% if is_bangla %}ধন্যবাদ! আপনার অর্ডারটি গ্রহণ করা হয়েছে।{% else %}Thank You for Your Order!{% endif %}
+            </h1>
+            <p class="text-sm text-zinc-500 mt-2">
+                Order Reference: <strong class="font-mono text-zinc-900 text-base">#{{ order.order_number }}</strong>
+            </p>
+        </div>
+
+        <!-- Payment Instructions Alert if manual payment -->
+        {% if order.payment_method != 'cod' and order.payment_status == 'pending_verification' %}
+        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-left text-xs text-amber-900 space-y-1.5">
+            <div class="font-bold flex items-center gap-1.5 text-amber-800">
+                <i class="fa-solid fa-clock"></i> Payment Pending Verification
+            </div>
+            <p>
+                We received your {{ order.get_payment_method_display|slice:':10' }} Transaction ID <strong>{{ order.payment_trx_id }}</strong>. Our team will verify and confirm your order shortly.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Order Snapshot Details -->
+        <div class="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/60 text-left space-y-4">
+            <div class="flex items-center justify-between text-xs border-b border-zinc-200/60 pb-3">
+                <span class="text-zinc-500">Recipient Name:</span>
+                <span class="font-bold text-zinc-900">{{ order.full_name }}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs border-b border-zinc-200/60 pb-3">
+                <span class="text-zinc-500">Contact Phone:</span>
+                <span class="font-mono font-bold text-zinc-900">{{ order.phone }}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs border-b border-zinc-200/60 pb-3">
+                <span class="text-zinc-500">Delivery Address:</span>
+                <span class="font-medium text-zinc-800 text-right max-w-xs">{{ order.delivery_address }} ({{ order.get_city_display }})</span>
+            </div>
+            <div class="flex items-center justify-between text-xs border-b border-zinc-200/60 pb-3">
+                <span class="text-zinc-500">Payment Method:</span>
+                <span class="font-bold text-zinc-900">{{ order.get_payment_method_display }}</span>
+            </div>
+            <div class="flex items-center justify-between text-sm pt-1">
+                <span class="font-bold text-zinc-900">Total Payable:</span>
+                <span class="font-black text-zinc-900 text-lg">৳{{ order.total_amount|floatformat:0 }}</span>
+            </div>
+        </div>
+
+        <!-- Ordered Items -->
+        <div class="text-left space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-zinc-400">Ordered Device(s)</div>
+            {% for item in order.items.all %}
+            <div class="flex items-center justify-between p-3.5 bg-white rounded-xl border border-zinc-200 text-xs">
+                <div>
+                    <div class="font-bold text-zinc-900 text-sm">{{ item.product_title }}</div>
+                    <div class="text-zinc-400 font-mono text-[11px]">{{ item.product_sku }} • 🔋 Battery {{ item.product_battery_health }}% • {{ item.product_condition }}</div>
+                </div>
+                <div class="font-black text-zinc-900 text-sm">৳{{ item.total_price|floatformat:0 }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="{% url 'orders:track_order_token' order.tracking_token %}" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-black text-white font-bold text-xs hover:bg-zinc-800 transition flex items-center justify-center gap-2 shadow-sm">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>{% if is_bangla %}অর্ডার ট্র্যাক করুন (Track Order){% else %}Track Your Order Status{% endif %}</span>
+            </a>
+            <a href="{% url 'store:home' %}" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-zinc-100 text-zinc-800 font-bold text-xs hover:bg-zinc-200 transition">
+                <span>{% if is_bangla %}হোমে ফিরে যান{% else %}Back to Store{% endif %}</span>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gadget-deluxe-shop
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn gadget_deluxe.wsgi --log-file -"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,gadgetdeluxe.shop,www.gadgetdeluxe.shop"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com,https://gadgetdeluxe.shop,https://www.gadgetdeluxe.shop"
+      - key: DATABASE_URL
+        sync: false # Set to your Neon PostgreSQL connection string

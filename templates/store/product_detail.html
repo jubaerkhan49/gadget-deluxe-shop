@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{{ product.model.name }} {{ product.storage }} ({{ product.color }}) - Gadget Deluxe
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-zinc-500 mb-6 font-medium">
+        <a href="{% url 'store:home' %}" class="hover:text-black">{% if is_bangla %}হোম{% else %}Home{% endif %}</a>
+        <span>/</span>
+        <a href="{% url 'store:product_list' %}" class="hover:text-black">{% if is_bangla %}আইফোন তালিকা{% else %}iPhones{% endif %}</a>
+        <span>/</span>
+        <a href="{% url 'store:product_list' %}?model={{ product.model.slug }}" class="hover:text-black">{{ product.model.name }}</a>
+        <span>/</span>
+        <span class="text-zinc-800 font-bold truncate max-w-xs">{{ product.sku }}</span>
+    </nav>
+
+    <!-- Product Layout: Gallery + Specs -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        
+        <!-- Left: Image Gallery (5 cols) -->
+        <div class="lg:col-span-6 bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 sticky top-24">
+            <!-- Main Photo -->
+            <div class="bg-zinc-50 rounded-2xl p-6 mb-4 flex items-center justify-center min-h-[380px] relative overflow-hidden">
+                <!-- Condition Tag -->
+                <div class="absolute top-4 left-4 z-10">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold shadow-sm backdrop-blur-md
+                        {% if product.condition == 'like_new' %}bg-emerald-500 text-white
+                        {% elif product.condition == 'excellent' %}bg-blue-500 text-white
+                        {% else %}bg-amber-500 text-white{% endif %}">
+                        {% if is_bangla %}{{ product.condition_display_bn }}{% else %}{{ product.get_condition_display }}{% endif %}
+                    </span>
+                </div>
+
+                <!-- Battery Badge -->
+                <div class="absolute top-4 right-4 z-10">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold shadow-sm bg-zinc-900 text-emerald-400">
+                        <i class="fa-solid fa-battery-full mr-1"></i> Battery {{ product.battery_health }}%
+                    </span>
+                </div>
+
+                {% if product.primary_image %}
+                <img id="main-product-image" src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="max-h-[340px] w-auto object-contain transition duration-200">
+                {% else %}
+                <div class="h-64 flex items-center justify-center text-zinc-300">
+                    <i class="fa-brands fa-apple text-8xl"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Gallery Thumbnails -->
+            {% if product.images.all %}
+            <div class="flex items-center gap-3 overflow-x-auto pb-2">
+                {% if product.primary_image %}
+                <button type="button" onclick="swapImage('{{ product.primary_image.url }}')" class="w-16 h-16 rounded-xl border-2 border-black p-1 bg-zinc-50 overflow-hidden flex-shrink-0 focus:outline-none">
+                    <img src="{{ product.primary_image.url }}" alt="Primary" class="w-full h-full object-contain">
+                </button>
+                {% endif %}
+                {% for img in product.images.all %}
+                <button type="button" onclick="swapImage('{{ img.image.url }}')" class="w-16 h-16 rounded-xl border border-zinc-200 hover:border-zinc-400 p-1 bg-zinc-50 overflow-hidden flex-shrink-0 focus:outline-none">
+                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:'Product gallery' }}" class="w-full h-full object-contain">
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Guarantee notice under image -->
+            <div class="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500 font-medium">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-camera text-zinc-400"></i> Real device photos</span>
+                <span class="flex items-center gap-1.5 font-mono text-zinc-400">IMEI: {{ product.masked_imei|default:"Verified" }}</span>
+            </div>
+        </div>
+
+        <!-- Right: Specifications & Buy Box (7 cols) -->
+        <div class="lg:col-span-6 space-y-6">
+            
+            <!-- Header Info -->
+            <div class="border-b border-zinc-200 pb-6">
+                <div class="flex items-center justify-between text-xs text-zinc-400 mb-2 font-mono">
+                    <span class="bg-zinc-100 text-zinc-700 font-semibold px-2.5 py-0.5 rounded-lg">Listing #{{ product.sku }}</span>
+                    <span>Region: {{ product.origin_region }}</span>
+                </div>
+
+                <h1 class="text-2xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight leading-tight">
+                    {{ product.model.name }}
+                </h1>
+                <p class="text-base sm:text-lg text-zinc-600 font-medium mt-1">
+                    {{ product.storage }} • {% if is_bangla and product.color_bn %}{{ product.color_bn }}{% else %}{{ product.color }}{% endif %}
+                </p>
+
+                <!-- Pricing -->
+                <div class="mt-4 flex items-baseline gap-3">
+                    <span class="text-3xl sm:text-4xl font-black text-zinc-900">
+                        ৳{{ product.price|floatformat:0 }}
+                    </span>
+                    {% if product.original_price %}
+                    <span class="text-base text-zinc-400 line-through">
+                        ৳{{ product.original_price|floatformat:0 }}
+                    </span>
+                    <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                        Save ৳{{ product.original_price|add:product.price|floatformat:0 }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Key Specs Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div class="p-3.5 rounded-2xl bg-white border border-zinc-200/80">
+                    <div class="text-[11px] text-zinc-400 uppercase font-semibold">Battery Health</div>
+                    <div class="text-base font-bold text-emerald-600 mt-0.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-battery-full text-sm"></i> {{ product.battery_health }}%
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-white border border-zinc-200/80">
+                    <div class="text-[11px] text-zinc-400 uppercase font-semibold">Condition</div>
+                    <div class="text-sm font-bold text-zinc-800 mt-0.5">
+                        {% if is_bangla %}{{ product.condition_display_bn }}{% else %}{{ product.get_condition_display }}{% endif %}
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-white border border-zinc-200/80">
+                    <div class="text-[11px] text-zinc-400 uppercase font-semibold">SIM Variant</div>
+                    <div class="text-xs font-bold text-zinc-800 mt-0.5 leading-snug">
+                        {% if is_bangla %}{{ product.sim_display_bn }}{% else %}{{ product.get_sim_type_display }}{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hardware Verification Checklist -->
+            <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-2 text-xs text-emerald-900">
+                <div class="font-bold flex items-center gap-2 text-emerald-800 text-sm">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    <span>Certified Quality Inspection</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-1 font-medium">
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 text-[10px]"></i> Original OLED & TrueTone: <strong>Active</strong></div>
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 text-[10px]"></i> FaceID & Sensors: <strong>100% Working</strong></div>
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 text-[10px]"></i> 3uTools Score: <strong>100% Genuine</strong></div>
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600 text-[10px]"></i> iCloud: <strong>Clean / Unlocked</strong></div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            {% if product.description %}
+            <div class="p-5 rounded-2xl bg-white border border-zinc-200/80 text-sm text-zinc-700 leading-relaxed space-y-2">
+                <h3 class="font-bold text-zinc-900 text-xs uppercase tracking-wider">Device Note & Details</h3>
+                <p>
+                    {% if is_bangla and product.description_bn %}
+                        {{ product.description_bn }}
+                    {% else %}
+                        {{ product.description }}
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Call to Actions -->
+            <div class="pt-2 space-y-3">
+                {% if product.is_in_stock %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Buy Now (Instant Checkout) -->
+                    <form action="{% url 'orders:cart_add' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="buy_now" value="1">
+                        <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-black hover:bg-zinc-800 text-white font-bold text-sm transition shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                            <span>{% if is_bangla %}সরাসরি অর্ডার করুন (Buy Now){% else %}Buy Now (Fast Checkout){% endif %}</span>
+                        </button>
+                    </form>
+
+                    <!-- Add to Cart -->
+                    <form action="{% url 'orders:cart_add' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-bold text-sm transition flex items-center justify-center gap-2 border border-zinc-200">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            <span>{% if is_bangla %}কার্টে রাখুন (Add to Cart){% else %}Add to Cart{% endif %}</span>
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="p-4 rounded-2xl bg-zinc-100 text-center text-zinc-500 font-bold text-sm">
+                    This specific device listing has been reserved or sold.
+                </div>
+                {% endif %}
+
+                <!-- Helpline -->
+                <div class="text-center pt-2">
+                    <p class="text-xs text-zinc-500">
+                        Have questions about this phone? Call <a href="tel:{{ store_settings.phone_number }}" class="font-bold text-black hover:underline">{{ store_settings.phone_number }}</a> or 
+                        <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}?text=Hello%2C%20I%20am%20interested%20in%20iPhone%20listing%20{{ product.sku }}" target="_blank" class="font-bold text-emerald-600 hover:underline">Chat on WhatsApp</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Warranty Badge Box -->
+            <div class="p-4 rounded-2xl bg-zinc-100 border border-zinc-200/80 flex items-center gap-3 text-xs text-zinc-700">
+                <i class="fa-solid fa-shield-halved text-xl text-black"></i>
+                <div>
+                    <strong class="text-zinc-900 font-bold">Gadget Deluxe Warranty:</strong>
+                    <span>{{ product.warranty_info }}</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Related Listings -->
+    {% if related_products %}
+    <div class="mt-20 pt-10 border-t border-zinc-200">
+        <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 mb-6">
+            {% if is_bangla %}একই মডেলের অন্যান্য আইফোনসমূহ{% else %}More {{ product.model.name }} Listings{% endif %}
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for rel in related_products %}
+            <div class="bg-white rounded-2xl border border-zinc-200/80 p-4 card-hover flex flex-col justify-between">
+                <div>
+                    <div class="bg-zinc-50 rounded-xl p-4 mb-3 text-center">
+                        {% if rel.primary_image %}
+                        <img src="{{ rel.primary_image.url }}" alt="{{ rel.title }}" class="h-36 mx-auto object-contain">
+                        {% else %}
+                        <div class="h-36 flex items-center justify-center text-zinc-300">
+                            <i class="fa-brands fa-apple text-4xl"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-[11px] text-zinc-400 font-mono">{{ rel.sku }}</div>
+                    <h3 class="font-bold text-sm text-zinc-900 mt-1">
+                        <a href="{{ rel.get_absolute_url }}" class="hover:underline">{{ rel.model.name }} {{ rel.storage }}</a>
+                    </h3>
+                    <div class="text-xs text-zinc-500 mt-0.5">
+                        {{ rel.color }} • Battery {{ rel.battery_health }}%
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between">
+                    <span class="font-bold text-zinc-900">৳{{ rel.price|floatformat:0 }}</span>
+                    <a href="{{ rel.get_absolute_url }}" class="text-xs font-semibold text-black hover:underline">View</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function swapImage(imgUrl) {
+        const mainImg = document.getElementById('main-product-image');
+        if (mainImg) {
+            mainImg.src = imgUrl;
+        }
+    }
+</script>
+{% endblock %}

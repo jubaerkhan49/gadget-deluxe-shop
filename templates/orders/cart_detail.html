@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{% if is_bangla %}শপিং ব্যাগ (Shopping Cart) | গ্যাজেট ডিলাক্স{% else %}Shopping Cart | Gadget Deluxe{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    
+    <div class="mb-8">
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
+            {% if is_bangla %}আপনার শপিং ব্যাগ{% else %}Shopping Cart{% endif %}
+        </h1>
+        <p class="text-xs sm:text-sm text-zinc-500 mt-1">
+            {% if is_bangla %}
+            নির্বাচিত আইফোন তালিকাভুক্ত করুন এবং দ্রুত চেকআউটে এগিয়ে যান।
+            {% else %}
+            Review your selected iPhone listings before proceeding to checkout.
+            {% endif %}
+        </p>
+    </div>
+
+    {% if cart|length > 0 %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Cart Items List (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+            {% for item in cart %}
+            {% with product=item.product %}
+            <div class="bg-white p-5 sm:p-6 rounded-3xl border border-zinc-200/80 flex flex-col sm:flex-row items-center gap-5 justify-between">
+                
+                <!-- Product Thumbnail & Details -->
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="w-20 h-20 bg-zinc-50 rounded-2xl p-2 flex-shrink-0 flex items-center justify-center border border-zinc-100">
+                        {% if product.primary_image %}
+                        <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
+                        {% else %}
+                        <i class="fa-brands fa-apple text-3xl text-zinc-300"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-400">
+                            <span>{{ product.sku }}</span>
+                            <span>•</span>
+                            <span class="text-emerald-600 font-sans font-bold">🔋 Battery {{ product.battery_health }}%</span>
+                        </div>
+                        <h2 class="font-bold text-base text-zinc-900 leading-snug">
+                            <a href="{{ product.get_absolute_url }}" class="hover:underline">{{ product.model.name }} {{ product.storage }}</a>
+                        </h2>
+                        <div class="text-xs text-zinc-500">
+                            {% if is_bangla and product.color_bn %}{{ product.color_bn }}{% else %}{{ product.color }}{% endif %} • 
+                            {% if is_bangla %}{{ product.condition_display_bn }}{% else %}{{ product.get_condition_display }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price and Delete Action -->
+                <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-zinc-100">
+                    <div class="text-right">
+                        <div class="text-lg font-black text-zinc-900">৳{{ item.total_price|floatformat:0 }}</div>
+                        <div class="text-[11px] text-zinc-400">1 Unit (Unique Device)</div>
+                    </div>
+                    <form action="{% url 'orders:cart_remove' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="p-2.5 rounded-xl bg-zinc-100 hover:bg-rose-50 hover:text-rose-600 text-zinc-400 transition" title="Remove Item">
+                            <i class="fa-regular fa-trash-can text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            {% endwith %}
+            {% endfor %}
+
+            <div class="flex items-center justify-between pt-2">
+                <a href="{% url 'store:product_list' %}" class="inline-flex items-center gap-2 text-xs font-bold text-zinc-600 hover:text-black">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                    <span>{% if is_bangla %}আরও আইফোন দেখুন{% else %}Continue Shopping{% endif %}</span>
+                </a>
+
+                <form action="{% url 'orders:cart_clear' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="text-xs font-semibold text-zinc-400 hover:text-rose-600 transition">
+                        {% if is_bangla %}ব্যাগ খালি করুন (Clear Cart){% else %}Clear Cart{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cart Summary Sidebar (4 cols) -->
+        <div class="lg:col-span-4 bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 shadow-sm space-y-6">
+            <h2 class="text-lg font-bold text-zinc-900 border-b border-zinc-100 pb-4">
+                {% if is_bangla %}অর্ডার সারাংশ{% else %}Order Summary{% endif %}
+            </h2>
+
+            <div class="space-y-3 text-sm text-zinc-600">
+                <div class="flex justify-between">
+                    <span>Subtotal ({{ cart|length }} phone{{ cart|length|pluralize }})</span>
+                    <span class="font-bold text-zinc-900">৳{{ subtotal|floatformat:0 }}</span>
+                </div>
+                
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span>Estimated Delivery</span>
+                        <div class="text-[11px] text-zinc-400">Inside Dhaka ৳{{ delivery_inside }} / Outside ৳{{ delivery_outside }}</div>
+                    </div>
+                    <span class="font-medium text-zinc-700">Calculated at checkout</span>
+                </div>
+            </div>
+
+            <div class="border-t border-zinc-100 pt-4 flex justify-between items-baseline">
+                <span class="text-base font-bold text-zinc-900">Subtotal</span>
+                <span class="text-2xl font-black text-zinc-900">৳{{ subtotal|floatformat:0 }}</span>
+            </div>
+
+            <a href="{% url 'orders:checkout' %}" class="w-full py-4 px-6 rounded-2xl bg-black hover:bg-zinc-800 text-white font-bold text-sm transition shadow-md flex items-center justify-center gap-2">
+                <span>{% if is_bangla %}চেকআউটে এগিয়ে যান (Checkout){% else %}Proceed to Checkout{% endif %}</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+
+            <!-- Delivery & Payment note -->
+            <div class="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/60 text-[11px] text-zinc-500 space-y-1.5">
+                <div class="flex items-center gap-1.5 font-bold text-zinc-700">
+                    <i class="fa-solid fa-truck-ramp-box text-zinc-500"></i> Fast & Secure Delivery
+                </div>
+                <p>Support Cash on Delivery, bKash, Nagad, Rocket, and Bank Transfer with full inspection upon receiving.</p>
+            </div>
+        </div>
+
+    </div>
+    {% else %}
+    <!-- Empty Cart -->
+    <div class="max-w-md mx-auto text-center py-16 bg-white rounded-3xl border border-zinc-200/80 p-8">
+        <div class="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center text-2xl text-zinc-400 mx-auto mb-4">
+            <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <h2 class="text-xl font-bold text-zinc-900">{% if is_bangla %}আপনার ব্যাগ খালি{% else %}Your shopping bag is empty{% endif %}</h2>
+        <p class="text-xs text-zinc-500 mt-2 mb-6">
+            {% if is_bangla %}
+            আমাদের সংগ্রহ থেকে আপনার পছন্দের ব্যবহৃত আইফোনটি সিলেক্ট করুন।
+            {% else %}
+            Browse our inspected inventory of iPhone 14 Pro, 15 Pro, and 16 Pro models.
+            {% endif %}
+        </p>
+        <a href="{% url 'store:product_list' %}" class="inline-block w-full py-3.5 bg-black text-white font-bold text-xs rounded-xl hover:bg-zinc-800 transition">
+            {% if is_bangla %}আইফোন সংগ্রহ দেখুন (Explore Phones){% else %}Explore iPhones{% endif %}
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

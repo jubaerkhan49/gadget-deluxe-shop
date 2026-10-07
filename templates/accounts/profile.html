@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{% if is_bangla %}আমার একাউন্ট ও অর্ডারসমূহ | গ্যাজেট ডিলাক্স{% else %}My Account & Orders | Gadget Deluxe{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+
+    <!-- Account Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-8 border-b border-zinc-200 gap-4 mb-8">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-bold shadow-sm">
+                {{ user.first_name|default:user.username|slice:":1"|upper }}
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold text-zinc-900 tracking-tight">
+                    {{ user.first_name|default:user.username }}
+                </h1>
+                <p class="text-xs text-zinc-500 mt-0.5">
+                    {{ user.email }} • Member since {{ user.date_joined|date:"M Y" }}
+                </p>
+            </div>
+        </div>
+
+        <div>
+            <a href="{% url 'accounts:logout' %}" class="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold transition">
+                <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Order History Section -->
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-zinc-900">
+                {% if is_bangla %}আপনার অর্ডারসমূহ{% else %}Your Order History{% endif %} ({{ orders.count }})
+            </h2>
+            <a href="{% url 'store:product_list' %}" class="text-xs font-bold text-black hover:underline">
+                Browse More iPhones &rarr;
+            </a>
+        </div>
+
+        {% if orders %}
+        <div class="space-y-4">
+            {% for order in orders %}
+            <div class="bg-white p-6 rounded-3xl border border-zinc-200/80 shadow-sm space-y-4">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 text-xs">
+                    <div>
+                        <span class="font-mono font-bold text-zinc-900 text-sm">#{{ order.order_number }}</span>
+                        <span class="text-zinc-400 ml-2">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold
+                            {% if order.order_status == 'delivered' %}bg-emerald-100 text-emerald-800
+                            {% elif order.order_status == 'shipped' or order.order_status == 'out_for_delivery' %}bg-blue-100 text-blue-800
+                            {% elif order.order_status == 'cancelled' %}bg-rose-100 text-rose-800
+                            {% else %}bg-amber-100 text-amber-800{% endif %}">
+                            {{ order.get_order_status_display }}
+                        </span>
+                        
+                        <a href="{% url 'orders:track_order_token' order.tracking_token %}" class="px-3.5 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-zinc-800 transition">
+                            Track
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <div class="space-y-2">
+                    {% for item in order.items.all %}
+                    <div class="flex items-center justify-between text-xs py-1">
+                        <div>
+                            <span class="font-bold text-zinc-900">{{ item.product_title }}</span>
+                            <span class="text-zinc-400 font-mono ml-2">{{ item.product_sku }}</span>
+                        </div>
+                        <span class="font-bold text-zinc-900">৳{{ item.total_price|floatformat:0 }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-zinc-100 text-xs">
+                    <span class="text-zinc-500">
+                        Payment: <strong>{{ order.get_payment_method_display }}</strong> ({{ order.get_payment_status_display }})
+                    </span>
+                    <span class="text-sm font-black text-zinc-900">
+                        Total: ৳{{ order.total_amount|floatformat:0 }}
+                    </span>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-12 text-center bg-white rounded-3xl border border-zinc-200">
+            <i class="fa-solid fa-receipt text-4xl text-zinc-300 mb-3"></i>
+            <h3 class="text-base font-bold text-zinc-800">No orders placed yet</h3>
+            <p class="text-xs text-zinc-500 mt-1">When you order an iPhone, it will appear here.</p>
+            <a href="{% url 'store:product_list' %}" class="mt-4 inline-block px-5 py-2.5 bg-black text-white font-bold text-xs rounded-xl">
+                Explore Available iPhones
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
