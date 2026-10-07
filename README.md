@@ -40,9 +40,14 @@
    - Visual 6-step progress stepper: *Order Placed → Confirmed → Processing → Shipped → Out for Delivery → Delivered*.
 6. **Bilingual FAQ & Trust Center**:
    - Answers to common questions regarding battery health, 3uTools testing, TrueTone, warranty, inspection on delivery, and guest orders.
-   - Manageable from Django Admin with both English and Bangla text.
-7. **Django Admin Dashboard**:
-   - Manage listings, photos, prices, orders, payment status, FAQs, and payment gateway details.
+   - Manageable from Admin with both English and Bangla text.
+7. **Comprehensive Custom Admin Portal (`/shop-admin/`)**:
+   - **Live Analytics & Traffic:** Total page views, daily/weekly/monthly unique visitor counts, and 30-day traffic growth charts.
+   - **Cash Flow Tracking:** Real-time revenue tracking across **Cash on Delivery, bKash, Nagad, Rocket, and Bank Transfer**, with Paid vs. Pending Verification breakdown.
+   - **Inventory Manager:** Add new iPhone listings, update specifications (storage, color, condition, battery health, SIM type, price, description in EN/BN), upload multiple gallery photos, and quick toggle stock status (*Available / Reserved / Sold*).
+   - **Orders & Payment Verification:** Review customer details, copy transaction IDs (TrxID), update fulfillment status (*Pending → Confirmed → Shipped → Delivered*), print invoices, and **Export Orders to CSV**.
+   - **Store & Payment Settings:** Change store hotline, WhatsApp, address, and mobile financial account numbers directly from the dashboard.
+   - **FAQ Manager:** Full CRUD for bilingual customer FAQs.
 
 ---
 
