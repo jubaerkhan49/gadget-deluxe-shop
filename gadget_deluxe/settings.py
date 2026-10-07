@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'store',
     'orders',
     'accounts',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'dashboard.middleware.VisitorAnalyticsMiddleware',
 ]
 
 ROOT_URLCONF = 'gadget_deluxe.urls'

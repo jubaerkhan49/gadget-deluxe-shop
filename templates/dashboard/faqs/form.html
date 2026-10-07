@@ -1,0 +1,71 @@
+{% extends 'dashboard/layout.html' %}
+
+{% block title %}
+{% if is_edit %}Edit FAQ | Gadget Deluxe Admin{% else %}Create FAQ | Gadget Deluxe Admin{% endif %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    
+    <div class="flex items-center gap-3 pb-4 border-b border-zinc-800">
+        <a href="{% url 'dashboard:faq_list' %}" class="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white transition">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-white">
+                {% if is_edit %}Edit FAQ Item{% else %}Add FAQ Item{% endif %}
+            </h1>
+            <p class="text-xs text-zinc-400">Manage bilingual question and answer details.</p>
+        </div>
+    </div>
+
+    <form method="POST" class="space-y-5 bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+                <label class="block font-semibold text-zinc-300 mb-1.5">Category *</label>
+                {{ form.category }}
+            </div>
+
+            <div>
+                <label class="block font-semibold text-zinc-300 mb-1.5">Display Order Number *</label>
+                {{ form.order }}
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-zinc-300 mb-1.5">Question (English) *</label>
+                {{ form.question_en }}
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-zinc-300 mb-1.5">প্রশ্ন (বাংলায়) *</label>
+                {{ form.question_bn }}
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-zinc-300 mb-1.5">Answer (English) *</label>
+                {{ form.answer_en }}
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-zinc-300 mb-1.5">উত্তর (বাংলায়) *</label>
+                {{ form.answer_bn }}
+            </div>
+
+            <div class="sm:col-span-2 flex items-center gap-2 pt-2">
+                {{ form.is_active }}
+                <label class="font-semibold text-zinc-300">Active (Visible on public FAQ page)</label>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+            <a href="{% url 'dashboard:faq_list' %}" class="px-5 py-2.5 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-xl hover:bg-zinc-700">Cancel</a>
+            <button type="submit" class="px-6 py-2.5 bg-white text-black text-xs font-bold rounded-xl hover:bg-zinc-200 transition">
+                {% if is_edit %}Save FAQ{% else %}Create FAQ{% endif %}
+            </button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

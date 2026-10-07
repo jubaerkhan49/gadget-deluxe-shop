@@ -1,0 +1,206 @@
+{% extends 'dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}
+{% if is_edit %}Edit {{ product.sku }} | Gadget Deluxe Admin{% else %}Add iPhone Listing | Gadget Deluxe Admin{% endif %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    
+    <!-- Top Action Bar -->
+    <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'dashboard:product_list' %}" class="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black text-white">
+                    {% if is_edit %}Edit Listing: {{ product.sku }}{% else %}Create New iPhone Listing{% endif %}
+                </h1>
+                <p class="text-xs text-zinc-400">Configure device condition, battery health, pricing, and photos.</p>
+            </div>
+        </div>
+
+        {% if is_edit %}
+        <div class="flex items-center gap-2">
+            <a href="{% url 'store:product_detail' product.slug %}" target="_blank" class="px-3.5 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                <span>View in Store</span>
+            </a>
+            <a href="{% url 'dashboard:product_delete' product.id %}" class="px-3.5 py-2 bg-rose-950/60 border border-rose-800 rounded-xl text-xs font-semibold text-rose-300 hover:bg-rose-900 transition">
+                Delete
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Main Form -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Section 1: Device Model & Storage -->
+        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
+            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">1. Device Model & Identification</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">iPhone Model *</label>
+                    {{ form.model }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Storage *</label>
+                    {{ form.storage }}
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Listing Title (English) *</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Listing Title (বাংলা - ঐচ্ছিক)</label>
+                    {{ form.title_bn }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Color (English) *</label>
+                    {{ form.color }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">রং (বাংলায়)</label>
+                    {{ form.color_bn }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Condition, Battery & Hardware Specs -->
+        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
+            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">2. Quality, Condition & Hardware</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Condition Grade *</label>
+                    {{ form.condition }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Battery Health % (50-100) *</label>
+                    {{ form.battery_health }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">SIM Type *</label>
+                    {{ form.sim_type }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Origin / Region Code</label>
+                    {{ form.origin_region }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Masked IMEI (Trust Badge)</label>
+                    {{ form.masked_imei }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Warranty Guarantee</label>
+                    {{ form.warranty_info }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Pricing & Availability -->
+        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
+            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">3. Pricing & Stock Status</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Selling Price (BDT ৳) *</label>
+                    {{ form.price }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Original / Strikethrough Price (BDT)</label>
+                    {{ form.original_price }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Availability Status *</label>
+                    {{ form.status }}
+                </div>
+
+                <div class="sm:col-span-3 flex items-center gap-2 pt-2">
+                    {{ form.featured }}
+                    <label class="font-semibold text-zinc-300">Feature this listing on homepage top picks</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Visuals & Descriptions -->
+        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
+            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">4. Photos & Inspection Test Notes</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Primary Featured Photo</label>
+                    {{ form.primary_image }}
+                    {% if is_edit and product.primary_image %}
+                    <div class="mt-2 flex items-center gap-3">
+                        <img src="{{ product.primary_image.url }}" class="w-16 h-16 object-contain bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-500 text-[11px]">Current Primary Photo</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if is_edit %}
+                <!-- Additional Gallery Photos Upload -->
+                <div class="sm:col-span-2 pt-2 border-t border-zinc-800">
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Add More Gallery Photos (Multiple Selection)</label>
+                    <input type="file" name="extra_images" multiple class="w-full px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 text-xs text-zinc-300">
+                    
+                    {% if product.images.all %}
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        {% for img in product.images.all %}
+                        <div class="relative w-20 h-20 bg-zinc-950 p-1.5 rounded-xl border border-zinc-800 group">
+                            <img src="{{ img.image.url }}" class="w-full h-full object-contain">
+                            <a href="{% url 'dashboard:product_image_delete' img.id %}" class="absolute -top-2 -right-2 w-6 h-6 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow" title="Delete Photo">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">Device Description & Test Notes (English)</label>
+                    {{ form.description }}
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-zinc-300 mb-1.5">বিবরণ ও টেস্ট নোট (বাংলা)</label>
+                    {{ form.description_bn }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end gap-3 pt-4">
+            <a href="{% url 'dashboard:product_list' %}" class="px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white text-xs font-bold transition">
+                Cancel
+            </a>
+            <button type="submit" class="px-8 py-3 rounded-xl bg-white text-black font-extrabold text-xs hover:bg-zinc-200 transition shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-check text-xs"></i>
+                <span>{% if is_edit %}Save Changes{% else %}Publish iPhone Listing{% endif %}</span>
+            </button>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}

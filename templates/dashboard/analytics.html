@@ -1,0 +1,131 @@
+{% extends 'dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}Analytics & Cash Flow | Gadget Deluxe Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-8">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Traffic & Cash Flow Analytics</h1>
+            <p class="text-xs text-zinc-400 mt-1">Detailed visitor trends, channel distributions, and device popularity.</p>
+        </div>
+    </div>
+
+    <!-- 30-Day Traffic Growth Chart -->
+    <div class="bg-zinc-900/80 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-base font-bold text-white">Daily Traffic (Last 30 Days)</h3>
+                <p class="text-xs text-zinc-400">Page views vs Unique customer sessions</p>
+            </div>
+        </div>
+        <div class="h-72">
+            <canvas id="trafficGrowthChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Two Column: Payment Method Distribution & Top Sold Models -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Payment Methods Cash Flow (6 cols) -->
+        <div class="lg:col-span-6 bg-zinc-900/80 border border-zinc-800/80 p-6 rounded-2xl space-y-5">
+            <h3 class="text-base font-bold text-white">Payment Method Cash Flow Share</h3>
+            
+            <div class="space-y-4">
+                {% for p in payment_breakdown %}
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between font-semibold">
+                        <span class="text-white">{{ p.label }} ({{ p.count }} order{{ p.count|pluralize }})</span>
+                        <span class="font-bold text-emerald-400">৳{{ p.total|floatformat:0 }} ({{ p.percentage }}%)</span>
+                    </div>
+                    <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                        <div class="bg-white h-full" style="width: {{ p.percentage }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Top Selling iPhone Models (6 cols) -->
+        <div class="lg:col-span-6 bg-zinc-900/80 border border-zinc-800/80 p-6 rounded-2xl space-y-5">
+            <h3 class="text-base font-bold text-white">Most Popular iPhone Models</h3>
+            
+            <div class="space-y-3">
+                {% for item in ordered_items %}
+                <div class="p-3.5 bg-zinc-950 rounded-xl border border-zinc-800/80 flex items-center justify-between text-xs">
+                    <div>
+                        <div class="font-bold text-white">{{ item.product_model }}</div>
+                        <div class="text-zinc-500">{{ item.total_units }} Unit{{ item.total_units|pluralize }} ordered</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-black text-white text-sm">৳{{ item.revenue|floatformat:0 }}</div>
+                        <div class="text-[10px] text-zinc-500">Gross Sales</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs text-zinc-500 py-4">No model order data yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('trafficGrowthChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ traffic_labels|safe }},
+                    datasets: [
+                        {
+                            label: 'Total Page Views',
+                            data: {{ traffic_views|safe }},
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Unique Visitors',
+                            data: {{ traffic_uniques|safe }},
+                            borderColor: '#34d399',
+                            backgroundColor: 'transparent',
+                            tension: 0.3,
+                            borderWidth: 2,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { color: '#27272a' },
+                            ticks: { color: '#a1a1aa', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { color: '#27272a' },
+                            ticks: { color: '#a1a1aa', font: { size: 10 } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e4e4e7', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

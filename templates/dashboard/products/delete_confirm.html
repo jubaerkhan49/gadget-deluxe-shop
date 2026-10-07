@@ -1,0 +1,30 @@
+{% extends 'dashboard/layout.html' %}
+
+{% block title %}Delete {{ product.sku }} | Gadget Deluxe Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-md mx-auto py-12">
+    <div class="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl text-center space-y-5">
+        <div class="w-12 h-12 rounded-full bg-rose-950/80 text-rose-400 flex items-center justify-center text-xl mx-auto border border-rose-800">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <div>
+            <h1 class="text-lg font-bold text-white">Delete iPhone Listing?</h1>
+            <p class="text-xs text-zinc-400 mt-1">
+                Are you sure you want to permanently delete <strong>{{ product.title }}</strong> ({{ product.sku }})?
+            </p>
+        </div>
+
+        <form method="POST" class="flex items-center justify-center gap-3 pt-2">
+            {% csrf_token %}
+            <a href="{% url 'dashboard:product_list' %}" class="px-5 py-2.5 bg-zinc-800 text-zinc-300 font-bold text-xs rounded-xl hover:bg-zinc-700">
+                Cancel
+            </a>
+            <button type="submit" class="px-5 py-2.5 bg-rose-600 text-white font-bold text-xs rounded-xl hover:bg-rose-700 shadow-md">
+                Yes, Delete Permanently
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}Manage iPhone Inventory | Gadget Deluxe Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">iPhone Inventory & Listings</h1>
+            <p class="text-xs text-zinc-400 mt-1">Manage individual used iPhone units, specifications, and availability.</p>
+        </div>
+
+        <div>
+            <a href="{% url 'dashboard:product_create' %}" class="px-4 py-2.5 bg-white text-black text-xs font-bold rounded-xl hover:bg-zinc-200 transition shadow-sm flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Add iPhone Listing</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="bg-zinc-900/80 border border-zinc-800 p-4 rounded-2xl">
+        <form method="GET" action="{% url 'dashboard:product_list' %}" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+            <div class="sm:col-span-5">
+                <div class="relative">
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search by SKU, Model, Color..." class="w-full pl-9 pr-4 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-200 focus:outline-none focus:border-zinc-500">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-zinc-500 text-xs"></i>
+                </div>
+            </div>
+
+            <div class="sm:col-span-3">
+                <select name="model" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-300 focus:outline-none focus:border-zinc-500">
+                    <option value="">All Models</option>
+                    {% for m in models_list %}
+                    <option value="{{ m.slug }}" {% if selected_model == m.slug %}selected{% endif %}>{{ m.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="sm:col-span-2">
+                <select name="status" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-300 focus:outline-none focus:border-zinc-500">
+                    <option value="">All Statuses</option>
+                    <option value="available" {% if selected_status == 'available' %}selected{% endif %}>Available</option>
+                    <option value="reserved" {% if selected_status == 'reserved' %}selected{% endif %}>Reserved</option>
+                    <option value="sold" {% if selected_status == 'sold' %}selected{% endif %}>Sold Out</option>
+                </select>
+            </div>
+
+            <div class="sm:col-span-2 flex items-center gap-2">
+                <button type="submit" class="w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-zinc-200 transition">
+                    Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Products Table -->
+    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-800">
+                    <tr>
+                        <th class="py-3.5 px-6">Image</th>
+                        <th class="py-3.5 px-6">Listing SKU & Title</th>
+                        <th class="py-3.5 px-6">Specs</th>
+                        <th class="py-3.5 px-6">Battery</th>
+                        <th class="py-3.5 px-6">Price</th>
+                        <th class="py-3.5 px-6">Status</th>
+                        <th class="py-3.5 px-6 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800/60 text-zinc-300">
+                    {% for product in products %}
+                    <tr class="hover:bg-zinc-800/30 transition">
+                        <td class="py-3.5 px-6">
+                            <div class="w-12 h-12 bg-zinc-950 rounded-xl p-1 border border-zinc-800 flex items-center justify-center">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
+                                {% else %}
+                                <i class="fa-brands fa-apple text-zinc-600 text-lg"></i>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-6">
+                            <div class="font-mono font-bold text-white text-xs">{{ product.sku }}</div>
+                            <div class="font-semibold text-zinc-200 mt-0.5">{{ product.model.name }} {{ product.storage }}</div>
+                            <div class="text-[10px] text-zinc-500">{{ product.color }} • {{ product.origin_region }}</div>
+                        </td>
+                        <td class="py-3.5 px-6 text-zinc-400">
+                            <div>{{ product.get_condition_display }}</div>
+                            <div class="text-[10px] text-zinc-500">{{ product.get_sim_type_display }}</div>
+                        </td>
+                        <td class="py-3.5 px-6 font-bold {% if product.battery_health >= 90 %}text-emerald-400{% else %}text-amber-400{% endif %}">
+                            🔋 {{ product.battery_health }}%
+                        </td>
+                        <td class="py-3.5 px-6 font-black text-white text-sm">
+                            ৳{{ product.price|floatformat:0 }}
+                        </td>
+                        <td class="py-3.5 px-6">
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold
+                                    {% if product.status == 'available' %}bg-emerald-950 text-emerald-400 border border-emerald-800
+                                    {% elif product.status == 'reserved' %}bg-amber-950 text-amber-400 border border-amber-800
+                                    {% else %}bg-rose-950 text-rose-400 border border-rose-800{% endif %}">
+                                    {{ product.get_status_display }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-6 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <a href="{% url 'dashboard:product_edit' product.id %}" class="p-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-zinc-300 hover:text-white transition" title="Edit Listing">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                {% if product.status == 'available' %}
+                                <a href="{% url 'dashboard:product_toggle_status' product.id 'sold' %}" class="p-1.5 bg-zinc-800 hover:bg-rose-950 hover:text-rose-400 rounded-lg text-zinc-400 transition text-[10px] font-bold" title="Mark as Sold">
+                                    Sold
+                                </a>
+                                {% else %}
+                                <a href="{% url 'dashboard:product_toggle_status' product.id 'available' %}" class="p-1.5 bg-zinc-800 hover:bg-emerald-950 hover:text-emerald-400 rounded-lg text-zinc-400 transition text-[10px] font-bold" title="Mark Available">
+                                    Avail
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'store:product_detail' product.slug %}" target="_blank" class="p-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition" title="View in Store">
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-12 text-zinc-500">No iPhone listings found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
