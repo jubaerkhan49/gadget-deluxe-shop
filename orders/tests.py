@@ -59,7 +59,7 @@ class OrderFlowTestCase(TestCase):
             'delivery_address': 'Flat 4B, House 12, Road 5, Dhanmondi',
             'city': 'inside_dhaka',
             'delivery_notes': 'Please call before arriving',
-            'payment_method': 'bkash',
+            'payment_method': 'bank_transfer',
             'payment_sender_number': '01712345678',
             'payment_trx_id': '9J4K2L8M1N',
         }
@@ -72,7 +72,7 @@ class OrderFlowTestCase(TestCase):
         self.assertEqual(order.subtotal, Decimal(145000))
         self.assertEqual(order.delivery_charge, Decimal(100))
         self.assertEqual(order.total_amount, Decimal(145100))
-        self.assertEqual(order.payment_method, 'bkash')
+        self.assertEqual(order.payment_method, 'bank_transfer')
         self.assertEqual(order.payment_trx_id, '9J4K2L8M1N')
         self.assertEqual(order.payment_status, 'pending_verification')
         self.assertEqual(order.order_status, 'pending')

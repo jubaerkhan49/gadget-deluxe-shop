@@ -7,34 +7,34 @@ import random
 
 class Order(models.Model):
     CITY_CHOICES = [
-        ('inside_dhaka', 'Inside Dhaka (৳100) / ঢাকা সিটির ভেতরে'),
-        ('outside_dhaka', 'Outside Dhaka (৳150) / ঢাকার বাইরে সারা বাংলাদেশ'),
+        ('inside_dhaka', 'Inside Dhaka (৳100)'),
+        ('outside_dhaka', 'Outside Dhaka (৳150)'),
     ]
 
     PAYMENT_METHOD_CHOICES = [
-        ('cod', 'Cash on Delivery (COD) / ক্যাশ অন ডেলিভারি'),
-        ('bkash', 'bKash / বিকাশ'),
-        ('nagad', 'Nagad / নগদ'),
-        ('rocket', 'Rocket / রকেট'),
-        ('bank_transfer', 'Bank Transfer / ব্যাংক ট্রান্সফার'),
+        ('cod', 'Cash on Delivery (COD)'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('bkash', 'bKash'),
+        ('nagad', 'Nagad'),
+        ('rocket', 'Rocket'),
     ]
 
     PAYMENT_STATUS_CHOICES = [
-        ('unpaid', 'Unpaid / অপরিশোধিত'),
-        ('pending_verification', 'Pending Verification / ভেরিফিকেশন অপেক্ষমান'),
-        ('paid', 'Paid / পরিশোধিত'),
-        ('failed', 'Failed / ব্যর্থ'),
-        ('refunded', 'Refunded / রিফান্ডকৃত'),
+        ('unpaid', 'Unpaid'),
+        ('pending_verification', 'Pending Verification'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
     ]
 
     ORDER_STATUS_CHOICES = [
-        ('pending', 'Pending / অপেক্ষমান'),
-        ('confirmed', 'Confirmed / নিশ্চিতকৃত'),
-        ('processing', 'Processing / প্রসেসিং'),
-        ('shipped', 'Shipped / কুরিয়ারে পাঠানো হয়েছে'),
-        ('out_for_delivery', 'Out for Delivery / ডেলিভারিতে বের হয়েছে'),
-        ('delivered', 'Delivered / ডেলিভারি সম্পন্ন'),
-        ('cancelled', 'Cancelled / বাতিল'),
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('processing', 'Processing'),
+        ('shipped', 'Shipped'),
+        ('out_for_delivery', 'Out for Delivery'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
     ]
 
     order_number = models.CharField(max_length=20, unique=True, editable=False)
@@ -102,6 +102,45 @@ class Order(models.Model):
             'cancelled': -1,
         }
         return steps.get(self.order_status, 0)
+
+    @property
+    def city_display_bn(self):
+        return "ঢাকা সিটির ভেতরে (৳১০০)" if self.city == 'inside_dhaka' else "ঢাকার বাইরে সারা বাংলাদেশ (৳১৫০)"
+
+    @property
+    def payment_method_display_bn(self):
+        names = {
+            'cod': 'ক্যাশ অন ডেলিভারি (COD)',
+            'bank_transfer': 'ব্যাংক ট্রান্সফার',
+            'bkash': 'বিকাশ',
+            'nagad': 'নগদ',
+            'rocket': 'রকেট',
+        }
+        return names.get(self.payment_method, self.get_payment_method_display())
+
+    @property
+    def order_status_display_bn(self):
+        names = {
+            'pending': 'অপেক্ষমান',
+            'confirmed': 'নিশ্চিতকৃত',
+            'processing': 'প্রসেসিং',
+            'shipped': 'কুরিয়ারে পাঠানো হয়েছে',
+            'out_for_delivery': 'ডেলিভারিতে বের হয়েছে',
+            'delivered': 'ডেলিভারি সম্পন্ন',
+            'cancelled': 'বাতিল',
+        }
+        return names.get(self.order_status, self.get_order_status_display())
+
+    @property
+    def payment_status_display_bn(self):
+        names = {
+            'unpaid': 'অপরিশোধিত',
+            'pending_verification': 'ভেরিফিকেশন অপেক্ষমান',
+            'paid': 'পরিশোধিত',
+            'failed': 'ব্যর্থ',
+            'refunded': 'রিফান্ডকৃত',
+        }
+        return names.get(self.payment_status, self.get_payment_status_display())
 
 
 class OrderItem(models.Model):

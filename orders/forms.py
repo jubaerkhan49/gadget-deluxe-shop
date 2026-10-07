@@ -4,6 +4,15 @@ import re
 
 
 class CheckoutForm(forms.ModelForm):
+    payment_method = forms.ChoiceField(
+        choices=[
+            ('cod', 'Cash on Delivery (COD)'),
+            ('bank_transfer', 'Bank Transfer'),
+        ],
+        widget=forms.RadioSelect(attrs={'class': 'payment-method-radio focus:ring-black'}),
+        initial='cod',
+    )
+
     class Meta:
         model = Order
         fields = [
@@ -20,7 +29,7 @@ class CheckoutForm(forms.ModelForm):
         widgets = {
             'full_name': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
-                'placeholder': 'e.g. Tanvir Ahmed / তানভীর আহমেদ',
+                'placeholder': 'e.g. Tanvir Ahmed',
                 'required': True,
             }),
             'phone': forms.TextInput(attrs={
@@ -30,12 +39,12 @@ class CheckoutForm(forms.ModelForm):
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
-                'placeholder': 'name@example.com (Optional / ঐচ্ছিক)',
+                'placeholder': 'name@example.com (Optional)',
             }),
             'delivery_address': forms.Textarea(attrs={
                 'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
                 'rows': 3,
-                'placeholder': 'House #, Road #, Sector/Area, Landmark / সম্পূর্ণ ডেলিভারি ঠিকানা',
+                'placeholder': 'House #, Road #, Sector/Area, Landmark',
                 'required': True,
             }),
             'city': forms.Select(attrs={
@@ -47,16 +56,13 @@ class CheckoutForm(forms.ModelForm):
                 'rows': 2,
                 'placeholder': 'e.g. Call before delivery, deliver after 3 PM (Optional)',
             }),
-            'payment_method': forms.RadioSelect(attrs={
-                'class': 'payment-method-radio focus:ring-black',
-            }),
             'payment_sender_number': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
-                'placeholder': '01XXXXXXXXX (Your bKash/Nagad/Rocket Number)',
+                'placeholder': 'Sender Phone or Bank Account Name',
             }),
             'payment_trx_id': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
-                'placeholder': 'e.g. 9J4K2L1M or Bank Deposit Ref',
+                'placeholder': 'e.g. Bank Deposit Ref / Slip No',
             }),
         }
 
