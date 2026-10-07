@@ -208,8 +208,8 @@
                 {% if is_edit %}
                 <!-- Additional Gallery Photos Upload -->
                 <div class="sm:col-span-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
-                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Add More Gallery Photos (Multiple Selection)</label>
-                    <input type="file" name="extra_images" multiple class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100">
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Add More Gallery Photos (Multiple Selection, supports HEIC / JPG / PNG)</label>
+                    <input type="file" name="extra_images" multiple accept="image/*,.heic,.heif,.HEIC,.HEIF" class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100">
                     
                     {% if product.images.all %}
                     <div class="mt-4 flex flex-wrap gap-3">

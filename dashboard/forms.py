@@ -74,12 +74,22 @@ class ProductForm(forms.ModelForm):
             'charging_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Charging: OK'}),
             'camera_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Camera: OK'}),
             'flashlight_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Flashlight: OK'}),
-            'primary_image': forms.FileInput(attrs={'class': 'w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100'}),
+            'primary_image': forms.FileInput(attrs={
+                'class': 'w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100',
+                'accept': 'image/*,.heic,.heif,.HEIC,.HEIF'
+            }),
             'description': forms.Textarea(attrs={'class': TEXTAREA_CLASSES, 'rows': 3, 'placeholder': 'Inspection test results, body condition details...'}),
             'description_bn': forms.Textarea(attrs={'class': TEXTAREA_CLASSES, 'rows': 3, 'placeholder': 'বাংলা বিবরণ...'}),
             'status': forms.Select(attrs={'class': SELECT_CLASSES}),
             'featured': forms.CheckboxInput(attrs={'class': 'w-4 h-4 text-black rounded border-zinc-300 dark:border-zinc-700 focus:ring-black'}),
         }
+
+    def clean_primary_image(self):
+        img = self.cleaned_data.get('primary_image')
+        if img and hasattr(img, 'file'):
+            from store.image_utils import process_image_file
+            return process_image_file(img)
+        return img
 
 
 class ProductImageForm(forms.ModelForm):
@@ -87,10 +97,20 @@ class ProductImageForm(forms.ModelForm):
         model = ProductImage
         fields = ['image', 'alt_text', 'order']
         widgets = {
-            'image': forms.FileInput(attrs={'class': 'w-full text-xs text-zinc-900 dark:text-zinc-100'}),
+            'image': forms.FileInput(attrs={
+                'class': 'w-full text-xs text-zinc-900 dark:text-zinc-100',
+                'accept': 'image/*,.heic,.heif,.HEIC,.HEIF'
+            }),
             'alt_text': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Alt text / Photo description'}),
             'order': forms.NumberInput(attrs={'class': INPUT_CLASSES}),
         }
+
+    def clean_image(self):
+        img = self.cleaned_data.get('image')
+        if img and hasattr(img, 'file'):
+            from store.image_utils import process_image_file
+            return process_image_file(img)
+        return img
 
 
 class FAQForm(forms.ModelForm):

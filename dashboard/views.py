@@ -357,8 +357,10 @@ def product_edit(request, product_id):
             
             # Handle additional gallery images upload
             gallery_files = request.FILES.getlist('extra_images')
+            from store.image_utils import process_image_file
             for f in gallery_files:
-                ProductImage.objects.create(product=product, image=f)
+                converted_f = process_image_file(f)
+                ProductImage.objects.create(product=product, image=converted_f)
 
             messages.success(request, f"Listing '{product.title}' updated successfully.")
             return redirect('dashboard:product_edit', product_id=product.id)

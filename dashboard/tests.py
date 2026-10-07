@@ -129,6 +129,39 @@ class DashboardTestCase(TestCase):
         self.product.refresh_from_db()
         self.assertEqual(self.product.status, 'sold')
 
+    def test_product_heic_upload_crud(self):
+        import io
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        import pillow_heif
+        pillow_heif.register_heif_opener()
+
+        self.client.force_login(self.admin_user)
+        buf = io.BytesIO()
+        img = Image.new('RGB', (100, 100), color='purple')
+        img.save(buf, format='HEIF')
+        buf.seek(0)
+        heic_file = SimpleUploadedFile('iphone_15_photo.HEIC', buf.read(), content_type='image/heic')
+
+        post_data = {
+            'model': self.model.id,
+            'title': 'iPhone 15 Pro Max 256GB Purple HEIC',
+            'storage': '256GB',
+            'color': 'Purple',
+            'condition': 'like_new',
+            'battery_health': 97,
+            'cycle_count': 12,
+            'sim_type': 'wifi_only',
+            'price': 118000,
+            'status': 'available',
+            'primary_image': heic_file,
+        }
+        res = self.client.post(reverse('dashboard:product_create'), post_data)
+        self.assertEqual(res.status_code, 302)
+        created_p = Product.objects.filter(title='iPhone 15 Pro Max 256GB Purple HEIC').first()
+        self.assertIsNotNone(created_p)
+        self.assertTrue(created_p.primary_image.name.endswith('.jpg'))
+
     def test_faq_crud(self):
         self.client.force_login(self.admin_user)
         post_data = {
