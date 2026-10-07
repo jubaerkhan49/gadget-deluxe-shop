@@ -107,15 +107,21 @@ class DashboardTestCase(TestCase):
             'color_bn': 'হোয়াইট টাইটানিয়াম',
             'condition': 'like_new',
             'battery_health': 99,
+            'cycle_count': 45,
             'sim_type': 'dual_esim',
-            'origin_region': 'USA (LL/A)',
             'price': 125000,
             'status': 'available',
-            'warranty_info': '7 Days Replacement',
         }
         res = self.client.post(reverse('dashboard:product_create'), post_data)
         self.assertEqual(res.status_code, 302)
-        self.assertTrue(Product.objects.filter(title='iPhone 15 Pro Max 512GB White Titanium').exists())
+        created_p = Product.objects.filter(title='iPhone 15 Pro Max 512GB White Titanium').first()
+        self.assertIsNotNone(created_p)
+        self.assertEqual(created_p.cycle_count, 45)
+
+        # Delete product
+        del_res = self.client.post(reverse('dashboard:product_delete', kwargs={'product_id': created_p.id}))
+        self.assertEqual(del_res.status_code, 302)
+        self.assertFalse(Product.objects.filter(id=created_p.id).exists())
 
         # Toggle status
         toggle_res = self.client.get(reverse('dashboard:product_toggle_status', kwargs={'product_id': self.product.id, 'new_status': 'sold'}))

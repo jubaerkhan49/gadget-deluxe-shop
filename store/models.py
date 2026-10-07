@@ -52,6 +52,7 @@ class Product(models.Model):
         ('physical_esim', '1 Physical SIM + 1 eSIM'),
         ('dual_esim', 'Dual eSIM (USA Variant)'),
         ('dual_physical', 'Dual Physical SIM (HK/China/Global)'),
+        ('no_sim', 'No Physical SIM / eSIM Only'),
     ]
 
     STATUS_CHOICES = [
@@ -80,16 +81,24 @@ class Product(models.Model):
         help_text="Battery Health Percentage (e.g. 96 for 96%)",
         default=100
     )
+    cycle_count = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        default=0,
+        help_text="Battery Cycle Count (e.g. 120)"
+    )
     sim_type = models.CharField(max_length=20, choices=SIM_CHOICES, default='physical_esim')
     origin_region = models.CharField(
         max_length=50, 
-        default='USA (LL/A)', 
-        help_text="e.g. USA (LL/A), Japan (J/A), Singapore (ZA/A)"
+        blank=True, 
+        default='', 
+        help_text="Optional origin e.g. USA (LL/A)"
     )
     masked_imei = models.CharField(
         max_length=30, 
         blank=True, 
-        help_text="e.g. 3549********812 (for customer trust)"
+        default='', 
+        help_text="Optional masked IMEI"
     )
 
     price = models.DecimalField(max_digits=10, decimal_places=0, help_text="Selling price in BDT (৳)")
@@ -103,7 +112,7 @@ class Product(models.Model):
 
     description = models.TextField(
         blank=True,
-        help_text="Device history, inspection test report summary (3uTools 100% score, TrueTone, FaceID working)."
+        help_text="Device history, inspection test report summary."
     )
     description_bn = models.TextField(blank=True, help_text="বাংলা বিবরণ")
 
@@ -112,6 +121,7 @@ class Product(models.Model):
     featured = models.BooleanField(default=False, help_text="Feature on Homepage")
     warranty_info = models.CharField(
         max_length=150, 
+        blank=True,
         default="7 Days Replacement & 1 Year Free Service Warranty",
         help_text="Warranty guarantee for this phone"
     )
@@ -160,6 +170,8 @@ class Product(models.Model):
             return '১ ফিজিক্যাল সিম + ১ ই-সিম'
         elif self.sim_type == 'dual_esim':
             return 'ডুয়াল ই-সিম (USA ভ্যারিয়েন্ট)'
+        elif self.sim_type == 'no_sim':
+            return 'নো ফিজিক্যাল সিম (ই-সিম)'
         return 'ডুয়াল ফিজিক্যাল সিম (HK/China)'
 
 

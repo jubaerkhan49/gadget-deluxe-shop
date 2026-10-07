@@ -8,12 +8,12 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">FAQ Management</h1>
-            <p class="text-xs text-zinc-400 mt-1">Manage frequently asked questions in English & Bangla.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">FAQ Management</h1>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Manage frequently asked questions in English & Bangla.</p>
         </div>
 
         <div>
-            <a href="{% url 'dashboard:faq_create' %}" class="px-4 py-2.5 bg-white text-black text-xs font-bold rounded-xl hover:bg-zinc-200 transition shadow-sm flex items-center gap-1.5">
+            <a href="{% url 'dashboard:faq_create' %}" class="px-4 py-2.5 bg-black text-white dark:bg-white dark:text-black text-xs font-bold rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition shadow-sm flex items-center gap-1.5">
                 <i class="fa-solid fa-plus text-xs"></i>
                 <span>Add FAQ Question</span>
             </a>
@@ -21,31 +21,31 @@
     </div>
 
     <!-- FAQ Items List -->
-    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-        <div class="divide-y divide-zinc-800/80">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
+        <div class="divide-y divide-zinc-200 dark:divide-zinc-800/80">
             {% for faq in faqs %}
-            <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-zinc-800/30 transition">
+            <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition">
                 <div class="space-y-1.5 max-w-2xl">
                     <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-300">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300">
                             {{ faq.get_category_display }}
                         </span>
-                        <span class="text-zinc-500 text-[11px]">Order: #{{ faq.order }}</span>
+                        <span class="text-zinc-400 text-[11px]">Order: #{{ faq.order }}</span>
                         {% if not faq.is_active %}
-                        <span class="text-rose-400 text-[10px] font-bold">Inactive</span>
+                        <span class="text-rose-600 dark:text-rose-400 text-[10px] font-bold">Inactive</span>
                         {% endif %}
                     </div>
 
-                    <h3 class="text-sm font-bold text-white">{{ faq.question_en }}</h3>
-                    <p class="text-xs text-zinc-400 font-bengali">{{ faq.question_bn }}</p>
+                    <h3 class="text-sm font-bold text-zinc-900 dark:text-white">{{ faq.question_en }}</h3>
+                    <p class="text-xs text-zinc-600 dark:text-zinc-400 font-bengali">{{ faq.question_bn }}</p>
                     <p class="text-xs text-zinc-500 line-clamp-2 mt-1">{{ faq.answer_en }}</p>
                 </div>
 
                 <div class="flex items-center gap-2 flex-shrink-0">
-                    <a href="{% url 'dashboard:faq_edit' faq.id %}" class="px-3 py-1.5 bg-zinc-800 hover:bg-white hover:text-black rounded-lg text-xs font-bold transition">
+                    <a href="{% url 'dashboard:faq_edit' faq.id %}" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-lg text-xs font-bold transition shadow-sm">
                         Edit
                     </a>
-                    <a href="{% url 'dashboard:faq_delete' faq.id %}" class="p-1.5 bg-zinc-800 hover:bg-rose-900 hover:text-rose-300 text-zinc-400 rounded-lg text-xs transition">
+                    <a href="{% url 'dashboard:faq_delete' faq.id %}" class="p-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-900 dark:hover:text-rose-200 text-zinc-500 dark:text-zinc-400 rounded-lg text-xs transition shadow-sm">
                         <i class="fa-solid fa-trash"></i>
                     </a>
                 </div>

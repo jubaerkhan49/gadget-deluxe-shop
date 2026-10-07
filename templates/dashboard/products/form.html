@@ -9,27 +9,28 @@
 <div class="max-w-4xl mx-auto space-y-6">
     
     <!-- Top Action Bar -->
-    <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
+    <div class="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div class="flex items-center gap-3">
-            <a href="{% url 'dashboard:product_list' %}" class="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white transition">
+            <a href="{% url 'dashboard:product_list' %}" class="p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition shadow-sm">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div>
-                <h1 class="text-xl sm:text-2xl font-black text-white">
+                <h1 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">
                     {% if is_edit %}Edit Listing: {{ product.sku }}{% else %}Create New iPhone Listing{% endif %}
                 </h1>
-                <p class="text-xs text-zinc-400">Configure device condition, battery health, pricing, and photos.</p>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">Configure device model, condition, battery health, cycle count, and pricing.</p>
             </div>
         </div>
 
         {% if is_edit %}
         <div class="flex items-center gap-2">
-            <a href="{% url 'store:product_detail' product.slug %}" target="_blank" class="px-3.5 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white flex items-center gap-1.5">
+            <a href="{% url 'store:product_detail' product.slug %}" target="_blank" class="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white flex items-center gap-1.5 shadow-sm transition">
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
                 <span>View in Store</span>
             </a>
-            <a href="{% url 'dashboard:product_delete' product.id %}" class="px-3.5 py-2 bg-rose-950/60 border border-rose-800 rounded-xl text-xs font-semibold text-rose-300 hover:bg-rose-900 transition">
-                Delete
+            <a href="{% url 'dashboard:product_delete' product.id %}" class="px-3.5 py-2 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold text-rose-700 dark:text-rose-300 hover:bg-rose-600 hover:text-white transition shadow-sm flex items-center gap-1.5">
+                <i class="fa-regular fa-trash-can text-xs"></i>
+                <span>Delete</span>
             </a>
         </div>
         {% endif %}
@@ -40,117 +41,120 @@
         {% csrf_token %}
 
         <!-- Section 1: Device Model & Storage -->
-        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
-            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">1. Device Model & Identification</h2>
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">
+            <h2 class="text-sm font-bold text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-mobile text-zinc-400"></i> 1. Device Model & Identification
+            </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">iPhone Model *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">iPhone Model *</label>
                     {{ form.model }}
+                    {% if form.model.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.model.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Storage *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Storage *</label>
                     {{ form.storage }}
+                    {% if form.storage.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.storage.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="sm:col-span-2">
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Listing Title (English) *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Listing Title (English) *</label>
                     {{ form.title }}
+                    {% if form.title.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.title.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="sm:col-span-2">
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Listing Title (বাংলা - ঐচ্ছিক)</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Listing Title (বাংলা - ঐচ্ছিক)</label>
                     {{ form.title_bn }}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Color (English) *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Color (English) *</label>
                     {{ form.color }}
+                    {% if form.color.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.color.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">রং (বাংলায়)</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">রং (বাংলায়)</label>
                     {{ form.color_bn }}
                 </div>
             </div>
         </div>
 
-        <!-- Section 2: Condition, Battery & Hardware Specs -->
-        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
-            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">2. Quality, Condition & Hardware</h2>
+        <!-- Section 2: Quality, Condition & Hardware (with cycle count and no sim) -->
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">
+            <h2 class="text-sm font-bold text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-microchip text-zinc-400"></i> 2. Quality, Condition & Battery Specs
+            </h2>
             
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Condition Grade *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Condition Grade *</label>
                     {{ form.condition }}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Battery Health % (50-100) *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Battery Health % (50-100) *</label>
                     {{ form.battery_health }}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">SIM Type *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Battery Cycle Count</label>
+                    {{ form.cycle_count }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">SIM Configuration *</label>
                     {{ form.sim_type }}
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Origin / Region Code</label>
-                    {{ form.origin_region }}
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Masked IMEI (Trust Badge)</label>
-                    {{ form.masked_imei }}
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Warranty Guarantee</label>
-                    {{ form.warranty_info }}
                 </div>
             </div>
         </div>
 
         <!-- Section 3: Pricing & Availability -->
-        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
-            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">3. Pricing & Stock Status</h2>
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">
+            <h2 class="text-sm font-bold text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-bangladeshi-taka-sign text-zinc-400"></i> 3. Pricing & Stock Status
+            </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Selling Price (BDT ৳) *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Selling Price (BDT ৳) *</label>
                     {{ form.price }}
+                    {% if form.price.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.price.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Original / Strikethrough Price (BDT)</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Original / Strikethrough Price (BDT)</label>
                     {{ form.original_price }}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Availability Status *</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Availability Status *</label>
                     {{ form.status }}
                 </div>
 
                 <div class="sm:col-span-3 flex items-center gap-2 pt-2">
                     {{ form.featured }}
-                    <label class="font-semibold text-zinc-300">Feature this listing on homepage top picks</label>
+                    <label class="font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">Feature this listing on homepage top picks</label>
                 </div>
             </div>
         </div>
 
         <!-- Section 4: Visuals & Descriptions -->
-        <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-4">
-            <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-3">4. Photos & Inspection Test Notes</h2>
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">
+            <h2 class="text-sm font-bold text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-camera text-zinc-400"></i> 4. Photos & Inspection Details
+            </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div class="sm:col-span-2">
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Primary Featured Photo</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Primary Featured Photo</label>
                     {{ form.primary_image }}
                     {% if is_edit and product.primary_image %}
                     <div class="mt-2 flex items-center gap-3">
-                        <img src="{{ product.primary_image.url }}" class="w-16 h-16 object-contain bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+                        <img src="{{ product.primary_image.url }}" class="w-16 h-16 object-contain bg-zinc-50 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800">
                         <span class="text-zinc-500 text-[11px]">Current Primary Photo</span>
                     </div>
                     {% endif %}
@@ -158,14 +162,14 @@
 
                 {% if is_edit %}
                 <!-- Additional Gallery Photos Upload -->
-                <div class="sm:col-span-2 pt-2 border-t border-zinc-800">
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Add More Gallery Photos (Multiple Selection)</label>
-                    <input type="file" name="extra_images" multiple class="w-full px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-950 text-xs text-zinc-300">
+                <div class="sm:col-span-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Add More Gallery Photos (Multiple Selection)</label>
+                    <input type="file" name="extra_images" multiple class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100">
                     
                     {% if product.images.all %}
                     <div class="mt-4 flex flex-wrap gap-3">
                         {% for img in product.images.all %}
-                        <div class="relative w-20 h-20 bg-zinc-950 p-1.5 rounded-xl border border-zinc-800 group">
+                        <div class="relative w-20 h-20 bg-zinc-50 dark:bg-zinc-950 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 group">
                             <img src="{{ img.image.url }}" class="w-full h-full object-contain">
                             <a href="{% url 'dashboard:product_image_delete' img.id %}" class="absolute -top-2 -right-2 w-6 h-6 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow" title="Delete Photo">
                                 <i class="fa-solid fa-xmark"></i>
@@ -178,12 +182,12 @@
                 {% endif %}
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">Device Description & Test Notes (English)</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Device Description & Test Notes (English)</label>
                     {{ form.description }}
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-zinc-300 mb-1.5">বিবরণ ও টেস্ট নোট (বাংলা)</label>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">বিবরণ ও টেস্ট নোট (বাংলা)</label>
                     {{ form.description_bn }}
                 </div>
             </div>
@@ -191,10 +195,10 @@
 
         <!-- Submit Button -->
         <div class="flex items-center justify-end gap-3 pt-4">
-            <a href="{% url 'dashboard:product_list' %}" class="px-5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white text-xs font-bold transition">
+            <a href="{% url 'dashboard:product_list' %}" class="px-5 py-3 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white text-xs font-bold transition">
                 Cancel
             </a>
-            <button type="submit" class="px-8 py-3 rounded-xl bg-white text-black font-extrabold text-xs hover:bg-zinc-200 transition shadow-lg flex items-center gap-2">
+            <button type="submit" class="px-8 py-3 rounded-xl bg-black dark:bg-white text-white dark:text-black font-extrabold text-xs hover:bg-zinc-800 dark:hover:bg-zinc-200 transition shadow-lg flex items-center gap-2">
                 <i class="fa-solid fa-check text-xs"></i>
                 <span>{% if is_edit %}Save Changes{% else %}Publish iPhone Listing{% endif %}</span>
             </button>

@@ -9,12 +9,12 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Customer Orders</h1>
-            <p class="text-xs text-zinc-400 mt-1">Review, verify payments, and manage order lifecycles.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">Customer Orders</h1>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Review, verify payments, and manage order lifecycles.</p>
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="{% url 'dashboard:order_export_csv' %}" class="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-semibold rounded-xl hover:bg-zinc-800 hover:text-white transition flex items-center gap-1.5">
+            <a href="{% url 'dashboard:order_export_csv' %}" class="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-black dark:hover:text-white transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-file-csv text-xs"></i>
                 <span>Export CSV</span>
             </a>
@@ -23,38 +23,38 @@
 
     <!-- Quick Filter Tabs -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-        <a href="{% url 'dashboard:order_list' %}" class="px-3.5 py-2 rounded-xl font-bold transition {% if not selected_order_status and not selected_payment_status %}bg-white text-black{% else %}bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+        <a href="{% url 'dashboard:order_list' %}" class="px-3.5 py-2 rounded-xl font-bold transition {% if not selected_order_status and not selected_payment_status %}bg-black text-white dark:bg-white dark:text-black shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
             All ({{ counts.all }})
         </a>
-        <a href="{% url 'dashboard:order_list' %}?order_status=pending" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'pending' %}bg-amber-400 text-black{% else %}bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+        <a href="{% url 'dashboard:order_list' %}?order_status=pending" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'pending' %}bg-amber-500 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
             Pending ({{ counts.pending }})
         </a>
-        <a href="{% url 'dashboard:order_list' %}?payment_status=pending_verification" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_payment_status == 'pending_verification' %}bg-amber-400 text-black{% else %}bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+        <a href="{% url 'dashboard:order_list' %}?payment_status=pending_verification" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_payment_status == 'pending_verification' %}bg-amber-500 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
             Verify Payment ({{ counts.pending_verification }})
         </a>
-        <a href="{% url 'dashboard:order_list' %}?order_status=confirmed" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'confirmed' %}bg-blue-400 text-black{% else %}bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+        <a href="{% url 'dashboard:order_list' %}?order_status=confirmed" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'confirmed' %}bg-blue-600 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
             Confirmed ({{ counts.confirmed }})
         </a>
-        <a href="{% url 'dashboard:order_list' %}?order_status=shipped" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'shipped' %}bg-purple-400 text-black{% else %}bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+        <a href="{% url 'dashboard:order_list' %}?order_status=shipped" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'shipped' %}bg-purple-600 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
             Shipped ({{ counts.shipped }})
         </a>
-        <a href="{% url 'dashboard:order_list' %}?order_status=delivered" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'delivered' %}bg-emerald-400 text-black{% else %}bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+        <a href="{% url 'dashboard:order_list' %}?order_status=delivered" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_order_status == 'delivered' %}bg-emerald-600 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
             Delivered ({{ counts.delivered }})
         </a>
     </div>
 
     <!-- Search & Secondary Filter Bar -->
-    <div class="bg-zinc-900/80 border border-zinc-800 p-4 rounded-2xl">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-sm">
         <form method="GET" action="{% url 'dashboard:order_list' %}" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
             <div class="sm:col-span-5">
                 <div class="relative">
-                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search by Order ID, Name, Phone, or TrxID..." class="w-full pl-9 pr-4 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-200 focus:outline-none focus:border-zinc-500">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-zinc-500 text-xs"></i>
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search by Order ID, Name, Phone, or TrxID..." class="w-full pl-9 pr-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-zinc-400 text-xs"></i>
                 </div>
             </div>
 
             <div class="sm:col-span-3">
-                <select name="payment_method" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-300 focus:outline-none focus:border-zinc-500">
+                <select name="payment_method" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white">
                     <option value="">All Payment Methods</option>
                     <option value="cod" {% if selected_payment_method == 'cod' %}selected{% endif %}>Cash on Delivery</option>
                     <option value="bkash" {% if selected_payment_method == 'bkash' %}selected{% endif %}>bKash</option>
@@ -65,14 +65,14 @@
             </div>
 
             <div class="sm:col-span-2">
-                <button type="submit" class="w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-zinc-200 transition">
+                <button type="submit" class="w-full py-2 bg-black text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition shadow-sm">
                     Filter
                 </button>
             </div>
 
             {% if search_query or selected_payment_method or selected_order_status or selected_payment_status %}
             <div class="sm:col-span-2">
-                <a href="{% url 'dashboard:order_list' %}" class="block text-center py-2 text-xs text-rose-400 hover:underline">
+                <a href="{% url 'dashboard:order_list' %}" class="block text-center py-2 text-xs text-rose-600 dark:text-rose-400 font-semibold hover:underline">
                     Reset
                 </a>
             </div>
@@ -81,10 +81,10 @@
     </div>
 
     <!-- Orders Table -->
-    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-                <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-800">
+                <thead class="bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-200 dark:border-zinc-800">
                     <tr>
                         <th class="py-3.5 px-6">Order ID</th>
                         <th class="py-3.5 px-6">Date</th>
@@ -96,42 +96,42 @@
                         <th class="py-3.5 px-6 text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-800/60 text-zinc-300">
+                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800/60 text-zinc-700 dark:text-zinc-300">
                     {% for order in orders %}
-                    <tr class="hover:bg-zinc-800/30 transition">
-                        <td class="py-4 px-6 font-mono font-bold text-white">
-                            <a href="{% url 'dashboard:order_detail' order.id %}" class="hover:text-emerald-400">#{{ order.order_number }}</a>
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition">
+                        <td class="py-4 px-6 font-mono font-bold text-zinc-900 dark:text-white">
+                            <a href="{% url 'dashboard:order_detail' order.id %}" class="hover:underline">#{{ order.order_number }}</a>
                         </td>
                         <td class="py-4 px-6 text-zinc-500 whitespace-nowrap">{{ order.created_at|date:"d M Y, h:i A" }}</td>
-                        <td class="py-4 px-6 font-semibold text-white">{{ order.full_name }}</td>
-                        <td class="py-4 px-6 font-mono text-zinc-400">{{ order.phone }}</td>
+                        <td class="py-4 px-6 font-semibold text-zinc-900 dark:text-white">{{ order.full_name }}</td>
+                        <td class="py-4 px-6 font-mono text-zinc-600 dark:text-zinc-400">{{ order.phone }}</td>
                         <td class="py-4 px-6">
-                            <div class="font-medium text-white">{{ order.get_payment_method_display|slice:':15' }}</div>
+                            <div class="font-medium text-zinc-800 dark:text-white">{{ order.get_payment_method_display|slice:':15' }}</div>
                             <div class="text-[10px] font-semibold 
-                                {% if order.payment_status == 'paid' %}text-emerald-400
-                                {% elif order.payment_status == 'pending_verification' %}text-amber-400
+                                {% if order.payment_status == 'paid' %}text-emerald-600 dark:text-emerald-400
+                                {% elif order.payment_status == 'pending_verification' %}text-amber-600 dark:text-amber-400
                                 {% else %}text-zinc-500{% endif %}">
                                 {{ order.get_payment_status_display }}
                                 {% if order.payment_trx_id %}
-                                <span class="font-mono text-zinc-400 ml-1">({{ order.payment_trx_id }})</span>
+                                <span class="font-mono font-bold text-zinc-900 dark:text-zinc-300 ml-1">({{ order.payment_trx_id }})</span>
                                 {% endif %}
                             </div>
                         </td>
                         <td class="py-4 px-6">
                             <span class="px-2.5 py-1 rounded-full text-[11px] font-bold
-                                {% if order.order_status == 'pending' %}bg-amber-950/60 border border-amber-800 text-amber-300
-                                {% elif order.order_status == 'confirmed' %}bg-blue-950/60 border border-blue-800 text-blue-300
-                                {% elif order.order_status == 'delivered' %}bg-emerald-950/60 border border-emerald-800 text-emerald-300
-                                {% elif order.order_status == 'cancelled' %}bg-rose-950/60 border border-rose-800 text-rose-300
-                                {% else %}bg-purple-950/60 border border-purple-800 text-purple-300{% endif %}">
+                                {% if order.order_status == 'pending' %}bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:border dark:border-amber-800 dark:text-amber-300
+                                {% elif order.order_status == 'confirmed' %}bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:border dark:border-blue-800 dark:text-blue-300
+                                {% elif order.order_status == 'delivered' %}bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:border dark:border-emerald-800 dark:text-emerald-300
+                                {% elif order.order_status == 'cancelled' %}bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:border dark:border-rose-800 dark:text-rose-300
+                                {% else %}bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:border dark:border-purple-800 dark:text-purple-300{% endif %}">
                                 {{ order.get_order_status_display }}
                             </span>
                         </td>
-                        <td class="py-4 px-6 text-right font-black text-white text-sm">
+                        <td class="py-4 px-6 text-right font-black text-zinc-900 dark:text-white text-sm">
                             ৳{{ order.total_amount|floatformat:0 }}
                         </td>
                         <td class="py-4 px-6 text-center">
-                            <a href="{% url 'dashboard:order_detail' order.id %}" class="px-3 py-1.5 bg-zinc-800 hover:bg-white hover:text-black rounded-lg text-xs font-bold transition">
+                            <a href="{% url 'dashboard:order_detail' order.id %}" class="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-white dark:hover:text-black rounded-lg text-xs font-bold transition shadow-sm">
                                 Manage
                             </a>
                         </td>

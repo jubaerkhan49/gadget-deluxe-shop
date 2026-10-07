@@ -11,10 +11,10 @@
 
     <!-- Page Title -->
     <div class="mb-8">
-        <h1 class="text-2xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">
             {% if is_bangla %}চেকআউট ও অর্ডার প্লেসমেন্ট{% else %}Checkout & Order Placement{% endif %}
         </h1>
-        <p class="text-xs sm:text-sm text-zinc-500 mt-1">
+        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             {% if is_bangla %}
             সহজ ও নিরাপদ চেকআউট। একাউন্ট ছাড়াও গেস্ট হিসেবে অর্ডার সম্পন্ন করতে পারেন।
             {% else %}
@@ -32,65 +32,65 @@
             <div class="lg:col-span-7 space-y-6">
                 
                 <!-- Section 1: Customer & Delivery Info -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 shadow-sm space-y-5">
-                    <div class="flex items-center gap-3 pb-3 border-b border-zinc-100">
-                        <div class="w-7 h-7 rounded-xl bg-black text-white flex items-center justify-center text-xs font-bold">1</div>
-                        <h2 class="text-lg font-bold text-zinc-900">
+                <div class="bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-5 transition-colors">
+                    <div class="flex items-center gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div class="w-7 h-7 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-xs font-bold">1</div>
+                        <h2 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                             {% if is_bangla %}ডেলিভারি তথ্য (Delivery Information){% else %}Customer & Delivery Information{% endif %}
                         </h2>
                     </div>
 
                     {% if not user.is_authenticated %}
-                    <div class="p-3 bg-zinc-50 rounded-2xl border border-zinc-200/60 text-xs text-zinc-600 flex items-center justify-between">
+                    <div class="p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl border border-zinc-200/60 dark:border-zinc-700/50 text-xs text-zinc-600 dark:text-zinc-400 flex items-center justify-between">
                         <span>Ordering as a <strong>Guest</strong>. (No account needed)</span>
-                        <a href="{% url 'accounts:login' %}?next={% url 'orders:checkout' %}" class="font-bold text-black hover:underline">Already have an account? Sign in</a>
+                        <a href="{% url 'accounts:login' %}?next={% url 'orders:checkout' %}" class="font-bold text-black dark:text-white hover:underline">Already have an account? Sign in</a>
                     </div>
                     {% endif %}
 
                     <!-- Form Fields -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold text-zinc-700 mb-1.5">
+                            <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                 {% if is_bangla %}আপনার পুরো নাম *{% else %}Full Name *{% endif %}
                             </label>
                             {{ form.full_name }}
-                            {% if form.full_name.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.full_name.errors.0 }}</p>{% endif %}
+                            {% if form.full_name.errors %}<p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ form.full_name.errors.0 }}</p>{% endif %}
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-zinc-700 mb-1.5">
+                            <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                 {% if is_bangla %}মোবাইল নম্বর * (সচল নম্বর দিন){% else %}Mobile Number * (11 Digits){% endif %}
                             </label>
                             {{ form.phone }}
-                            {% if form.phone.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+                            {% if form.phone.errors %}<p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-zinc-700 mb-1.5">
+                            <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                 {% if is_bangla %}ইমেইল এড্রেস (ঐচ্ছিক){% else %}Email Address (Optional){% endif %}
                             </label>
                             {{ form.email }}
-                            {% if form.email.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+                            {% if form.email.errors %}<p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold text-zinc-700 mb-1.5">
+                            <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                 {% if is_bangla %}ডেলিভারি এলাকা *{% else %}Delivery Area / City *{% endif %}
                             </label>
                             {{ form.city }}
-                            {% if form.city.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.city.errors.0 }}</p>{% endif %}
+                            {% if form.city.errors %}<p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ form.city.errors.0 }}</p>{% endif %}
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold text-zinc-700 mb-1.5">
+                            <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                 {% if is_bangla %}সম্পূর্ণ ডেলিভারি ঠিকানা (বাসা/রোড/এলাকা) *{% else %}Full Delivery Address (House, Road, Area) *{% endif %}
                             </label>
                             {{ form.delivery_address }}
-                            {% if form.delivery_address.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.delivery_address.errors.0 }}</p>{% endif %}
+                            {% if form.delivery_address.errors %}<p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ form.delivery_address.errors.0 }}</p>{% endif %}
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold text-zinc-700 mb-1.5">
+                            <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                 {% if is_bangla %}বিশেষ কোন নির্দেশনা থাকলে (ঐচ্ছিক){% else %}Delivery Notes / Special Instructions (Optional){% endif %}
                             </label>
                             {{ form.delivery_notes }}
@@ -99,10 +99,10 @@
                 </div>
 
                 <!-- Section 2: Payment Method Selection -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 shadow-sm space-y-5">
-                    <div class="flex items-center gap-3 pb-3 border-b border-zinc-100">
-                        <div class="w-7 h-7 rounded-xl bg-black text-white flex items-center justify-center text-xs font-bold">2</div>
-                        <h2 class="text-lg font-bold text-zinc-900">
+                <div class="bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-5 transition-colors">
+                    <div class="flex items-center gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div class="w-7 h-7 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-xs font-bold">2</div>
+                        <h2 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                             {% if is_bangla %}পেমেন্ট মাধ্যম নির্বাচন করুন{% else %}Select Payment Method{% endif %}
                         </h2>
                     </div>
@@ -110,70 +110,70 @@
                     <div class="space-y-3">
                         
                         <!-- COD Option -->
-                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 cursor-pointer hover:border-black transition">
-                            <input type="radio" name="payment_method" value="cod" checked class="mt-1 text-black focus:ring-black">
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer hover:border-black dark:hover:border-zinc-400 transition bg-transparent">
+                            <input type="radio" name="payment_method" value="cod" checked class="mt-1 text-black dark:text-white focus:ring-black">
                             <div class="flex-grow">
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-sm text-zinc-900">Cash on Delivery (ক্যাশ অন ডেলিভারি)</span>
-                                    <span class="text-xs font-semibold px-2 py-0.5 bg-zinc-100 rounded text-zinc-600">Most Popular</span>
+                                    <span class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Cash on Delivery (ক্যাশ অন ডেলিভারি)</span>
+                                    <span class="text-xs font-semibold px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-zinc-600 dark:text-zinc-300">Most Popular</span>
                                 </div>
-                                <p class="text-xs text-zinc-500 mt-1">
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                                     Pay the remaining balance in cash after receiving and inspecting the iPhone in person.
                                 </p>
                             </div>
                         </label>
 
                         <!-- bKash Option -->
-                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 cursor-pointer hover:border-pink-500 transition">
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer hover:border-pink-500 transition bg-transparent">
                             <input type="radio" name="payment_method" value="bkash" class="mt-1 text-pink-600 focus:ring-pink-500">
                             <div class="flex-grow">
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-sm text-zinc-900">bKash (বিকাশ)</span>
-                                    <span class="text-xs font-bold text-pink-600">bKash Personal/Merchant</span>
+                                    <span class="font-bold text-sm text-zinc-900 dark:text-zinc-100">bKash (বিকাশ)</span>
+                                    <span class="text-xs font-bold text-pink-600 dark:text-pink-400">bKash Personal/Merchant</span>
                                 </div>
-                                <p class="text-xs text-zinc-500 mt-1">
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                                     Send Money or Payment to our official bKash account and provide TrxID.
                                 </p>
                             </div>
                         </label>
 
                         <!-- Nagad Option -->
-                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 cursor-pointer hover:border-orange-500 transition">
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer hover:border-orange-500 transition bg-transparent">
                             <input type="radio" name="payment_method" value="nagad" class="mt-1 text-orange-600 focus:ring-orange-500">
                             <div class="flex-grow">
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-sm text-zinc-900">Nagad (নগদ)</span>
-                                    <span class="text-xs font-bold text-orange-600">Nagad Personal/Merchant</span>
+                                    <span class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Nagad (নগদ)</span>
+                                    <span class="text-xs font-bold text-orange-600 dark:text-orange-400">Nagad Personal/Merchant</span>
                                 </div>
-                                <p class="text-xs text-zinc-500 mt-1">
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                                     Send Money to our official Nagad account and provide TrxID.
                                 </p>
                             </div>
                         </label>
 
                         <!-- Rocket Option -->
-                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 cursor-pointer hover:border-purple-500 transition">
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer hover:border-purple-500 transition bg-transparent">
                             <input type="radio" name="payment_method" value="rocket" class="mt-1 text-purple-600 focus:ring-purple-500">
                             <div class="flex-grow">
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-sm text-zinc-900">Rocket (রকেট)</span>
-                                    <span class="text-xs font-bold text-purple-600">DBBL Rocket</span>
+                                    <span class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Rocket (রকেট)</span>
+                                    <span class="text-xs font-bold text-purple-600 dark:text-purple-400">DBBL Rocket</span>
                                 </div>
-                                <p class="text-xs text-zinc-500 mt-1">
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                                     Send Money to our official Rocket account and provide TrxID.
                                 </p>
                             </div>
                         </label>
 
                         <!-- Bank Transfer Option -->
-                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 cursor-pointer hover:border-blue-600 transition">
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer hover:border-blue-600 transition bg-transparent">
                             <input type="radio" name="payment_method" value="bank_transfer" class="mt-1 text-blue-600 focus:ring-blue-500">
                             <div class="flex-grow">
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-sm text-zinc-900">Bank Transfer (ব্যাংক ট্রান্সফার / ডিপোজিট)</span>
-                                    <span class="text-xs font-bold text-blue-600">Direct Deposit</span>
+                                    <span class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Bank Transfer (ব্যাংক ট্রান্সফার / ডিপোজিট)</span>
+                                    <span class="text-xs font-bold text-blue-600 dark:text-blue-400">Direct Deposit</span>
                                 </div>
-                                <p class="text-xs text-zinc-500 mt-1">
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                                     Transfer directly to our company bank account and provide transaction reference / slip no.
                                 </p>
                             </div>
@@ -182,64 +182,64 @@
                     </div>
 
                     <!-- Dynamic Payment Instructions Box -->
-                    <div id="payment-details-box" class="hidden p-5 rounded-2xl bg-zinc-50 border border-zinc-200 space-y-4">
-                        <div id="bkash-instructions" class="hidden space-y-2 text-xs text-zinc-700">
-                            <div class="font-bold text-sm text-pink-600 flex items-center gap-1.5">
+                    <div id="payment-details-box" class="hidden p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-4">
+                        <div id="bkash-instructions" class="hidden space-y-2 text-xs text-zinc-700 dark:text-zinc-300">
+                            <div class="font-bold text-sm text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-mobile-screen"></i> bKash Payment Details:
                             </div>
-                            <div class="p-3 bg-white rounded-xl border border-pink-100 font-mono text-xs">
-                                <strong>bKash Number:</strong> <span class="text-pink-600 font-bold text-sm">{{ settings.bkash_number }}</span>
+                            <div class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-pink-100 dark:border-pink-900/50 font-mono text-xs">
+                                <strong>bKash Number:</strong> <span class="text-pink-600 dark:text-pink-400 font-bold text-sm">{{ settings.bkash_number }}</span>
                             </div>
-                            <p class="text-zinc-600">
+                            <p class="text-zinc-600 dark:text-zinc-400">
                                 {% if is_bangla %}{{ settings.bkash_instructions_bn }}{% else %}{{ settings.bkash_instructions_en }}{% endif %}
                             </p>
                         </div>
 
-                        <div id="nagad-instructions" class="hidden space-y-2 text-xs text-zinc-700">
-                            <div class="font-bold text-sm text-orange-600 flex items-center gap-1.5">
+                        <div id="nagad-instructions" class="hidden space-y-2 text-xs text-zinc-700 dark:text-zinc-300">
+                            <div class="font-bold text-sm text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-mobile-screen"></i> Nagad Payment Details:
                             </div>
-                            <div class="p-3 bg-white rounded-xl border border-orange-100 font-mono text-xs">
-                                <strong>Nagad Number:</strong> <span class="text-orange-600 font-bold text-sm">{{ settings.nagad_number }}</span>
+                            <div class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-orange-100 dark:border-orange-900/50 font-mono text-xs">
+                                <strong>Nagad Number:</strong> <span class="text-orange-600 dark:text-orange-400 font-bold text-sm">{{ settings.nagad_number }}</span>
                             </div>
-                            <p class="text-zinc-600">
+                            <p class="text-zinc-600 dark:text-zinc-400">
                                 {% if is_bangla %}{{ settings.nagad_instructions_bn }}{% else %}{{ settings.nagad_instructions_en }}{% endif %}
                             </p>
                         </div>
 
-                        <div id="rocket-instructions" class="hidden space-y-2 text-xs text-zinc-700">
-                            <div class="font-bold text-sm text-purple-600 flex items-center gap-1.5">
+                        <div id="rocket-instructions" class="hidden space-y-2 text-xs text-zinc-700 dark:text-zinc-300">
+                            <div class="font-bold text-sm text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-mobile-screen"></i> Rocket Payment Details:
                             </div>
-                            <div class="p-3 bg-white rounded-xl border border-purple-100 font-mono text-xs">
-                                <strong>Rocket Number:</strong> <span class="text-purple-600 font-bold text-sm">{{ settings.rocket_number }}</span>
+                            <div class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-purple-100 dark:border-purple-900/50 font-mono text-xs">
+                                <strong>Rocket Number:</strong> <span class="text-purple-600 dark:text-purple-400 font-bold text-sm">{{ settings.rocket_number }}</span>
                             </div>
-                            <p class="text-zinc-600">
+                            <p class="text-zinc-600 dark:text-zinc-400">
                                 {% if is_bangla %}{{ settings.rocket_instructions_bn }}{% else %}{{ settings.rocket_instructions_en }}{% endif %}
                             </p>
                         </div>
 
-                        <div id="bank-instructions" class="hidden space-y-2 text-xs text-zinc-700">
-                            <div class="font-bold text-sm text-blue-700 flex items-center gap-1.5">
+                        <div id="bank-instructions" class="hidden space-y-2 text-xs text-zinc-700 dark:text-zinc-300">
+                            <div class="font-bold text-sm text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-building-columns"></i> Bank Account Information:
                             </div>
-                            <pre class="p-3 bg-white rounded-xl border border-blue-100 font-sans text-xs whitespace-pre-wrap leading-relaxed">{{ settings.bank_details_en }}</pre>
+                            <pre class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-blue-100 dark:border-blue-900/50 font-sans text-xs whitespace-pre-wrap leading-relaxed text-zinc-800 dark:text-zinc-200">{{ settings.bank_details_en }}</pre>
                         </div>
 
                         <!-- Manual Verification Input Fields -->
-                        <div class="pt-3 border-t border-zinc-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="pt-3 border-t border-zinc-200 dark:border-zinc-700 grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold text-zinc-700 mb-1">
+                                <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
                                     {% if is_bangla %}প্রেরকের নম্বর / একাউন্ট নাম{% else %}Sender Phone / Account Name{% endif %}
                                 </label>
                                 {{ form.payment_sender_number }}
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-zinc-700 mb-1">
+                                <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
                                     {% if is_bangla %}ট্রানজেকশন আইডি (TrxID) / স্লিপ নং *{% else %}Transaction ID (TrxID) / Ref *{% endif %}
                                 </label>
                                 {{ form.payment_trx_id }}
-                                {% if form.payment_trx_id.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.payment_trx_id.errors.0 }}</p>{% endif %}
+                                {% if form.payment_trx_id.errors %}<p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ form.payment_trx_id.errors.0 }}</p>{% endif %}
                             </div>
                         </div>
                     </div>
@@ -249,8 +249,8 @@
             </div>
 
             <!-- Right 5 Cols: Order Summary & Place Order -->
-            <div class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 shadow-sm space-y-6 sticky top-24">
-                <h2 class="text-lg font-bold text-zinc-900 border-b border-zinc-100 pb-4">
+            <div class="lg:col-span-5 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-6 sticky top-24 transition-colors">
+                <h2 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-4">
                     {% if is_bangla %}অর্ডার পণ্য ও মূল্য{% else %}Order Summary{% endif %}
                 </h2>
 
@@ -258,21 +258,21 @@
                 <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
                     {% for item in cart %}
                     {% with product=item.product %}
-                    <div class="flex items-center gap-3 justify-between text-xs py-2 border-b border-zinc-100 last:border-0">
+                    <div class="flex items-center gap-3 justify-between text-xs py-2 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-zinc-50 rounded-xl p-1 flex items-center justify-center flex-shrink-0">
+                            <div class="w-12 h-12 bg-zinc-50 dark:bg-zinc-800 rounded-xl p-1 flex items-center justify-center flex-shrink-0">
                                 {% if product.primary_image %}
                                 <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
                                 {% else %}
-                                <i class="fa-brands fa-apple text-zinc-300"></i>
+                                <i class="fa-brands fa-apple text-zinc-300 dark:text-zinc-600"></i>
                                 {% endif %}
                             </div>
                             <div>
-                                <div class="font-bold text-zinc-900">{{ product.model.name }} {{ product.storage }}</div>
-                                <div class="text-[11px] text-zinc-400 font-mono">{{ product.sku }} • 🔋 {{ product.battery_health }}%</div>
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100">{{ product.model.name }} {{ product.storage }}</div>
+                                <div class="text-[11px] text-zinc-400 dark:text-zinc-500 font-mono">{{ product.sku }} • 🔋 {{ product.battery_health }}%</div>
                             </div>
                         </div>
-                        <div class="font-bold text-zinc-900 text-sm">
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">
                             ৳{{ item.total_price|floatformat:0 }}
                         </div>
                     </div>
@@ -281,33 +281,33 @@
                 </div>
 
                 <!-- Calculations -->
-                <div class="space-y-3 text-sm text-zinc-600 border-t border-zinc-100 pt-4">
+                <div class="space-y-3 text-sm text-zinc-600 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800 pt-4">
                     <div class="flex justify-between">
                         <span>Subtotal</span>
-                        <span class="font-bold text-zinc-900">৳<span id="summary-subtotal">{{ subtotal|floatformat:0 }}</span></span>
+                        <span class="font-bold text-zinc-900 dark:text-zinc-100">৳<span id="summary-subtotal">{{ subtotal|floatformat:0 }}</span></span>
                     </div>
 
                     <div class="flex justify-between">
                         <span>Delivery Fee</span>
-                        <span class="font-bold text-zinc-900">৳<span id="summary-delivery">{{ settings.delivery_charge_inside_dhaka|floatformat:0 }}</span></span>
+                        <span class="font-bold text-zinc-900 dark:text-zinc-100">৳<span id="summary-delivery">{{ settings.delivery_charge_inside_dhaka|floatformat:0 }}</span></span>
                     </div>
                 </div>
 
                 <!-- Total -->
-                <div class="border-t border-zinc-100 pt-4 flex justify-between items-baseline">
-                    <span class="text-base font-extrabold text-zinc-900">Total Payable</span>
-                    <span class="text-3xl font-black text-zinc-900">
+                <div class="border-t border-zinc-100 dark:border-zinc-800 pt-4 flex justify-between items-baseline">
+                    <span class="text-base font-extrabold text-zinc-900 dark:text-zinc-100">Total Payable</span>
+                    <span class="text-3xl font-black text-zinc-900 dark:text-zinc-100">
                         ৳<span id="summary-total">{{ subtotal|add:settings.delivery_charge_inside_dhaka|floatformat:0 }}</span>
                     </span>
                 </div>
 
                 <!-- Place Order CTA -->
-                <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-black hover:bg-zinc-800 text-white font-extrabold text-base transition shadow-lg flex items-center justify-center gap-2">
+                <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-extrabold text-base transition shadow-lg flex items-center justify-center gap-2">
                     <i class="fa-solid fa-lock text-xs"></i>
                     <span>{% if is_bangla %}অর্ডার সম্পন্ন করুন (Confirm Order){% else %}Confirm & Place Order{% endif %}</span>
                 </button>
 
-                <p class="text-[11px] text-zinc-400 text-center leading-normal">
+                <p class="text-[11px] text-zinc-400 dark:text-zinc-500 text-center leading-normal">
                     By confirming your order, you agree to inspect your device upon delivery. 7-Day Replacement guarantee is automatically activated upon reception.
                 </p>
 
@@ -361,9 +361,9 @@
             document.querySelectorAll('.payment-option').forEach(el => {
                 const radio = el.querySelector('input[type="radio"]');
                 if (radio && radio.checked) {
-                    el.classList.add('border-black', 'bg-zinc-50/50');
+                    el.classList.add('border-black', 'dark:border-zinc-300', 'bg-zinc-50/50', 'dark:bg-zinc-800/40');
                 } else {
-                    el.classList.remove('border-black', 'bg-zinc-50/50');
+                    el.classList.remove('border-black', 'dark:border-zinc-300', 'bg-zinc-50/50', 'dark:bg-zinc-800/40');
                 }
             });
 
