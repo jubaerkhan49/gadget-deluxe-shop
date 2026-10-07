@@ -28,7 +28,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
-            <!-- Left 7 Cols: Compact Combined Customer, Delivery & Payment Card -->
+            <!-- Left 7 Cols: Customer & Delivery Information -->
             <div class="lg:col-span-7 space-y-4">
 
                 <!-- Section 1: Customer & Delivery Info -->
@@ -98,7 +98,12 @@
                     </div>
                 </div>
 
-                <!-- Section 2: Payment Method (Side-by-side 2-col tiles for ultra-compact vertical height) -->
+            </div>
+
+            <!-- Right 5 Cols: Payment Method (Upper side) + Order Summary & Place Order -->
+            <div class="lg:col-span-5 space-y-4 lg:sticky lg:top-20">
+
+                <!-- Section 2: Payment Method (Placed Upper Side of Order Summary) -->
                 <div class="bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-3 transition-colors">
                     <div class="flex items-center gap-2 pb-2 border-b border-zinc-100 dark:border-zinc-800">
                         <span class="w-5 h-5 rounded-lg bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-bold">2</span>
@@ -124,9 +129,9 @@
                                 </div>
                                 <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">
                                     {% if is_bangla %}
-                                    হাতে পেয়ে চেক করে মূল্য পরিশোধ করুন
+                                    হাতে পেয়ে মূল্য দিন
                                     {% else %}
-                                    Pay cash upon inspecting your device
+                                    Pay cash upon delivery
                                     {% endif %}
                                 </p>
                             </div>
@@ -146,9 +151,9 @@
                                 </div>
                                 <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">
                                     {% if is_bangla %}
-                                    অফিসিয়াল ব্যাংক একাউন্টে ট্রান্সফার
+                                    ব্যাংক একাউন্ট ট্রান্সফার
                                     {% else %}
-                                    Direct company bank deposit / transfer
+                                    Direct bank transfer
                                     {% endif %}
                                 </p>
                             </div>
@@ -186,83 +191,74 @@
 
                 </div>
 
-            </div>
+                <!-- Section 3: Order Summary & Place Order -->
+                <div class="bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-3.5 transition-colors">
+                    <h2 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                        {% if is_bangla %}অর্ডার সারসংক্ষেপ{% else %}Order Summary{% endif %}
+                    </h2>
 
-            <!-- Right 5 Cols: Compact Order Summary & CTA -->
-            <div class="lg:col-span-5 bg-white dark:bg-zinc-900 p-4 sm:p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm space-y-4 lg:sticky lg:top-20 transition-colors">
-                <h2 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
-                    {% if is_bangla %}অর্ডার সারসংক্ষেপ{% else %}Order Summary{% endif %}
-                </h2>
-
-                <!-- Items mini list -->
-                <div class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
-                    {% for item in cart %}
-                    {% with product=item.product %}
-                    <div class="flex items-center gap-2.5 justify-between text-xs py-1.5 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-lg p-1 flex items-center justify-center flex-shrink-0">
-                                {% if product.primary_image %}
-                                <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
-                                {% else %}
-                                <i class="fa-brands fa-apple text-zinc-300 dark:text-zinc-600"></i>
-                                {% endif %}
+                    <!-- Items mini list -->
+                    <div class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                        {% for item in cart %}
+                        {% with product=item.product %}
+                        <div class="flex items-center gap-2.5 justify-between text-xs py-1.5 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-10 h-10 bg-zinc-50 dark:bg-zinc-800 rounded-lg p-1 flex items-center justify-center flex-shrink-0">
+                                    {% if product.primary_image %}
+                                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
+                                    {% else %}
+                                    <i class="fa-brands fa-apple text-zinc-300 dark:text-zinc-600"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">{{ product.model.name }} {{ product.storage }}</div>
+                                    <div class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono truncate">{{ product.sku }} • 🔋 {{ product.battery_health }}%</div>
+                                </div>
                             </div>
-                            <div class="min-w-0">
-                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">{{ product.model.name }} {{ product.storage }}</div>
-                                <div class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono truncate">{{ product.sku }} • 🔋 {{ product.battery_health }}%</div>
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs flex-shrink-0">
+                                ৳{{ item.total_price|floatformat:0 }}
                             </div>
                         </div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs flex-shrink-0">
-                            ৳{{ item.total_price|floatformat:0 }}
+                        {% endwith %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price Calculations -->
+                    <div class="space-y-2 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800 pt-2.5">
+                        <div class="flex justify-between">
+                            <span>{% if is_bangla %}সাবটোটাল{% else %}Subtotal{% endif %}</span>
+                            <span class="font-bold text-zinc-900 dark:text-zinc-100">৳<span id="summary-subtotal">{{ subtotal|floatformat:0 }}</span></span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>{% if is_bangla %}ডেলিভারি চার্জ{% else %}Delivery Fee{% endif %}</span>
+                            <span class="font-bold text-zinc-900 dark:text-zinc-100">৳<span id="summary-delivery">{{ settings.delivery_charge_inside_dhaka|floatformat:0 }}</span></span>
                         </div>
                     </div>
-                    {% endwith %}
-                    {% endfor %}
-                </div>
 
-                <!-- Selected Payment Method Indicator in Order Summary -->
-                <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs">
-                    <span class="text-zinc-500 dark:text-zinc-400 text-[11px] font-medium">{% if is_bangla %}পেমেন্ট মাধ্যম:{% else %}Payment Method:{% endif %}</span>
-                    <span id="summary-payment-method" class="font-bold text-zinc-900 dark:text-zinc-100 text-[11px] flex items-center gap-1">
-                        <i class="fa-solid fa-money-bill-wave text-emerald-600 dark:text-emerald-400"></i>
-                        <span>Cash on Delivery</span>
-                    </span>
-                </div>
-
-                <!-- Price Calculations -->
-                <div class="space-y-2 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800 pt-3">
-                    <div class="flex justify-between">
-                        <span>{% if is_bangla %}সাবটোটাল{% else %}Subtotal{% endif %}</span>
-                        <span class="font-bold text-zinc-900 dark:text-zinc-100">৳<span id="summary-subtotal">{{ subtotal|floatformat:0 }}</span></span>
+                    <!-- Total -->
+                    <div class="border-t border-zinc-100 dark:border-zinc-800 pt-2.5 flex justify-between items-baseline">
+                        <span class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100">{% if is_bangla %}সর্বমোট প্রদেয়{% else %}Total Payable{% endif %}</span>
+                        <span class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100">
+                            ৳<span id="summary-total">{{ subtotal|add:settings.delivery_charge_inside_dhaka|floatformat:0 }}</span>
+                        </span>
                     </div>
 
-                    <div class="flex justify-between">
-                        <span>{% if is_bangla %}ডেলিভারি চার্জ{% else %}Delivery Fee{% endif %}</span>
-                        <span class="font-bold text-zinc-900 dark:text-zinc-100">৳<span id="summary-delivery">{{ settings.delivery_charge_inside_dhaka|floatformat:0 }}</span></span>
-                    </div>
+                    <!-- Place Order CTA -->
+                    <button type="submit" class="w-full py-3 px-5 rounded-xl bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-extrabold text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lock text-[11px]"></i>
+                        <span>{% if is_bangla %}অর্ডার কনফার্ম করুন{% else %}Confirm & Place Order{% endif %}</span>
+                    </button>
+
+                    <p class="text-[10px] text-zinc-400 dark:text-zinc-500 text-center leading-tight">
+                        {% if is_bangla %}
+                        ৭ দিনের রিপ্লেসমেন্ট গ্যারান্টি স্বয়ংক্রিয়ভাবে কার্যকর হবে।
+                        {% else %}
+                        7-Day Replacement guarantee is automatically activated upon delivery.
+                        {% endif %}
+                    </p>
+
                 </div>
-
-                <!-- Total -->
-                <div class="border-t border-zinc-100 dark:border-zinc-800 pt-3 flex justify-between items-baseline">
-                    <span class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100">{% if is_bangla %}সর্বমোট প্রদেয়{% else %}Total Payable{% endif %}</span>
-                    <span class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100">
-                        ৳<span id="summary-total">{{ subtotal|add:settings.delivery_charge_inside_dhaka|floatformat:0 }}</span>
-                    </span>
-                </div>
-
-                <!-- Place Order CTA -->
-                <button type="submit" class="w-full py-3 px-5 rounded-xl bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-extrabold text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-lock text-[11px]"></i>
-                    <span>{% if is_bangla %}অর্ডার কনফার্ম করুন{% else %}Confirm & Place Order{% endif %}</span>
-                </button>
-
-                <p class="text-[10px] text-zinc-400 dark:text-zinc-500 text-center leading-tight">
-                    {% if is_bangla %}
-                    ৭ দিনের রিপ্লেসমেন্ট গ্যারান্টি স্বয়ংক্রিয়ভাবে কার্যকর হবে।
-                    {% else %}
-                    7-Day Replacement guarantee is automatically activated upon delivery.
-                    {% endif %}
-                </p>
 
             </div>
 
@@ -283,7 +279,6 @@
 
         const deliverySpan = document.getElementById('summary-delivery');
         const totalSpan = document.getElementById('summary-total');
-        const paymentSummarySpan = document.getElementById('summary-payment-method');
 
         function updateTotals() {
             if (!citySelect) return;
@@ -300,7 +295,7 @@
             updateTotals();
         }
 
-        // Payment Method toggler & live summary sync
+        // Payment Method toggler
         const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
         const detailsBox = document.getElementById('payment-details-box');
 
@@ -319,14 +314,8 @@
 
             if (selected === 'bank_transfer') {
                 if (detailsBox) detailsBox.classList.remove('hidden');
-                if (paymentSummarySpan) {
-                    paymentSummarySpan.innerHTML = '<i class="fa-solid fa-building-columns text-blue-600 dark:text-blue-400"></i> <span>Bank Transfer</span>';
-                }
             } else {
                 if (detailsBox) detailsBox.classList.add('hidden');
-                if (paymentSummarySpan) {
-                    paymentSummarySpan.innerHTML = '<i class="fa-solid fa-money-bill-wave text-emerald-600 dark:text-emerald-400"></i> <span>Cash on Delivery</span>';
-                }
             }
         }
 
