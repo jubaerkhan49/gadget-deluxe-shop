@@ -3,111 +3,11 @@
 {% load i18n %}
 
 {% block title %}
-{% if is_bangla %}গ্যাজেট ডিলাক্স | সেরা মানের ব্যবহৃত ও রিফার্বিশড আইফোন{% else %}Gadget Deluxe | Quality Used iPhones, Carefully Checked{% endif %}
+{% if is_bangla %}গ্যাজেট ডিলাক্স | প্রিমিয়াম ব্যবহৃত আইফোন সংগ্রহ{% else %}Gadget Deluxe | Quality Used iPhones{% endif %}
 {% endblock %}
 
 {% block content %}
-<!-- Premium Compact Hero Section -->
-<section class="relative pt-6 pb-6 sm:pt-8 sm:pb-8 border-b border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/60 transition-colors">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div class="bg-gradient-to-br from-white via-zinc-50/80 to-zinc-100/70 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-6 sm:p-8 lg:p-10 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm relative overflow-hidden">
-            
-            <!-- Ambient Background Glow -->
-            <div class="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-emerald-500/10 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-                
-                <!-- Left: Hero Copy & Search (7 cols) -->
-                <div class="lg:col-span-7 space-y-4">
-                    
-                    <!-- Live Status Badge -->
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/90 dark:bg-zinc-800 text-white text-[11px] font-semibold shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span>{% if is_bangla %}১০০% আসল ও পরীক্ষিত আইফোন স্টক{% else %}100% Inspected & Certified Used iPhones{% endif %}</span>
-                    </div>
-
-                    <!-- Headline -->
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight leading-[1.15]">
-                        {% if is_bangla %}
-                        প্রিমিয়াম ব্যবহৃত আইফোন,<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-700 to-zinc-400 dark:from-zinc-200 dark:to-zinc-500">নিখুঁতভাবে পরীক্ষিত।</span>
-                        {% else %}
-                        Quality Used iPhones,<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-zinc-100 dark:to-zinc-400">Carefully Checked.</span>
-                        {% endif %}
-                    </h1>
-
-                    <!-- Subtitle -->
-                    <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed">
-                        {% if is_bangla %}
-                        আইফোন ১৪ প্রো, ১৫ প্রো ও ১৬ প্রো সিরিজের প্রতিটি ফোন আসল ডিসপ্লে, ট্রুটোন এবং ব্যাটারি স্বাস্থ্য সহ শতভাগ পরীক্ষিত।
-                        {% else %}
-                        Exclusively focused on iPhone 14 Pro, 15 Pro, and 16 Pro models. Each device is physically inspected for TrueTone, FaceID, and authentic battery.
-                        {% endif %}
-                    </p>
-
-                    <!-- Quick Search / Filter Input inside Hero -->
-                    <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-lg">
-                        <form method="GET" action="{% url 'store:product_list' %}" class="flex-grow relative">
-                            <input type="text" name="q" placeholder="Search by model, storage or color..." 
-                                class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none shadow-sm transition">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-zinc-400 text-xs"></i>
-                        </form>
-                        <a href="#featured-listings" class="px-4 py-2.5 bg-black dark:bg-white text-white dark:text-black text-xs font-bold rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition text-center shadow-sm flex items-center justify-center gap-1.5 flex-shrink-0">
-                            <span>Browse Stock</span>
-                            <i class="fa-solid fa-arrow-down text-[10px]"></i>
-                        </a>
-                    </div>
-
-                </div>
-
-                <!-- Right: 4 Sleek Feature Trust Cards (5 cols) -->
-                <div class="lg:col-span-5 grid grid-cols-2 gap-3">
-                    
-                    <div class="p-4 rounded-2xl bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-700/60 shadow-sm space-y-1.5 transition">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-microchip"></i>
-                        </div>
-                        <h4 class="font-bold text-xs text-zinc-900 dark:text-white">TrueTone & FaceID</h4>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Original OLED & 100% working sensors</p>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-700/60 shadow-sm space-y-1.5 transition">
-                        <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-battery-three-quarters"></i>
-                        </div>
-                        <h4 class="font-bold text-xs text-zinc-900 dark:text-white">Battery Health</h4>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Accurate 85% to 100% capacity verified</p>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-700/60 shadow-sm space-y-1.5 transition">
-                        <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-shield-check"></i>
-                        </div>
-                        <h4 class="font-bold text-xs text-zinc-900 dark:text-white">7 Days Warranty</h4>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Risk-free device replacement guarantee</p>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-700/60 shadow-sm space-y-1.5 transition">
-                        <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-truck-ramp-box"></i>
-                        </div>
-                        <h4 class="font-bold text-xs text-zinc-900 dark:text-white">Check on Delivery</h4>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Inspect phone before payment (COD)</p>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-</section>
-
-<!-- Model Filter Navigation -->
+<!-- Clean Model Filter Navigation Bar -->
 <section class="py-3.5 bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 sticky top-16 z-40 shadow-sm transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
@@ -126,15 +26,15 @@
     </div>
 </section>
 
-<!-- Main Listings Section (Immediately Visible) -->
-<section id="featured-listings" class="py-8 lg:py-12">
+<!-- Main Listings Section (Immediately at the Top) -->
+<section id="featured-listings" class="py-6 sm:py-8 lg:py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
             <div>
-                <h2 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
+                <h1 class="text-xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
                     {% if is_bangla %}উপলব্ধ ব্যবহৃত আইফোনসমূহ{% else %}Available iPhone Listings{% endif %}
-                </h2>
+                </h1>
                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     {% if is_bangla %}
                     প্রতিটি ফোন সম্পূর্ণ স্বতন্ত্র ও প্রস্তুত। ছবিতে যা দেখছেন, ঠিক সেটাই পাবেন।
@@ -168,12 +68,12 @@
                     </span>
                 </div>
 
-                <!-- Product Photo -->
-                <a href="{{ product.get_absolute_url }}" class="block relative bg-zinc-50 dark:bg-zinc-950/60 pt-9 pb-5 px-4 text-center group-hover:bg-zinc-100/70 dark:group-hover:bg-zinc-800/50 transition">
+                <!-- Product Photo (Clean, properly fitted) -->
+                <a href="{{ product.get_absolute_url }}" class="block relative bg-zinc-50 dark:bg-zinc-950/60 aspect-[4/3] p-2 text-center group-hover:bg-zinc-100/70 dark:group-hover:bg-zinc-800/50 transition overflow-hidden">
                     {% if product.primary_image %}
-                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-48 w-auto mx-auto object-contain transition duration-300 group-hover:scale-105" loading="lazy">
+                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-full object-cover sm:object-contain rounded-xl transition duration-300 group-hover:scale-105" loading="lazy">
                     {% else %}
-                    <div class="h-48 flex items-center justify-center text-zinc-300 dark:text-zinc-700">
+                    <div class="h-full w-full flex items-center justify-center text-zinc-300 dark:text-zinc-700">
                         <i class="fa-brands fa-apple text-5xl"></i>
                     </div>
                     {% endif %}

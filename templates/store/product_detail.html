@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 mb-6 font-medium">
@@ -23,12 +23,13 @@
     <!-- Product Layout: Gallery + Specs -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         
-        <!-- Left: Image Gallery (6 cols) -->
-        <div class="lg:col-span-6 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 sticky top-24 transition-colors">
-            <!-- Main Photo (Clean with no overlay badges) -->
-            <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl p-6 mb-4 flex items-center justify-center min-h-[380px] relative overflow-hidden">
+        <!-- Left: Image Gallery (6 cols) - Expansive and Beautifully Fitted -->
+        <div class="lg:col-span-6 bg-white dark:bg-zinc-900 p-3 sm:p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 sticky top-24 shadow-sm transition-colors">
+            
+            <!-- Main Photo Display (Fills the viewing frame naturally) -->
+            <div class="relative w-full h-[400px] sm:h-[480px] lg:h-[520px] rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-950/60 flex items-center justify-center mb-3 group border border-zinc-100 dark:border-zinc-800/60">
                 {% if product.primary_image %}
-                <img id="main-product-image" src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="max-h-[340px] w-auto object-contain transition duration-200">
+                <img id="main-product-image" src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-[1.02]">
                 {% else %}
                 <div class="h-64 flex items-center justify-center text-zinc-300 dark:text-zinc-600">
                     <i class="fa-brands fa-apple text-8xl"></i>
@@ -38,14 +39,14 @@
 
             <!-- Gallery Thumbnails -->
             {% if product.images.all %}
-            <div class="flex items-center gap-3 overflow-x-auto pb-2">
+            <div class="flex items-center gap-3 overflow-x-auto pb-1 pt-1 no-scrollbar">
                 {% if product.primary_image %}
-                <button type="button" onclick="swapImage('{{ product.primary_image.url }}')" class="w-16 h-16 rounded-xl border-2 border-black dark:border-white p-1 bg-zinc-50 dark:bg-zinc-800 overflow-hidden flex-shrink-0 focus:outline-none">
+                <button type="button" onclick="swapImage('{{ product.primary_image.url }}', this)" class="thumb-btn w-20 h-20 rounded-xl border-2 border-black dark:border-white p-1 bg-zinc-50 dark:bg-zinc-800/80 overflow-hidden flex-shrink-0 focus:outline-none transition">
                     <img src="{{ product.primary_image.url }}" alt="Primary" class="w-full h-full object-contain">
                 </button>
                 {% endif %}
                 {% for img in product.images.all %}
-                <button type="button" onclick="swapImage('{{ img.image.url }}')" class="w-16 h-16 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 p-1 bg-zinc-50 dark:bg-zinc-800 overflow-hidden flex-shrink-0 focus:outline-none">
+                <button type="button" onclick="swapImage('{{ img.image.url }}', this)" class="thumb-btn w-20 h-20 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 p-1 bg-zinc-50 dark:bg-zinc-800/80 overflow-hidden flex-shrink-0 focus:outline-none transition">
                     <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:'Product gallery' }}" class="w-full h-full object-contain">
                 </button>
                 {% endfor %}
@@ -237,11 +238,11 @@
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for rel in related_products %}
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-4 card-hover flex flex-col justify-between transition-colors">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-3 card-hover flex flex-col justify-between transition-colors">
                 <div>
-                    <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl p-4 mb-3 text-center">
+                    <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl aspect-[4/3] p-2 mb-3 text-center flex items-center justify-center overflow-hidden">
                         {% if rel.primary_image %}
-                        <img src="{{ rel.primary_image.url }}" alt="{{ rel.title }}" class="h-36 mx-auto object-contain">
+                        <img src="{{ rel.primary_image.url }}" alt="{{ rel.title }}" class="h-full w-full object-contain">
                         {% else %}
                         <div class="h-36 flex items-center justify-center text-zinc-300 dark:text-zinc-600">
                             <i class="fa-brands fa-apple text-4xl"></i>
@@ -271,10 +272,18 @@
 
 {% block extra_js %}
 <script>
-    function swapImage(imgUrl) {
+    function swapImage(imgUrl, btn) {
         const mainImg = document.getElementById('main-product-image');
         if (mainImg) {
             mainImg.src = imgUrl;
+        }
+        document.querySelectorAll('.thumb-btn').forEach(b => {
+            b.classList.remove('border-black', 'dark:border-white');
+            b.classList.add('border-zinc-200', 'dark:border-zinc-700');
+        });
+        if (btn) {
+            btn.classList.add('border-black', 'dark:border-white');
+            btn.classList.remove('border-zinc-200', 'dark:border-zinc-700');
         }
     }
 </script>
