@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import IPhoneModel, Product, ProductImage, FAQ, StoreSettings
+from .models import IPhoneModel, Product, ProductImage, FAQ, StoreSettings, Review
 
 
 class ProductImageInline(admin.TabularInline):
@@ -132,6 +132,15 @@ class FAQAdmin(admin.ModelAdmin):
     list_editable = ('order', 'is_active')
 
 
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('customer_name', 'product', 'rating', 'is_verified_purchase', 'is_approved', 'created_at')
+    list_filter = ('rating', 'is_verified_purchase', 'is_approved', 'created_at')
+    search_fields = ('customer_name', 'customer_phone', 'customer_email', 'title', 'comment', 'product__sku', 'product__title')
+    list_editable = ('is_approved',)
+    readonly_fields = ('created_at', 'updated_at')
+
+
 @admin.register(StoreSettings)
 class StoreSettingsAdmin(admin.ModelAdmin):
     list_display = ('store_name', 'phone_number', 'email', 'delivery_charge_inside_dhaka', 'delivery_charge_outside_dhaka')
@@ -141,3 +150,4 @@ class StoreSettingsAdmin(admin.ModelAdmin):
         if self.model.objects.exists():
             return False
         return super().has_add_permission(request)
+

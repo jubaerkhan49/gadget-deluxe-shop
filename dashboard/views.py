@@ -7,10 +7,12 @@ from django.http import HttpResponse, JsonResponse
 from datetime import timedelta
 import csv
 
-from store.models import Product, ProductImage, FAQ, StoreSettings, IPhoneModel
+from django.contrib.auth.models import User
+from store.models import Product, ProductImage, FAQ, StoreSettings, IPhoneModel, Review
 from orders.models import Order, OrderItem
 from .models import PageVisit
 from .forms import ProductForm, ProductImageForm, FAQForm, StoreSettingsForm, OrderStatusUpdateForm
+
 
 
 @staff_member_required
@@ -476,3 +478,335 @@ def store_settings_view(request):
         form = StoreSettingsForm(instance=settings_obj)
 
     return render(request, 'dashboard/settings.html', {'form': form, 'settings': settings_obj})
+
+
+# ==============================================================================
+# CUSTOMER MANAGEMENT VIEWS
+# ==============================================================================
+
+@staff_member_required
+def customer_list(request):
+    """
+    Consolidated Customer Management View.
+    Aggregates both registered users and guest checkout customers.
+    """
+    search_query = request.GET.get('q', '').strip()
+    customer_type = request.GET.get('type', '')  # 'registered', 'guest', ''
+    
+    # 1. Fetch all orders and reviews
+    orders = Order.objects.select_related('user').prefetch_related('items').order_by('-created_at')
+    reviews = Review.objects.select_related('user', 'product').order_by('-created_at')
+    registered_users = User.objects.filter(is_staff=False).order_by('-date_joined')
+    
+    # We will build a unified dictionary keyed by customer identity
+    customers_map = {}
+    
+    # Add registered users first
+    for u in registered_users:
+        key = f"u-{u.id}"
+        customers_map[key] = {
+            'key': key,
+            'user': u,
+            'name': u.get_full_name() or u.username,
+            'phone': '',
+            'email': u.email,
+            'is_registered': True,
+            'orders': [],
+            'reviews': [],
+            'total_spent': 0,
+            'orders_count': 0,
+            'reviews_count': 0,
+            'last_active': u.date_joined,
+            'address': '',
+            'city': '',
+        }
+    
+    # Add orders to customers
+    for order in orders:
+        if order.user:
+            key = f"u-{order.user.id}"
+            if key not in customers_map:
+                customers_map[key] = {
+                    'key': key,
+                    'user': order.user,
+                    'name': order.full_name or order.user.get_full_name() or order.user.username,
+                    'phone': order.phone,
+                    'email': order.email or order.user.email,
+                    'is_registered': True,
+                    'orders': [],
+                    'reviews': [],
+                    'total_spent': 0,
+                    'orders_count': 0,
+                    'reviews_count': 0,
+                    'last_active': order.created_at,
+                    'address': order.delivery_address,
+                    'city': order.get_city_display(),
+                }
+            c = customers_map[key]
+            c['orders'].append(order)
+            if not c['phone'] and order.phone:
+                c['phone'] = order.phone
+            if not c['email'] and order.email:
+                c['email'] = order.email
+            if order.order_status != 'cancelled':
+                c['total_spent'] += order.total_amount
+            if not c['address'] and order.delivery_address:
+                c['address'] = order.delivery_address
+                c['city'] = order.get_city_display()
+            if order.created_at > c['last_active']:
+                c['last_active'] = order.created_at
+        else:
+            # Guest order, key by phone (or order id fallback)
+            clean_phone = order.phone.strip() if order.phone else ''
+            key = f"p-{clean_phone}" if clean_phone else f"o-{order.id}"
+            if key not in customers_map:
+                customers_map[key] = {
+                    'key': key,
+                    'user': None,
+                    'name': order.full_name,
+                    'phone': order.phone,
+                    'email': order.email or '',
+                    'is_registered': False,
+                    'orders': [],
+                    'reviews': [],
+                    'total_spent': 0,
+                    'orders_count': 0,
+                    'reviews_count': 0,
+                    'last_active': order.created_at,
+                    'address': order.delivery_address,
+                    'city': order.get_city_display(),
+                }
+            c = customers_map[key]
+            c['orders'].append(order)
+            if order.order_status != 'cancelled':
+                c['total_spent'] += order.total_amount
+            if order.created_at > c['last_active']:
+                c['last_active'] = order.created_at
+            if not c['address'] and order.delivery_address:
+                c['address'] = order.delivery_address
+                c['city'] = order.get_city_display()
+
+    # Link reviews to customers
+    for rev in reviews:
+        if rev.user:
+            key = f"u-{rev.user.id}"
+            if key in customers_map:
+                customers_map[key]['reviews'].append(rev)
+        elif rev.customer_phone:
+            clean_phone = rev.customer_phone.strip()
+            key = f"p-{clean_phone}"
+            if key in customers_map:
+                customers_map[key]['reviews'].append(rev)
+            else:
+                # Customer who left a review but no recorded orders yet
+                customers_map[key] = {
+                    'key': key,
+                    'user': None,
+                    'name': rev.customer_name,
+                    'phone': rev.customer_phone,
+                    'email': rev.customer_email,
+                    'is_registered': False,
+                    'orders': [],
+                    'reviews': [rev],
+                    'total_spent': 0,
+                    'orders_count': 0,
+                    'reviews_count': 1,
+                    'last_active': rev.created_at,
+                    'address': '',
+                    'city': '',
+                }
+
+    # Finalize counts
+    customers_list = list(customers_map.values())
+    for c in customers_list:
+        c['orders_count'] = len(c['orders'])
+        c['reviews_count'] = len(c['reviews'])
+
+    # Filtering
+    if customer_type == 'registered':
+        customers_list = [c for c in customers_list if c['is_registered']]
+    elif customer_type == 'guest':
+        customers_list = [c for c in customers_list if not c['is_registered']]
+
+    if search_query:
+        q_lower = search_query.lower()
+        customers_list = [
+            c for c in customers_list
+            if q_lower in c['name'].lower()
+            or (c['phone'] and q_lower in c['phone'].lower())
+            or (c['email'] and q_lower in c['email'].lower())
+        ]
+
+    # Sort by last_active descending
+    customers_list.sort(key=lambda x: x['last_active'], reverse=True)
+
+    # Summary metrics
+    total_customers_count = len(customers_map)
+    total_revenue = sum(c['total_spent'] for c in customers_map.values())
+    total_reviews_count = Review.objects.count()
+    active_buyers_count = sum(1 for c in customers_map.values() if c['orders_count'] > 0)
+
+    context = {
+        'customers': customers_list,
+        'search_query': search_query,
+        'selected_type': customer_type,
+        'total_customers_count': total_customers_count,
+        'total_revenue': total_revenue,
+        'total_reviews_count': total_reviews_count,
+        'active_buyers_count': active_buyers_count,
+    }
+    return render(request, 'dashboard/customers/list.html', context)
+
+
+@staff_member_required
+def customer_detail(request, customer_key):
+    """
+    Detailed 360-degree customer profile:
+    Shows customer personal info, order history, purchased iPhone devices, and submitted reviews.
+    """
+    user = None
+    phone = None
+    
+    if customer_key.startswith('u-'):
+        user_id = customer_key.split('-')[1]
+        user = get_object_or_404(User, id=user_id)
+        orders = Order.objects.filter(user=user).prefetch_related('items').order_by('-created_at')
+        reviews = Review.objects.filter(user=user).select_related('product', 'product__model').order_by('-created_at')
+        name = user.get_full_name() or user.username
+        email = user.email
+        phone = orders.first().phone if orders.exists() else ''
+        joined_date = user.date_joined
+        is_registered = True
+        address = orders.first().delivery_address if orders.exists() else ''
+        city = orders.first().get_city_display() if orders.exists() else ''
+    elif customer_key.startswith('p-'):
+        phone = customer_key[2:]
+        orders = Order.objects.filter(phone=phone).prefetch_related('items').order_by('-created_at')
+        reviews = Review.objects.filter(customer_phone=phone).select_related('product', 'product__model').order_by('-created_at')
+        first_order = orders.first()
+        name = first_order.full_name if first_order else (reviews.first().customer_name if reviews.exists() else phone)
+        email = first_order.email if first_order and first_order.email else (reviews.first().customer_email if reviews.exists() else '')
+        joined_date = orders.last().created_at if orders.exists() else (reviews.last().created_at if reviews.exists() else timezone.now())
+        is_registered = False
+        address = first_order.delivery_address if first_order else ''
+        city = first_order.get_city_display() if first_order else ''
+    elif customer_key.startswith('o-'):
+        order_id = customer_key.split('-')[1]
+        order = get_object_or_404(Order, id=order_id)
+        orders = Order.objects.filter(id=order.id).prefetch_related('items')
+        reviews = Review.objects.none()
+        name = order.full_name
+        email = order.email
+        phone = order.phone
+        joined_date = order.created_at
+        is_registered = False
+        address = order.delivery_address
+        city = order.get_city_display()
+    else:
+        messages.error(request, "Customer not found.")
+        return redirect('dashboard:customer_list')
+
+    # Purchased Items snapshot
+    purchased_items = OrderItem.objects.filter(order__in=orders).select_related('order', 'product', 'product__model').order_by('-order__created_at')
+
+    total_spent = orders.exclude(order_status='cancelled').aggregate(total=Sum('total_amount'))['total'] or 0
+    total_orders = orders.count()
+    delivered_orders = orders.filter(order_status='delivered').count()
+    total_reviews = reviews.count()
+
+    context = {
+        'customer_key': customer_key,
+        'customer_name': name,
+        'customer_email': email,
+        'customer_phone': phone,
+        'customer_address': address,
+        'customer_city': city,
+        'joined_date': joined_date,
+        'is_registered': is_registered,
+        'user_obj': user,
+        'orders': orders,
+        'purchased_items': purchased_items,
+        'reviews': reviews,
+        'total_spent': total_spent,
+        'total_orders': total_orders,
+        'delivered_orders': delivered_orders,
+        'total_reviews': total_reviews,
+    }
+    return render(request, 'dashboard/customers/detail.html', context)
+
+
+# ==============================================================================
+# REVIEWS MANAGEMENT & MODERATION
+# ==============================================================================
+
+@staff_member_required
+def review_list(request):
+    """
+    Global Product Reviews Manager & Moderation.
+    """
+    reviews = Review.objects.select_related('product', 'product__model', 'user').order_by('-created_at')
+    
+    rating_filter = request.GET.get('rating')
+    status_filter = request.GET.get('status')
+    search_query = request.GET.get('q', '').strip()
+
+    if rating_filter:
+        reviews = reviews.filter(rating=rating_filter)
+    if status_filter == 'approved':
+        reviews = reviews.filter(is_approved=True)
+    elif status_filter == 'pending':
+        reviews = reviews.filter(is_approved=False)
+
+    if search_query:
+        reviews = reviews.filter(
+            Q(customer_name__icontains=search_query) |
+            Q(customer_phone__icontains=search_query) |
+            Q(customer_email__icontains=search_query) |
+            Q(title__icontains=search_query) |
+            Q(comment__icontains=search_query) |
+            Q(product__sku__icontains=search_query) |
+            Q(product__title__icontains=search_query)
+        )
+
+    counts = {
+        'all': Review.objects.count(),
+        'approved': Review.objects.filter(is_approved=True).count(),
+        'pending': Review.objects.filter(is_approved=False).count(),
+        'five_star': Review.objects.filter(rating=5).count(),
+    }
+
+    context = {
+        'reviews': reviews,
+        'selected_rating': rating_filter,
+        'selected_status': status_filter,
+        'search_query': search_query,
+        'counts': counts,
+    }
+    return render(request, 'dashboard/reviews/list.html', context)
+
+
+@staff_member_required
+def review_toggle_approval(request, review_id):
+    """
+    Toggle publication approval for a customer review.
+    """
+    review = get_object_or_404(Review, id=review_id)
+    review.is_approved = not review.is_approved
+    review.save(update_fields=['is_approved'])
+    
+    status_text = "Approved and published on store" if review.is_approved else "Hidden from store"
+    messages.success(request, f"Review #{review.id} by {review.customer_name} is now {status_text}.")
+    return redirect(request.META.get('HTTP_REFERER') or 'dashboard:review_list')
+
+
+@staff_member_required
+def review_delete(request, review_id):
+    """
+    Delete a customer review.
+    """
+    review = get_object_or_404(Review, id=review_id)
+    customer = review.customer_name
+    review.delete()
+    messages.success(request, f"Review by {customer} has been permanently deleted.")
+    return redirect(request.META.get('HTTP_REFERER') or 'dashboard:review_list')
+

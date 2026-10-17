@@ -1,0 +1,407 @@
+{% extends 'dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}{{ customer_name }} | Customer Profile | Gadget Deluxe Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    
+    <!-- Top Back Navigation & Actions -->
+    <div class="flex items-center justify-between">
+        <a href="{% url 'dashboard:customer_list' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Customers Directory</span>
+        </a>
+    </div>
+
+    <!-- Customer Profile Header Card -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            
+            <div class="flex items-center gap-4 sm:gap-6">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center font-extrabold text-2xl sm:text-3xl shadow-inner flex-shrink-0">
+                    {{ customer_name|slice:":1"|upper|default:"C" }}
+                </div>
+                
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <h1 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
+                            {{ customer_name }}
+                        </h1>
+                        {% if is_registered %}
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900">
+                            <i class="fa-solid fa-circle-check text-[10px]"></i> Registered User
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                            <i class="fa-regular fa-user text-[10px]"></i> Guest Customer
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-zinc-500 dark:text-zinc-400">
+                        {% if customer_phone %}
+                        <a href="tel:{{ customer_phone }}" class="hover:text-black dark:hover:text-white transition flex items-center gap-1.5 font-mono">
+                            <i class="fa-solid fa-phone text-zinc-400"></i>
+                            <span>{{ customer_phone }}</span>
+                        </a>
+                        {% endif %}
+
+                        {% if customer_email %}
+                        <a href="mailto:{{ customer_email }}" class="hover:text-black dark:hover:text-white transition flex items-center gap-1.5">
+                            <i class="fa-regular fa-envelope text-zinc-400"></i>
+                            <span>{{ customer_email }}</span>
+                        </a>
+                        {% endif %}
+
+                        {% if customer_city %}
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-zinc-400"></i>
+                            <span>{{ customer_city }}</span>
+                        </span>
+                        {% endif %}
+
+                        <span class="flex items-center gap-1.5 text-zinc-400">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>Customer since {{ joined_date|date:"M d, Y" }}</span>
+                        </span>
+                    </div>
+
+                    {% if customer_address %}
+                    <p class="text-xs text-zinc-600 dark:text-zinc-300 font-medium pt-1">
+                        <span class="text-zinc-400">Address:</span> {{ customer_address }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Lifetime KPIs -->
+            <div class="grid grid-cols-3 gap-3 w-full md:w-auto text-center border-t md:border-t-0 md:border-l border-zinc-200 dark:border-zinc-800 pt-4 md:pt-0 md:pl-8">
+                <div class="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl">
+                    <div class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Total Spent</div>
+                    <div class="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">৳{{ total_spent|floatformat:0 }}</div>
+                </div>
+
+                <div class="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl">
+                    <div class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Orders</div>
+                    <div class="text-base sm:text-lg font-black text-zinc-900 dark:text-white mt-0.5">{{ total_orders }}</div>
+                </div>
+
+                <div class="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl">
+                    <div class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Reviews</div>
+                    <div class="text-base sm:text-lg font-black text-amber-500 mt-0.5">{{ total_reviews }}</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SECTION 1: PURCHASED IPHONE LISTINGS / DEVICES -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
+            <div>
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen-button text-blue-600"></i>
+                    <span>Purchased iPhone Devices ({{ purchased_items.count }})</span>
+                </h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Every unit and model bought by this customer.</p>
+            </div>
+        </div>
+
+        {% if purchased_items %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-200 dark:border-zinc-800">
+                    <tr>
+                        <th class="py-3 px-4">Device</th>
+                        <th class="py-3 px-4">Storage & Color</th>
+                        <th class="py-3 px-4">Condition</th>
+                        <th class="py-3 px-4">Battery</th>
+                        <th class="py-3 px-4 text-right">Unit Price</th>
+                        <th class="py-3 px-4">Order ID</th>
+                        <th class="py-3 px-4">Date</th>
+                        <th class="py-3 px-4">Order Status</th>
+                        <th class="py-3 px-4 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800/60 text-zinc-700 dark:text-zinc-300">
+                    {% for item in purchased_items %}
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition">
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100">
+                                {{ item.product_title }}
+                            </div>
+                            {% if item.product_sku %}
+                            <span class="text-[10px] font-mono text-zinc-400">{{ item.product_sku }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3.5 px-4 font-semibold text-zinc-800 dark:text-zinc-200">
+                            {{ item.product_storage }} • {{ item.product_color }}
+                        </td>
+
+                        <td class="py-3.5 px-4">
+                            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                                {{ item.product_condition }}
+                            </span>
+                        </td>
+
+                        <td class="py-3.5 px-4 font-semibold">
+                            {% if item.product_battery_health %}
+                            <span class="text-emerald-600 dark:text-emerald-400">🔋 {{ item.product_battery_health }}%</span>
+                            {% else %}
+                            <span class="text-zinc-400">—</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-right font-bold text-zinc-900 dark:text-white">
+                            ৳{{ item.price|floatformat:0 }}
+                        </td>
+
+                        <td class="py-3.5 px-4 font-mono font-bold text-blue-600 dark:text-blue-400">
+                            <a href="{% url 'dashboard:order_detail' item.order.id %}" class="hover:underline">
+                                #{{ item.order.order_number }}
+                            </a>
+                        </td>
+
+                        <td class="py-3.5 px-4 text-zinc-500 text-[11px]">
+                            {{ item.order.created_at|date:"M d, Y" }}
+                        </td>
+
+                        <td class="py-3.5 px-4">
+                            {% if item.order.order_status == 'delivered' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
+                                Delivered
+                            </span>
+                            {% elif item.order.order_status == 'cancelled' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300">
+                                Cancelled
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300">
+                                {{ item.order.get_order_status_display }}
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-center">
+                            {% if item.product %}
+                            <a href="{{ item.product.get_absolute_url }}" target="_blank" class="p-1.5 text-zinc-400 hover:text-black dark:hover:text-white transition" title="View Storefront Listing">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                            {% else %}
+                            <span class="text-zinc-400">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="py-8 text-center text-zinc-400 dark:text-zinc-500 text-xs">
+            No iPhone purchases recorded for this customer yet.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- SECTION 2: ORDERS HISTORY -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
+            <div>
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-purple-600"></i>
+                    <span>Order History ({{ orders.count }})</span>
+                </h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Summary of all placed orders, payment methods, and statuses.</p>
+            </div>
+        </div>
+
+        {% if orders %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-200 dark:border-zinc-800">
+                    <tr>
+                        <th class="py-3 px-4">Order ID</th>
+                        <th class="py-3 px-4">Date</th>
+                        <th class="py-3 px-4">Items</th>
+                        <th class="py-3 px-4">Payment Method</th>
+                        <th class="py-3 px-4">Payment Status</th>
+                        <th class="py-3 px-4">Order Status</th>
+                        <th class="py-3 px-4 text-right">Total (BDT)</th>
+                        <th class="py-3 px-4 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800/60 text-zinc-700 dark:text-zinc-300">
+                    {% for order in orders %}
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition">
+                        <td class="py-3.5 px-4 font-mono font-bold text-zinc-900 dark:text-white">
+                            #{{ order.order_number }}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-zinc-500 text-[11px]">
+                            {{ order.created_at|date:"M d, Y h:i A" }}
+                        </td>
+
+                        <td class="py-3.5 px-4">
+                            <span class="font-semibold">{{ order.items.count }} item{{ order.items.count|pluralize }}</span>
+                        </td>
+
+                        <td class="py-3.5 px-4">
+                            <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ order.get_payment_method_display }}</span>
+                            {% if order.payment_trx_id %}
+                            <div class="text-[10px] font-mono text-zinc-400">TrxID: {{ order.payment_trx_id }}</div>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3.5 px-4">
+                            {% if order.payment_status == 'paid' %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
+                                <i class="fa-solid fa-circle-check text-[9px]"></i> Paid
+                            </span>
+                            {% elif order.payment_status == 'pending_verification' %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300">
+                                <i class="fa-solid fa-clock text-[9px]"></i> Verify TrxID
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                {{ order.get_payment_status_display }}
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3.5 px-4">
+                            {% if order.order_status == 'delivered' %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white">
+                                <i class="fa-solid fa-check text-[9px]"></i> Delivered
+                            </span>
+                            {% elif order.order_status == 'confirmed' %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white">
+                                Confirmed
+                            </span>
+                            {% elif order.order_status == 'shipped' %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-600 text-white">
+                                Shipped
+                            </span>
+                            {% elif order.order_status == 'cancelled' %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white">
+                                Cancelled
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white">
+                                Pending
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-right font-bold text-zinc-900 dark:text-white">
+                            ৳{{ order.total_amount|floatformat:0 }}
+                        </td>
+
+                        <td class="py-3.5 px-4 text-center">
+                            <a href="{% url 'dashboard:order_detail' order.id %}" class="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-semibold rounded-lg transition text-[11px]">
+                                Manage
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="py-8 text-center text-zinc-400 dark:text-zinc-500 text-xs">
+            No orders found for this customer.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- SECTION 3: REVIEWS SUBMITTED BY CUSTOMER -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
+            <div>
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                    <span>Customer Reviews ({{ reviews.count }})</span>
+                </h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Feedback and ratings written by this customer.</p>
+            </div>
+        </div>
+
+        {% if reviews %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for rev in reviews %}
+            <div class="bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= rev.rating %}
+                                    <i class="fa-solid fa-star"></i>
+                                    {% else %}
+                                    <i class="fa-regular fa-star text-zinc-300 dark:text-zinc-700"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="font-bold text-zinc-900 dark:text-white ml-1 text-xs">{{ rev.rating }}.0</span>
+                            </div>
+                            <div class="text-xs font-bold text-zinc-900 dark:text-white mt-1">
+                                <a href="{{ rev.product.get_absolute_url }}" target="_blank" class="hover:underline">
+                                    {{ rev.product.title }}
+                                </a>
+                            </div>
+                            <div class="text-[10px] font-mono text-zinc-400">{{ rev.product.sku }}</div>
+                        </div>
+
+                        <div class="flex flex-col items-end gap-1">
+                            {% if rev.is_approved %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                <i class="fa-solid fa-eye text-[9px]"></i> Published
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                <i class="fa-solid fa-eye-slash text-[9px]"></i> Hidden
+                            </span>
+                            {% endif %}
+
+                            {% if rev.is_verified_purchase %}
+                            <span class="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                                <i class="fa-solid fa-badge-check text-[9px]"></i> Verified Buyer
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if rev.title %}
+                    <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100">"{{ rev.title }}"</div>
+                    {% endif %}
+
+                    <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed bg-white dark:bg-zinc-900 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                        {{ rev.comment }}
+                    </p>
+                </div>
+
+                <div class="pt-2 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between text-xs">
+                    <span class="text-[11px] text-zinc-400">{{ rev.created_at|date:"M d, Y h:i A" }}</span>
+
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'dashboard:review_toggle_approval' rev.id %}" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition {% if rev.is_approved %}bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-300{% else %}bg-emerald-600 hover:bg-emerald-500 text-white{% endif %}">
+                            {% if rev.is_approved %}Hide{% else %}Approve{% endif %}
+                        </a>
+
+                        <a href="{% url 'dashboard:review_delete' rev.id %}" onclick="return confirm('Are you sure you want to delete this review permanently?');" class="p-1 text-rose-500 hover:text-rose-700 transition text-xs" title="Delete Review">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="py-8 text-center text-zinc-400 dark:text-zinc-500 text-xs">
+            No reviews submitted by this customer yet.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

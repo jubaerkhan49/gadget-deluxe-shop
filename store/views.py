@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.db.models import Q
 from django.utils import translation
 from django.http import HttpResponseRedirect
-from .models import IPhoneModel, Product, FAQ, StoreSettings
+from .models import IPhoneModel, Product, FAQ, StoreSettings, Review
+from orders.models import Order, OrderItem
 
 
 def home(request):
@@ -114,6 +116,61 @@ def product_detail(request, slug):
         'related_products': related_products,
     }
     return render(request, 'store/product_detail.html', context)
+
+
+def submit_review(request, product_id):
+    """
+    Handle customer review submission for a specific iPhone listing.
+    """
+    if request.method != 'POST':
+        return redirect('store:home')
+
+    product = get_object_or_404(Product, id=product_id)
+    try:
+        rating = int(request.POST.get('rating', 5))
+    except (ValueError, TypeError):
+        rating = 5
+    rating = max(1, min(5, rating))
+    
+    name = request.POST.get('customer_name', '').strip()
+    phone = request.POST.get('customer_phone', '').strip()
+    email = request.POST.get('customer_email', '').strip()
+    title = request.POST.get('title', '').strip()
+    comment = request.POST.get('comment', '').strip()
+
+    if not name or not comment:
+        messages.error(request, "Please enter your name and a brief review message.")
+        return redirect('store:product_detail', slug=product.slug)
+
+    # Check for verified purchase
+    is_verified = False
+    if request.user.is_authenticated:
+        if OrderItem.objects.filter(order__user=request.user, product=product).exists() or Order.objects.filter(user=request.user).exists():
+            is_verified = True
+    elif phone:
+        clean_p = phone.replace(' ', '').replace('-', '')
+        if clean_p.startswith('+88'):
+            clean_p = clean_p[3:]
+        elif clean_p.startswith('88'):
+            clean_p = clean_p[2:]
+        if Order.objects.filter(phone__icontains=clean_p).exists():
+            is_verified = True
+
+    Review.objects.create(
+        product=product,
+        user=request.user if request.user.is_authenticated else None,
+        customer_name=name,
+        customer_phone=phone,
+        customer_email=email,
+        rating=rating,
+        title=title,
+        comment=comment,
+        is_verified_purchase=is_verified,
+        is_approved=True,
+    )
+
+    messages.success(request, "🎉 Thank you! Your review has been published.")
+    return redirect('store:product_detail', slug=product.slug)
 
 
 def faq_view(request):

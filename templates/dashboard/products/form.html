@@ -150,12 +150,28 @@
                     {{ form.camera_inspection }}
                 </div>
 
-                <div class="sm:col-span-2 lg:col-span-1">
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Camera Portrait</label>
+                    {{ form.camera_portrait }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Midframe Fitting</label>
+                    {{ form.midframe_fitting }}
+                </div>
+
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Lens Freshness</label>
+                    {{ form.lens_freshness }}
+                </div>
+
+                <div>
                     <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Flashlight / Torch</label>
                     {{ form.flashlight_inspection }}
                 </div>
             </div>
         </div>
+
 
         <!-- Section 4: Pricing & Availability -->
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm">

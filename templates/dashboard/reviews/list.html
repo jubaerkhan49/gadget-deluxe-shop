@@ -1,0 +1,187 @@
+{% extends 'dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}Customer Reviews Moderation | Gadget Deluxe Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">Customer Reviews</h1>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Moderate customer reviews, verify purchase feedback, and publish ratings to storefront listings.</p>
+        </div>
+    </div>
+
+    <!-- Quick Filter Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <a href="{% url 'dashboard:review_list' %}" class="px-3.5 py-2 rounded-xl font-bold transition {% if not selected_status and not selected_rating %}bg-black text-white dark:bg-white dark:text-black shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+            All Reviews ({{ counts.all }})
+        </a>
+        <a href="{% url 'dashboard:review_list' %}?status=approved" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_status == 'approved' %}bg-emerald-600 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+            Published ({{ counts.approved }})
+        </a>
+        <a href="{% url 'dashboard:review_list' %}?status=pending" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_status == 'pending' %}bg-amber-500 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+            Hidden / Pending ({{ counts.pending }})
+        </a>
+        <a href="{% url 'dashboard:review_list' %}?rating=5" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_rating == '5' %}bg-amber-500 text-white shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+            5-Star Reviews ({{ counts.five_star }})
+        </a>
+    </div>
+
+    <!-- Search & Rating Filter Bar -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-sm">
+        <form method="GET" action="{% url 'dashboard:review_list' %}" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+            <div class="sm:col-span-6">
+                <div class="relative">
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search by customer name, phone, product title, SKU, or comment text..." class="w-full pl-9 pr-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-zinc-400 text-xs"></i>
+                </div>
+            </div>
+
+            <div class="sm:col-span-3">
+                <select name="rating" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white">
+                    <option value="">All Star Ratings</option>
+                    <option value="5" {% if selected_rating == '5' %}selected{% endif %}>⭐⭐⭐⭐⭐ 5 Stars</option>
+                    <option value="4" {% if selected_rating == '4' %}selected{% endif %}>⭐⭐⭐⭐ 4 Stars</option>
+                    <option value="3" {% if selected_rating == '3' %}selected{% endif %}>⭐⭐⭐ 3 Stars</option>
+                    <option value="2" {% if selected_rating == '2' %}selected{% endif %}>⭐⭐ 2 Stars</option>
+                    <option value="1" {% if selected_rating == '1' %}selected{% endif %}>⭐ 1 Star</option>
+                </select>
+            </div>
+
+            <div class="sm:col-span-2">
+                <button type="submit" class="w-full py-2 bg-black text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition shadow-sm">
+                    Filter
+                </button>
+            </div>
+
+            {% if search_query or selected_rating or selected_status %}
+            <div class="sm:col-span-1 text-center">
+                <a href="{% url 'dashboard:review_list' %}" class="block py-2 text-xs text-rose-600 dark:text-rose-400 font-semibold hover:underline">
+                    Reset
+                </a>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Reviews Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for rev in reviews %}
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+            
+            <div class="space-y-3">
+                <!-- Header: Customer & Product Info -->
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-700 dark:text-zinc-300 flex-shrink-0">
+                            {{ rev.customer_name|slice:":1"|upper|default:"C" }}
+                        </div>
+                        <div>
+                            <div class="font-bold text-xs text-zinc-900 dark:text-white flex items-center gap-1.5">
+                                {% if rev.user %}
+                                <a href="{% url 'dashboard:customer_detail' 'u-'|add:rev.user.id|stringformat:'s' %}" class="hover:underline">
+                                    {{ rev.customer_name }}
+                                </a>
+                                {% elif rev.customer_phone %}
+                                <a href="{% url 'dashboard:customer_detail' 'p-'|add:rev.customer_phone %}" class="hover:underline">
+                                    {{ rev.customer_name }}
+                                </a>
+                                {% else %}
+                                <span>{{ rev.customer_name }}</span>
+                                {% endif %}
+
+                                {% if rev.is_verified_purchase %}
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400" title="Verified Customer Purchase">
+                                    <i class="fa-solid fa-circle-check text-[9px]"></i> Verified
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="text-[11px] text-zinc-400">
+                                {% if rev.customer_phone %}<span class="font-mono">{{ rev.customer_phone }}</span>{% endif %}
+                                {% if rev.customer_phone and rev.customer_email %} • {% endif %}
+                                {% if rev.customer_email %}<span>{{ rev.customer_email }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Approval Badge -->
+                    <div>
+                        {% if rev.is_approved %}
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                            <i class="fa-solid fa-eye text-[9px]"></i> Published
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                            <i class="fa-solid fa-eye-slash text-[9px]"></i> Hidden
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Product Subject -->
+                <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <i class="fa-solid fa-mobile-screen-button text-zinc-400 text-xs"></i>
+                        <a href="{{ rev.product.get_absolute_url }}" target="_blank" class="font-bold text-zinc-800 dark:text-zinc-200 hover:underline truncate">
+                            {{ rev.product.title }}
+                        </a>
+                    </div>
+                    <span class="font-mono text-[10px] text-zinc-400 flex-shrink-0">{{ rev.product.sku }}</span>
+                </div>
+
+                <!-- Star Rating -->
+                <div class="flex items-center gap-1 text-amber-400 text-xs">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= rev.rating %}
+                        <i class="fa-solid fa-star"></i>
+                        {% else %}
+                        <i class="fa-regular fa-star text-zinc-300 dark:text-zinc-700"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="font-bold text-zinc-900 dark:text-white ml-1.5">{{ rev.rating }}.0 Stars</span>
+                </div>
+
+                <!-- Review Content -->
+                {% if rev.title %}
+                <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{ rev.title }}</h4>
+                {% endif %}
+
+                <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed bg-zinc-50/50 dark:bg-zinc-950/40 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/80">
+                    {{ rev.comment }}
+                </p>
+            </div>
+
+            <!-- Footer Moderation Actions -->
+            <div class="pt-3 mt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs">
+                <span class="text-[11px] text-zinc-400">{{ rev.created_at|date:"M d, Y h:i A" }}</span>
+
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'dashboard:review_toggle_approval' rev.id %}" class="px-3 py-1.5 rounded-xl text-xs font-bold transition {% if rev.is_approved %}bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300{% else %}bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm{% endif %}">
+                        {% if rev.is_approved %}
+                        <i class="fa-solid fa-eye-slash mr-1 text-[10px]"></i> Hide Review
+                        {% else %}
+                        <i class="fa-solid fa-check mr-1 text-[10px]"></i> Publish Review
+                        {% endif %}
+                    </a>
+
+                    <a href="{% url 'dashboard:review_delete' rev.id %}" onclick="return confirm('Delete this review permanently?');" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-zinc-500 transition" title="Delete Review">
+                        <i class="fa-regular fa-trash-can text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="col-span-2 py-12 text-center text-zinc-400 dark:text-zinc-500 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
+            <i class="fa-regular fa-star text-3xl mb-2 text-zinc-300 dark:text-zinc-600"></i>
+            <p class="font-medium text-xs">No customer reviews found matching your filters.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

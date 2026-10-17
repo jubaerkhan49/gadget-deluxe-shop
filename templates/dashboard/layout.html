@@ -115,6 +115,16 @@
                         <span>Add New Listing</span>
                     </a>
 
+                    <a href="{% url 'dashboard:customer_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {% if 'customer' in request.resolver_match.url_name %}bg-black text-white dark:bg-white dark:text-black font-bold shadow-sm{% else %}text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60{% endif %}">
+                        <i class="fa-solid fa-users text-sm"></i>
+                        <span>Customers</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:review_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {% if 'review' in request.resolver_match.url_name %}bg-black text-white dark:bg-white dark:text-black font-bold shadow-sm{% else %}text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60{% endif %}">
+                        <i class="fa-solid fa-star text-sm"></i>
+                        <span>Customer Reviews</span>
+                    </a>
+
                     <a href="{% url 'dashboard:faq_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {% if 'faq' in request.resolver_match.url_name %}bg-black text-white dark:bg-white dark:text-black font-bold shadow-sm{% else %}text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60{% endif %}">
                         <i class="fa-regular fa-circle-question text-sm"></i>
                         <span>FAQ Manager</span>
@@ -125,6 +135,7 @@
                         <span>Payment & Settings</span>
                     </a>
                 </nav>
+
             </div>
 
             <!-- Footer info / Logout -->

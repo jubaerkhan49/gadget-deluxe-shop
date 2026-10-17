@@ -47,6 +47,9 @@ class ProductForm(forms.ModelForm):
             'sound_inspection',
             'charging_inspection',
             'camera_inspection',
+            'camera_portrait',
+            'midframe_fitting',
+            'lens_freshness',
             'flashlight_inspection',
             'primary_image',
             'description',
@@ -67,13 +70,16 @@ class ProductForm(forms.ModelForm):
             'sim_type': forms.Select(attrs={'class': SELECT_CLASSES}),
             'price': forms.NumberInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. 109000'}),
             'original_price': forms.NumberInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. 115000 (Optional)'}),
-            'display_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. 120Hz ProMotion OLED: OK'}),
-            'truetone_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. TrueTone: OK'}),
-            'faceid_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. FaceID & Sensors: Working'}),
-            'sound_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Sound & Vibration: OK'}),
-            'charging_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Charging: OK'}),
-            'camera_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Camera: OK'}),
-            'flashlight_inspection': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g. Flashlight: OK'}),
+            'display_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'truetone_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'faceid_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'sound_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'charging_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'camera_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'camera_portrait': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'midframe_fitting': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'lens_freshness': forms.Select(attrs={'class': SELECT_CLASSES}),
+            'flashlight_inspection': forms.Select(attrs={'class': SELECT_CLASSES}),
             'primary_image': forms.FileInput(attrs={
                 'class': 'w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100',
                 'accept': 'image/*,.heic,.heif,.HEIC,.HEIF'
@@ -83,6 +89,7 @@ class ProductForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': SELECT_CLASSES}),
             'featured': forms.CheckboxInput(attrs={'class': 'w-4 h-4 text-black rounded border-zinc-300 dark:border-zinc-700 focus:ring-black'}),
         }
+
 
     def clean_primary_image(self):
         img = self.cleaned_data.get('primary_image')

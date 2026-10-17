@@ -75,3 +75,27 @@ class StoreViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         # Check session and cookie
         self.assertEqual(self.client.session.get('_language'), 'bn')
+
+    def test_review_submission(self):
+        review_data = {
+            'customer_name': 'Rahim Uddin',
+            'customer_phone': '01811223344',
+            'customer_email': 'rahim@example.com',
+            'rating': 5,
+            'title': 'Super clean iPhone!',
+            'comment': 'Battery and physical condition are like brand new. Very satisfied with Gadget Deluxe!',
+        }
+        url = reverse('store:submit_review', kwargs={'product_id': self.product.id})
+        res = self.client.post(url, review_data)
+        self.assertEqual(res.status_code, 302)
+        
+        # Verify review in database
+        from store.models import Review
+        rev = Review.objects.filter(customer_name='Rahim Uddin').first()
+        self.assertIsNotNone(rev)
+        self.assertEqual(rev.rating, 5)
+        self.assertEqual(rev.product, self.product)
+        self.assertTrue(rev.is_approved)
+        self.assertEqual(self.product.review_count, 1)
+        self.assertEqual(self.product.average_rating, 5.0)
+

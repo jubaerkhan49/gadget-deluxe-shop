@@ -1,0 +1,211 @@
+{% extends 'dashboard/layout.html' %}
+{% load static %}
+
+{% block title %}Customer Directory | Gadget Deluxe Admin{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">Customer Management</h1>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">View customer purchase history, ordered iPhone devices, and submitted reviews.</p>
+        </div>
+    </div>
+
+    <!-- Overview Stat Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
+                <span class="text-xs font-semibold">Total Customers</span>
+                <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-black text-zinc-900 dark:text-white">{{ total_customers_count }}</div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Registered & Guest Buyers</div>
+        </div>
+
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
+                <span class="text-xs font-semibold">Total Customer Spend</span>
+                <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-black text-zinc-900 dark:text-white">৳{{ total_revenue|floatformat:0 }}</div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Lifetime verified orders</div>
+        </div>
+
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
+                <span class="text-xs font-semibold">Active Buyers</span>
+                <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-black text-zinc-900 dark:text-white">{{ active_buyers_count }}</div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Purchased at least 1 iPhone</div>
+        </div>
+
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-2">
+                <span class="text-xs font-semibold">Total Reviews Left</span>
+                <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-black text-zinc-900 dark:text-white">{{ total_reviews_count }}</div>
+            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Customer feedback submissions</div>
+        </div>
+    </div>
+
+    <!-- Quick Filter Tabs & Search Bar -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <!-- Type Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <a href="{% url 'dashboard:customer_list' %}" class="px-3.5 py-2 rounded-xl font-bold transition {% if not selected_type %}bg-black text-white dark:bg-white dark:text-black shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+                All Customers
+            </a>
+            <a href="{% url 'dashboard:customer_list' %}?type=registered" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_type == 'registered' %}bg-black text-white dark:bg-white dark:text-black shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+                Registered Users
+            </a>
+            <a href="{% url 'dashboard:customer_list' %}?type=guest" class="px-3.5 py-2 rounded-xl font-bold transition {% if selected_type == 'guest' %}bg-black text-white dark:bg-white dark:text-black shadow-sm{% else %}bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-800{% endif %}">
+                Guest Buyers
+            </a>
+        </div>
+
+        <!-- Search input -->
+        <form method="GET" action="{% url 'dashboard:customer_list' %}" class="flex items-center gap-2 w-full sm:w-auto">
+            {% if selected_type %}
+            <input type="hidden" name="type" value="{{ selected_type }}">
+            {% endif %}
+            <div class="relative w-full sm:w-72">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search by name, phone, email..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white shadow-sm">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-zinc-400 text-xs"></i>
+            </div>
+            <button type="submit" class="px-3.5 py-2 bg-black text-white dark:bg-white dark:text-black font-bold text-xs rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition shadow-sm">
+                Search
+            </button>
+            {% if search_query %}
+            <a href="{% url 'dashboard:customer_list' %}{% if selected_type %}?type={{ selected_type }}{% endif %}" class="text-xs text-rose-600 dark:text-rose-400 font-semibold hover:underline">
+                Clear
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-zinc-50 dark:bg-zinc-950 text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold border-b border-zinc-200 dark:border-zinc-800">
+                    <tr>
+                        <th class="py-3.5 px-6">Customer</th>
+                        <th class="py-3.5 px-6">Phone Number</th>
+                        <th class="py-3.5 px-6">Email Address</th>
+                        <th class="py-3.5 px-6 text-center">Orders</th>
+                        <th class="py-3.5 px-6 text-center">Reviews</th>
+                        <th class="py-3.5 px-6 text-right">Total Spent</th>
+                        <th class="py-3.5 px-6">Last Active</th>
+                        <th class="py-3.5 px-6 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800/60 text-zinc-700 dark:text-zinc-300">
+                    {% for customer in customers %}
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition">
+                        <td class="py-4 px-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-700 dark:text-zinc-300 flex-shrink-0">
+                                    {{ customer.name|slice:":1"|upper|default:"C" }}
+                                </div>
+                                <div>
+                                    <a href="{% url 'dashboard:customer_detail' customer.key %}" class="font-bold text-zinc-900 dark:text-zinc-100 hover:underline block">
+                                        {{ customer.name|default:"Customer" }}
+                                    </a>
+                                    {% if customer.is_registered %}
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                        <i class="fa-solid fa-circle-check text-[9px]"></i> Registered User
+                                    </span>
+                                    {% else %}
+                                    <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">Guest Buyer</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="py-4 px-6 font-mono text-zinc-800 dark:text-zinc-200">
+                            {% if customer.phone %}
+                            <a href="tel:{{ customer.phone }}" class="hover:underline flex items-center gap-1.5">
+                                <i class="fa-solid fa-phone text-[10px] text-zinc-400"></i>
+                                <span>{{ customer.phone }}</span>
+                            </a>
+                            {% else %}
+                            <span class="text-zinc-400">—</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-4 px-6 text-zinc-600 dark:text-zinc-400">
+                            {% if customer.email %}
+                            <a href="mailto:{{ customer.email }}" class="hover:underline flex items-center gap-1.5 truncate max-w-[180px]">
+                                <i class="fa-regular fa-envelope text-[10px] text-zinc-400"></i>
+                                <span>{{ customer.email }}</span>
+                            </a>
+                            {% else %}
+                            <span class="text-zinc-400">—</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-4 px-6 text-center">
+                            {% if customer.orders_count > 0 %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
+                                {{ customer.orders_count }} Order{{ customer.orders_count|pluralize }}
+                            </span>
+                            {% else %}
+                            <span class="text-zinc-400">0</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-4 px-6 text-center">
+                            {% if customer.reviews_count > 0 %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">
+                                <i class="fa-solid fa-star text-[9px]"></i> {{ customer.reviews_count }}
+                            </span>
+                            {% else %}
+                            <span class="text-zinc-400">0</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-4 px-6 text-right font-bold text-zinc-900 dark:text-white">
+                            ৳{{ customer.total_spent|floatformat:0 }}
+                        </td>
+
+                        <td class="py-4 px-6 text-zinc-500 dark:text-zinc-400 text-[11px]">
+                            {{ customer.last_active|date:"M d, Y" }}
+                        </td>
+
+                        <td class="py-4 px-6 text-center">
+                            <a href="{% url 'dashboard:customer_detail' customer.key %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-zinc-700 dark:text-zinc-300 font-bold rounded-xl transition">
+                                <span>Details</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="py-12 text-center text-zinc-500 dark:text-zinc-400">
+                            <div class="max-w-xs mx-auto space-y-3">
+                                <i class="fa-solid fa-user-group text-3xl text-zinc-300 dark:text-zinc-600"></i>
+                                <p class="font-medium text-xs">No customers matched your search criteria.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.urls import reverse
 import uuid
@@ -43,9 +44,26 @@ class Product(models.Model):
     ]
 
     CONDITION_CHOICES = [
-        ('like_new', 'Like New / Pristine (99%)'),
-        ('excellent', 'Excellent Condition (95%+)'),
-        ('good', 'Good Condition (90%+)'),
+        ('like_new', '99%+ New'),
+        ('excellent', '95%+ New'),
+        ('good', '90%+ New'),
+    ]
+
+    QUALITY_GRADE_CHOICES = [
+        ('Perfect', 'Perfect'),
+        ('Good', 'Good'),
+        ('Average', 'Average'),
+        ('Poor', 'Poor'),
+    ]
+
+    OK_NOT_OK_CHOICES = [
+        ('OK', 'OK'),
+        ('Not OK', 'Not OK'),
+    ]
+
+    WORKING_CHOICES = [
+        ('Working', 'Working'),
+        ('Not Working', 'Not Working'),
     ]
 
     SIM_CHOICES = [
@@ -104,46 +122,75 @@ class Product(models.Model):
     # Configurable Quality Inspection Checklist
     display_inspection = models.CharField(
         max_length=80, 
-        default="120Hz ProMotion OLED: OK", 
+        choices=OK_NOT_OK_CHOICES,
+        default="OK", 
         blank=True, 
         help_text="Display inspection status"
     )
     truetone_inspection = models.CharField(
         max_length=80, 
-        default="TrueTone: OK", 
+        choices=OK_NOT_OK_CHOICES,
+        default="OK", 
         blank=True, 
         help_text="TrueTone status"
     )
     faceid_inspection = models.CharField(
         max_length=80, 
-        default="FaceID & Sensors: Working", 
+        choices=WORKING_CHOICES,
+        default="Working", 
         blank=True, 
         help_text="FaceID & sensors status"
     )
     sound_inspection = models.CharField(
         max_length=80, 
-        default="Sound & Vibration: OK", 
+        choices=OK_NOT_OK_CHOICES,
+        default="OK", 
         blank=True, 
         help_text="Sound and speaker status"
     )
     charging_inspection = models.CharField(
         max_length=80, 
-        default="Charging: OK", 
+        choices=OK_NOT_OK_CHOICES,
+        default="OK", 
         blank=True, 
         help_text="Charging port status"
     )
     camera_inspection = models.CharField(
         max_length=80, 
-        default="Camera: OK", 
+        choices=OK_NOT_OK_CHOICES,
+        default="OK", 
         blank=True, 
         help_text="Camera lens and focus status"
     )
+    camera_portrait = models.CharField(
+        max_length=30,
+        choices=QUALITY_GRADE_CHOICES,
+        default="Perfect",
+        blank=True,
+        help_text="Camera Portrait quality"
+    )
+    midframe_fitting = models.CharField(
+        max_length=30,
+        choices=QUALITY_GRADE_CHOICES,
+        default="Perfect",
+        blank=True,
+        help_text="Midframe fitting quality"
+    )
+    lens_freshness = models.CharField(
+        max_length=30,
+        choices=QUALITY_GRADE_CHOICES,
+        default="Perfect",
+        blank=True,
+        help_text="Lens freshness quality"
+    )
     flashlight_inspection = models.CharField(
         max_length=80, 
-        default="Flashlight: OK", 
+        choices=OK_NOT_OK_CHOICES,
+        default="OK", 
         blank=True, 
         help_text="Flashlight status"
     )
+
 
     price = models.DecimalField(max_digits=10, decimal_places=0, help_text="Selling price in BDT (৳)")
     original_price = models.DecimalField(
@@ -219,24 +266,35 @@ class Product(models.Model):
 
     @property
     def inspection_checklist(self):
+        def format_item(label, val):
+            if not val:
+                return ""
+            if ":" in val:
+                return val
+            return f"{label}: {val}"
+
         items = [
-            self.display_inspection,
-            self.truetone_inspection,
-            self.faceid_inspection,
-            self.sound_inspection,
-            self.charging_inspection,
-            self.camera_inspection,
-            self.flashlight_inspection,
+            format_item("Display / Refresh Rate", self.display_inspection),
+            format_item("TrueTone", self.truetone_inspection),
+            format_item("FaceID & Sensors", self.faceid_inspection),
+            format_item("Sound & Vibration", self.sound_inspection),
+            format_item("Charging Port & Battery", self.charging_inspection),
+            format_item("Camera (Front & Back)", self.camera_inspection),
+            format_item("Camera Portrait", self.camera_portrait),
+            format_item("Midframe Fitting", self.midframe_fitting),
+            format_item("Lens Freshness", self.lens_freshness),
+            format_item("Flashlight / Torch", self.flashlight_inspection),
         ]
         return [item.strip() for item in items if item and item.strip()]
 
     @property
     def condition_display_bn(self):
         if self.condition == 'like_new':
-            return 'লাইক নিউ (৯৯%)'
+            return '৯৯%+ নতুন'
         elif self.condition == 'excellent':
-            return 'চমৎকার কন্ডিশন (৯৫%+)'
-        return 'ভালো কন্ডিশন (৯০%+)'
+            return '৯৫%+ নতুন'
+        return '৯০%+ নতুন'
+
 
     @property
     def sim_display_bn(self):
@@ -247,6 +305,22 @@ class Product(models.Model):
         elif self.sim_type == 'wifi_only':
             return 'ওয়াইফাই অনলি (WiFi Only)'
         return 'ডুয়াল ফিজিক্যাল সিম (HK/China)'
+
+    @property
+    def approved_reviews(self):
+        return self.reviews.filter(is_approved=True).order_by('-created_at')
+
+    @property
+    def average_rating(self):
+        reviews = self.approved_reviews
+        if not reviews.exists():
+            return 5.0
+        total = sum(r.rating for r in reviews)
+        return round(total / reviews.count(), 1)
+
+    @property
+    def review_count(self):
+        return self.approved_reviews.count()
 
 
 class ProductImage(models.Model):
@@ -273,6 +347,37 @@ class ProductImage(models.Model):
                     if converted:
                         self.image = converted
         super().save(*args, **kwargs)
+
+
+class Review(models.Model):
+    RATING_CHOICES = [
+        (5, '5 Stars - Excellent'),
+        (4, '4 Stars - Very Good'),
+        (3, '3 Stars - Average'),
+        (2, '2 Stars - Below Average'),
+        (1, '1 Star - Poor'),
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
+    customer_name = models.CharField(max_length=100)
+    customer_phone = models.CharField(max_length=20, blank=True)
+    customer_email = models.EmailField(blank=True)
+    rating = models.PositiveSmallIntegerField(default=5, choices=RATING_CHOICES)
+    title = models.CharField(max_length=150, blank=True)
+    comment = models.TextField()
+    is_verified_purchase = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Product Review"
+        verbose_name_plural = "Product Reviews"
+
+    def __str__(self):
+        return f"{self.customer_name} ({self.rating}★) on {self.product.sku}"
 
 
 

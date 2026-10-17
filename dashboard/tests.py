@@ -214,3 +214,83 @@ class DashboardTestCase(TestCase):
         # Visiting public homepage should record PageVisit
         self.client.get(reverse('store:home'))
         self.assertTrue(PageVisit.objects.filter(path=reverse('store:home')).exists())
+
+    def test_customer_list_and_detail(self):
+        from store.models import Review
+        self.client.force_login(self.admin_user)
+        
+        # Create an OrderItem and Review for the customer
+        OrderItem.objects.create(
+            order=self.order,
+            product=self.product,
+            product_title=self.product.title,
+            product_sku=self.product.sku,
+            product_model=self.product.model.name,
+            product_storage=self.product.storage,
+            product_color=self.product.color,
+            product_condition=self.product.condition,
+            product_battery_health=self.product.battery_health,
+            price=self.product.price,
+            quantity=1
+        )
+        Review.objects.create(
+            product=self.product,
+            customer_name="Abir Hasan",
+            customer_phone="01799887766",
+            rating=5,
+            title="Awesome phone",
+            comment="Excellent condition, highly recommend!",
+            is_approved=True
+        )
+
+        # 1. Customer Directory List
+        list_res = self.client.get(reverse('dashboard:customer_list'))
+        self.assertEqual(list_res.status_code, 200)
+        self.assertContains(list_res, "Abir Hasan")
+        self.assertContains(list_res, "01799887766")
+        self.assertContains(list_res, "Total Customer Spend")
+
+        # Search filter
+        search_res = self.client.get(reverse('dashboard:customer_list') + '?q=Abir')
+        self.assertEqual(search_res.status_code, 200)
+        self.assertContains(search_res, "Abir Hasan")
+
+        # 2. Customer Detail
+        detail_res = self.client.get(reverse('dashboard:customer_detail', kwargs={'customer_key': 'p-01799887766'}))
+        self.assertEqual(detail_res.status_code, 200)
+        self.assertContains(detail_res, "Abir Hasan")
+        self.assertContains(detail_res, "Purchased iPhone Devices")
+        self.assertContains(detail_res, self.product.title)
+        self.assertContains(detail_res, "Awesome phone")
+
+    def test_review_moderation(self):
+        from store.models import Review
+        self.client.force_login(self.admin_user)
+        
+        rev = Review.objects.create(
+            product=self.product,
+            customer_name="Tanvir Rahman",
+            customer_phone="01611223344",
+            rating=4,
+            title="Good device",
+            comment="Works as described.",
+            is_approved=True
+        )
+
+        # 1. Review List
+        res = self.client.get(reverse('dashboard:review_list'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Tanvir Rahman")
+        self.assertContains(res, "Good device")
+
+        # 2. Toggle Approval (Hide)
+        toggle_res = self.client.get(reverse('dashboard:review_toggle_approval', kwargs={'review_id': rev.id}))
+        self.assertEqual(toggle_res.status_code, 302)
+        rev.refresh_from_db()
+        self.assertFalse(rev.is_approved)
+
+        # 3. Delete Review
+        del_res = self.client.get(reverse('dashboard:review_delete', kwargs={'review_id': rev.id}))
+        self.assertEqual(del_res.status_code, 302)
+        self.assertFalse(Review.objects.filter(id=rev.id).exists())
+

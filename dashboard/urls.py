@@ -26,6 +26,16 @@ urlpatterns = [
     path('faqs/<int:faq_id>/edit/', views.faq_edit, name='faq_edit'),
     path('faqs/<int:faq_id>/delete/', views.faq_delete, name='faq_delete'),
 
+    # Customers Management
+    path('customers/', views.customer_list, name='customer_list'),
+    path('customers/<str:customer_key>/', views.customer_detail, name='customer_detail'),
+
+    # Customer Reviews Moderation
+    path('reviews/', views.review_list, name='review_list'),
+    path('reviews/<int:review_id>/toggle/', views.review_toggle_approval, name='review_toggle_approval'),
+    path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
+
     # Settings
     path('settings/', views.store_settings_view, name='settings'),
 ]
+
