@@ -136,8 +136,8 @@
                     </a>
 
                     <a href="{% url 'dashboard:change_password' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {% if request.resolver_match.url_name == 'change_password' %}bg-black text-white dark:bg-white dark:text-black font-bold shadow-sm{% else %}text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60{% endif %}">
-                        <i class="fa-solid fa-key text-sm"></i>
-                        <span>Change Password</span>
+                        <i class="fa-solid fa-user-shield text-sm"></i>
+                        <span>Admin Credentials</span>
                     </a>
                 </nav>
 

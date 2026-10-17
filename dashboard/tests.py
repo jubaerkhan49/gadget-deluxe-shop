@@ -313,25 +313,60 @@ class DashboardTestCase(TestCase):
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res.url, reverse('dashboard:home'))
 
-    def test_change_password_view(self):
-        """Test staff can change password from shop admin panel"""
+    def test_change_credentials_flow_with_otp(self):
+        """Test staff can send OTP and update username, email, and password with OTP verification"""
         self.client.force_login(self.admin_user)
-        # GET page
+        # 1. GET page
         res = self.client.get(reverse('dashboard:change_password'))
         self.assertEqual(res.status_code, 200)
-        self.assertContains(res, "Change Admin Password")
-        self.assertContains(res, "id_old_password")
+        self.assertContains(res, "Admin Credentials & Security")
+        self.assertContains(res, "id_username")
+        self.assertContains(res, "id_email")
+        self.assertContains(res, "id_otp")
 
-        # POST valid password change
-        post_data = {
-            'old_password': 'BossPass123!',
-            'new_password1': 'NewSecurePass2026!#',
-            'new_password2': 'NewSecurePass2026!#',
+        # 2. Request OTP via AJAX POST
+        otp_res = self.client.post(reverse('dashboard:send_admin_otp'), data={'email': 'newboss@gadgetdeluxe.shop'})
+        self.assertEqual(otp_res.status_code, 200)
+        otp_data = otp_res.json()
+        self.assertTrue(otp_data['success'])
+        
+        # Verify OTP is stored in session
+        session = self.client.session
+        self.assertIn('admin_otp', session)
+        generated_otp = session['admin_otp']['code']
+
+        # 3. Submit credentials update with invalid OTP -> should fail
+        fail_data = {
+            'username': 'superboss',
+            'email': 'newboss@gadgetdeluxe.shop',
+            'current_password': 'BossPass123!',
+            'new_password': 'NewSecurePass2026!#',
+            'confirm_password': 'NewSecurePass2026!#',
+            'otp': '999999',
         }
-        post_res = self.client.post(reverse('dashboard:change_password'), data=post_data)
-        self.assertEqual(post_res.status_code, 302)
+        fail_res = self.client.post(reverse('dashboard:change_password'), data=fail_data)
+        self.assertEqual(fail_res.status_code, 200)
         self.admin_user.refresh_from_db()
+        self.assertEqual(self.admin_user.username, 'boss')  # unchanged
+
+        # 4. Submit credentials update with valid OTP -> should succeed
+        success_data = {
+            'username': 'superboss',
+            'email': 'newboss@gadgetdeluxe.shop',
+            'current_password': 'BossPass123!',
+            'new_password': 'NewSecurePass2026!#',
+            'confirm_password': 'NewSecurePass2026!#',
+            'otp': generated_otp,
+        }
+        success_res = self.client.post(reverse('dashboard:change_password'), data=success_data)
+        self.assertEqual(success_res.status_code, 302)
+        self.admin_user.refresh_from_db()
+        self.assertEqual(self.admin_user.username, 'superboss')
+        self.assertEqual(self.admin_user.email, 'newboss@gadgetdeluxe.shop')
         self.assertTrue(self.admin_user.check_password('NewSecurePass2026!#'))
+        
+        # Verify OTP is cleared after use
+        self.assertNotIn('admin_otp', self.client.session)
 
     def test_product_form_photo_preview_markup(self):
         """Ensure photo preview cards, gallery uploader, and scripts are present in product form"""

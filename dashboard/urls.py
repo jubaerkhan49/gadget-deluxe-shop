@@ -38,5 +38,6 @@ urlpatterns = [
     # Settings & Security
     path('settings/', views.store_settings_view, name='settings'),
     path('password/change/', views.change_password_view, name='change_password'),
+    path('password/send-otp/', views.send_admin_otp_view, name='send_admin_otp'),
 ]
 

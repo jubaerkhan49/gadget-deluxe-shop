@@ -6,6 +6,9 @@ from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from datetime import timedelta
 import csv
+import secrets
+from django.core.mail import send_mail
+from django.conf import settings
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -497,24 +500,141 @@ def store_settings_view(request):
 
 
 @staff_member_required
+def send_admin_otp_view(request):
+    """
+    Generate and dispatch a 6-digit OTP code to the administrator's email
+    for verifying username, email, or password modifications.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Only POST method is allowed.'}, status=405)
+
+    target_email = request.POST.get('email', '').strip() or request.user.email
+    if not target_email or '@' not in target_email:
+        return JsonResponse({'success': False, 'message': 'Please provide a valid email address.'}, status=400)
+
+    # Generate 6-digit cryptographic OTP code
+    otp_code = f"{secrets.randbelow(900000) + 100000}"
+
+    # Save to admin session with 10-minute expiry
+    request.session['admin_otp'] = {
+        'code': otp_code,
+        'email': target_email,
+        'expires_at': (timezone.now() + timedelta(minutes=10)).isoformat(),
+        'created_at': timezone.now().isoformat(),
+    }
+    request.session.modified = True
+
+    # Compose and dispatch email
+    subject = f"[Gadget Deluxe] Admin Security OTP: {otp_code}"
+    body_text = (
+        f"Hello {request.user.username},\n\n"
+        f"Your verification code to modify your Gadget Deluxe administrator credentials "
+        f"(username, email, or password) is:\n\n"
+        f"    {otp_code}\n\n"
+        f"This code will expire in 10 minutes.\n\n"
+        f"If you did not initiate this request, please review your store account security immediately.\n\n"
+        f"— Gadget Deluxe Security Team\n"
+        f"https://www.gadgetdeluxe.shop"
+    )
+
+    sent_successfully = False
+    try:
+        send_mail(
+            subject=subject,
+            message=body_text,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[target_email],
+            fail_silently=False,
+        )
+        sent_successfully = True
+    except Exception as e:
+        # In development or if SMTP is offline, log OTP to console
+        print(f"[SECURITY OTP] Failed to send email via SMTP: {e}. Active OTP for {target_email} is: {otp_code}")
+
+    msg = f"A 6-digit verification code has been dispatched to {target_email}."
+    return JsonResponse({
+        'success': True,
+        'message': msg,
+        'email': target_email,
+        'dev_otp': otp_code if (settings.DEBUG or not sent_successfully) else None,
+    })
+
+
+@staff_member_required
 def change_password_view(request):
     """
-    Allow staff members and store administrators to change their password
-    directly from the shop admin panel.
+    Allow staff members and store administrators to change their username, email,
+    and password directly from the shop admin panel with Email OTP verification.
     """
+    user = request.user
     if request.method == 'POST':
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Prevent user from being logged out
-            messages.success(request, "Your administrator password has been updated successfully!")
-            return redirect('dashboard:settings')
-        else:
-            messages.error(request, "Could not update password. Please check the errors below.")
-    else:
-        form = PasswordChangeForm(user=request.user)
+        new_username = request.POST.get('username', '').strip()
+        new_email = request.POST.get('email', '').strip()
+        current_password = request.POST.get('current_password', '')
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        otp_entered = request.POST.get('otp', '').strip()
 
-    return render(request, 'dashboard/change_password.html', {'form': form})
+        errors = []
+
+        # 1. Validate Current Password
+        if not user.check_password(current_password):
+            errors.append("Current admin password is incorrect.")
+
+        # 2. Validate OTP
+        otp_session = request.session.get('admin_otp')
+        if not otp_session:
+            errors.append("No verification code found. Please click 'Send OTP' to your email first.")
+        else:
+            try:
+                expires_at = timezone.datetime.fromisoformat(otp_session['expires_at'])
+                if timezone.now() > expires_at:
+                    errors.append("Verification code has expired. Please request a new OTP.")
+                elif otp_session['code'] != otp_entered:
+                    errors.append("Invalid verification code (OTP). Please check your email and try again.")
+            except Exception:
+                errors.append("Invalid OTP session. Please request a new OTP.")
+
+        # 3. Validate Username
+        if not new_username:
+            errors.append("Username cannot be empty.")
+        elif new_username != user.username and User.objects.filter(username__iexact=new_username).exclude(id=user.id).exists():
+            errors.append(f"Username '{new_username}' is already taken by another account.")
+
+        # 4. Validate Email
+        if not new_email or '@' not in new_email:
+            errors.append("Please enter a valid email address.")
+
+        # 5. Validate Password (if provided)
+        if new_password or confirm_password:
+            if len(new_password) < 8:
+                errors.append("New password must be at least 8 characters long.")
+            if new_password != confirm_password:
+                errors.append("New password and confirmation password do not match.")
+
+        if errors:
+            for err in errors:
+                messages.error(request, err)
+        else:
+            # Apply Changes
+            user.username = new_username
+            user.email = new_email
+            if new_password:
+                user.set_password(new_password)
+            user.save()
+
+            # Clear used OTP
+            request.session.pop('admin_otp', None)
+            request.session.modified = True
+
+            # Keep user authenticated
+            update_session_auth_hash(request, user)
+            messages.success(request, "Administrator credentials successfully verified and updated!")
+            return redirect('dashboard:change_password')
+
+    return render(request, 'dashboard/change_password.html', {
+        'admin_user': user,
+    })
 
 
 # ==============================================================================
