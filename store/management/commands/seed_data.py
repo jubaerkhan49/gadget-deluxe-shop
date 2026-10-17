@@ -58,6 +58,13 @@ def generate_iphone_mockup(model_name, color_name, bg_hex):
 class Command(BaseCommand):
     help = 'Seeds database with realistic iPhone 14/15/16 Pro listings, FAQs, and Store Settings'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help='Force re-seeding sample listings even if products already exist in the database',
+        )
+
     def handle(self, *args, **options):
         self.stdout.write(self.style.NOTICE("Seeding Gadget Deluxe database..."))
 
@@ -251,39 +258,45 @@ class Command(BaseCommand):
             },
         ]
 
-        for item in listings:
-            m_obj = model_objs[item['model']]
-            title = f"{item['model']} {item['storage']} - {item['color']} ({item['battery_health']}% Battery)"
-            title_bn = f"{item['model']} {item['storage']} - {item['color_bn']} ({item['battery_health']}% ব্যাটারি)"
+        if Product.objects.exists() and not options.get('force'):
+            self.stdout.write(self.style.WARNING(
+                f"[SKIP] {Product.objects.count()} product(s) already exist in database. "
+                "Skipping listing seeding so custom/deleted listings are preserved. (Pass --force to re-seed anyway)"
+            ))
+        else:
+            for item in listings:
+                m_obj = model_objs[item['model']]
+                title = f"{item['model']} {item['storage']} - {item['color']} ({item['battery_health']}% Battery)"
+                title_bn = f"{item['model']} {item['storage']} - {item['color_bn']} ({item['battery_health']}% ব্যাটারি)"
 
-            prod, created = Product.objects.get_or_create(
-                title=title,
-                model=m_obj,
-                storage=item['storage'],
-                color=item['color'],
-                defaults={
-                    'title_bn': title_bn,
-                    'color_bn': item['color_bn'],
-                    'condition': item['condition'],
-                    'battery_health': item['battery_health'],
-                    'sim_type': item['sim_type'],
-                    'origin_region': item['origin_region'],
-                    'masked_imei': f"35{item['battery_health']}840291{item['battery_health']}",
-                    'price': item['price'],
-                    'original_price': item['original_price'],
-                    'description': item['description'],
-                    'description_bn': item['description_bn'],
-                    'featured': item['featured'],
-                    'status': 'available',
-                }
-            )
+                prod, created = Product.objects.get_or_create(
+                    title=title,
+                    model=m_obj,
+                    storage=item['storage'],
+                    color=item['color'],
+                    defaults={
+                        'title_bn': title_bn,
+                        'color_bn': item['color_bn'],
+                        'condition': item['condition'],
+                        'battery_health': item['battery_health'],
+                        'sim_type': item['sim_type'],
+                        'origin_region': item['origin_region'],
+                        'masked_imei': f"35{item['battery_health']}840291{item['battery_health']}",
+                        'price': item['price'],
+                        'original_price': item['original_price'],
+                        'description': item['description'],
+                        'description_bn': item['description_bn'],
+                        'featured': item['featured'],
+                        'status': 'available',
+                    }
+                )
 
-            # Generate aesthetic mockup image if none attached
-            if not prod.primary_image:
-                mock_img = generate_iphone_mockup(item['model'], item['color'], item['color_hex'])
-                prod.primary_image.save(f"{prod.slug}.png", mock_img, save=True)
+                # Generate aesthetic mockup image if none attached
+                if not prod.primary_image:
+                    mock_img = generate_iphone_mockup(item['model'], item['color'], item['color_hex'])
+                    prod.primary_image.save(f"{prod.slug}.png", mock_img, save=True)
 
-        self.stdout.write(self.style.SUCCESS(f"Created {len(listings)} iPhone listings."))
+            self.stdout.write(self.style.SUCCESS(f"Created {len(listings)} iPhone listings."))
 
         # 5. FAQs
         faq_data = [
