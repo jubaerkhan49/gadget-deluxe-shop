@@ -411,11 +411,11 @@ class StoreSettings(models.Model):
     tagline_en = models.CharField(max_length=200, default="Quality Used iPhones, Carefully Checked.")
     tagline_bn = models.CharField(max_length=200, default="যাচাইকৃত সেরা মানের ব্যবহৃত আইফোন।")
     
-    phone_number = models.CharField(max_length=30, default="+880 1700-000000")
-    whatsapp_number = models.CharField(max_length=30, default="+880 1700-000000")
+    phone_number = models.CharField(max_length=30, default="+8801406169818")
+    whatsapp_number = models.CharField(max_length=30, default="+8801406169818")
     email = models.EmailField(default="support@gadgetdeluxe.shop")
-    address_en = models.CharField(max_length=255, default="Shop #42, Level 4, Bashundhara City / Multiplan Center, Dhaka")
-    address_bn = models.CharField(max_length=255, default="শপ #৪২, লেভেল ৪, বসুন্ধরা সিটি / মাল্টিপ্ল্যান সেন্টার, ঢাকা")
+    address_en = models.CharField(max_length=255, default="875, East Shewrapara, Shewrapara Metro Station, Kafrul, Dhaka")
+    address_bn = models.CharField(max_length=255, default="৮৭৫, পূর্ব শেওড়াপাড়া, শেওড়াপাড়া মেট্রো স্টেশন, কাফরুল, ঢাকা")
 
     # Payment accounts
     bkash_number = models.CharField(max_length=50, default="017XXXXXXXX (Personal/Merchant)")
