@@ -73,7 +73,7 @@ class Command(BaseCommand):
         settings.tagline_bn = "যাচাইকৃত প্রিমিয়াম ব্যবহৃত আইফোন।"
         settings.phone_number = "+8801406169818"
         settings.whatsapp_number = "+8801406169818"
-        settings.email = "support@gadgetdeluxe.shop"
+        settings.email = "gadgetdeluxe0@gmail.com"
         settings.address_en = "875, East Shewrapara, Shewrapara Metro Station, Kafrul, Dhaka"
         settings.address_bn = "৮৭৫, পূর্ব শেওড়াপাড়া, শেওড়াপাড়া মেট্রো স্টেশন, কাফরুল, ঢাকা"
         settings.bkash_number = "01711223344 (Personal / Send Money)"

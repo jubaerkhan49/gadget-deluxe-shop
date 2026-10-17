@@ -413,7 +413,7 @@ class StoreSettings(models.Model):
     
     phone_number = models.CharField(max_length=30, default="+8801406169818")
     whatsapp_number = models.CharField(max_length=30, default="+8801406169818")
-    email = models.EmailField(default="support@gadgetdeluxe.shop")
+    email = models.EmailField(default="gadgetdeluxe0@gmail.com")
     address_en = models.CharField(max_length=255, default="875, East Shewrapara, Shewrapara Metro Station, Kafrul, Dhaka")
     address_bn = models.CharField(max_length=255, default="৮৭৫, পূর্ব শেওড়াপাড়া, শেওড়াপাড়া মেট্রো স্টেশন, কাফরুল, ঢাকা")
 
