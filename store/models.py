@@ -251,6 +251,19 @@ class Product(models.Model):
             
         super().save(*args, **kwargs)
 
+    @property
+    def primary_image_url(self):
+        """
+        Safely returns the primary image URL or empty string if file or storage is missing or misconfigured.
+        Guarantees template rendering will never crash with ValueError.
+        """
+        if not self.primary_image:
+            return ""
+        try:
+            return self.primary_image.url
+        except Exception:
+            return ""
+
     def get_absolute_url(self):
         return reverse('store:product_detail', kwargs={'slug': self.slug})
 
@@ -333,6 +346,18 @@ class ProductImage(models.Model):
         ordering = ['order', 'id']
         verbose_name = "Product Image"
         verbose_name_plural = "Product Gallery Images"
+
+    @property
+    def image_url(self):
+        """
+        Safely returns the gallery image URL or empty string if file or storage is missing or misconfigured.
+        """
+        if not self.image:
+            return ""
+        try:
+            return self.image.url
+        except Exception:
+            return ""
 
     def __str__(self):
         return f"Image for {self.product.sku}"

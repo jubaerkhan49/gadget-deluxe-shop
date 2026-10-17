@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'cloudinary_storage',
-    'cloudinary',
     
     # Custom apps
     'store',
@@ -147,20 +145,50 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 
-# Cloudinary persistent media storage (keeps uploads safe across Render redeploys)
-CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
-CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+import cloudinary
 
-USE_CLOUDINARY = bool(CLOUDINARY_URL or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET))
+# Cloudinary persistent media storage (keeps uploads safe across Render redeploys)
+_raw_c_url = os.environ.get('CLOUDINARY_URL', '').strip()
+_raw_c_name = os.environ.get('CLOUDINARY_CLOUD_NAME', '').strip()
+_raw_c_key = os.environ.get('CLOUDINARY_API_KEY', '').strip()
+_raw_c_secret = os.environ.get('CLOUDINARY_API_SECRET', '').strip()
+
+USE_CLOUDINARY = False
+
+# Check if valid CLOUDINARY_URL provided (must have @ and not be a template placeholder like <API_KEY>)
+if _raw_c_url and '@' in _raw_c_url and '<' not in _raw_c_url:
+    try:
+        cloudinary.reset_config()
+        c_conf = cloudinary.config()
+        if c_conf.cloud_name and '<' not in c_conf.cloud_name:
+            USE_CLOUDINARY = True
+            CLOUDINARY_STORAGE = {
+                'CLOUD_NAME': c_conf.cloud_name,
+                'API_KEY': c_conf.api_key,
+                'API_SECRET': c_conf.api_secret,
+            }
+    except Exception:
+        USE_CLOUDINARY = False
+elif _raw_c_name and _raw_c_key and _raw_c_secret and '<' not in _raw_c_name:
+    try:
+        cloudinary.config(
+            cloud_name=_raw_c_name,
+            api_key=_raw_c_key,
+            api_secret=_raw_c_secret,
+            secure=True,
+        )
+        if cloudinary.config().cloud_name:
+            USE_CLOUDINARY = True
+            CLOUDINARY_STORAGE = {
+                'CLOUD_NAME': _raw_c_name,
+                'API_KEY': _raw_c_key,
+                'API_SECRET': _raw_c_secret,
+            }
+    except Exception:
+        USE_CLOUDINARY = False
 
 if USE_CLOUDINARY:
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-        'API_KEY': CLOUDINARY_API_KEY,
-        'API_SECRET': CLOUDINARY_API_SECRET,
-    }
+    INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     STORAGES = {
         "default": {
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",

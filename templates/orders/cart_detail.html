@@ -34,10 +34,10 @@
                 <!-- Product Thumbnail & Details -->
                 <div class="flex items-center gap-4 w-full sm:w-auto">
                     <div class="w-20 h-20 bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl p-2 flex-shrink-0 flex items-center justify-center border border-zinc-100 dark:border-zinc-700/50">
-                        {% if product.primary_image %}
-                        <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
+                        {% if product.primary_image_url %}
+                        <img src="{{ product.primary_image_url }}" alt="{{ product.title }}" class="h-full w-auto object-contain">
                         {% else %}
-                        <i class="fa-brands fa-apple text-3xl text-zinc-300 dark:text-zinc-600"></i>
+                        <i class="fa-solid fa-mobile-screen text-3xl text-zinc-300 dark:text-zinc-600"></i>
                         {% endif %}
                     </div>
                     

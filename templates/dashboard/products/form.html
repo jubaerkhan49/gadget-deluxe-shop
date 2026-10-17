@@ -238,9 +238,9 @@
                     </div>
 
                     <!-- Current Saved Photo (if editing) -->
-                    {% if is_edit and product.primary_image %}
+                    {% if is_edit and product.primary_image_url %}
                     <div id="currentPrimaryPhotoWrapper" class="mt-2.5 flex items-center gap-3">
-                        <img src="{{ product.primary_image.url }}" class="w-14 h-14 object-contain bg-zinc-50 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                        <img src="{{ product.primary_image_url }}" class="w-14 h-14 object-contain bg-zinc-50 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm" onerror="this.parentElement.style.display='none';">
                         <div>
                             <span class="text-zinc-600 dark:text-zinc-300 text-[11px] block font-bold">Current Primary Photo</span>
                             <span class="text-zinc-400 text-[10px] block">Selecting a new photo above will replace this upon saving.</span>

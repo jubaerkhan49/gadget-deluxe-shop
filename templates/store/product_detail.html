@@ -28,8 +28,8 @@
             
             <!-- Main Photo Display -->
             <div class="relative w-full h-[320px] sm:h-[380px] lg:h-[420px] rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-950/60 flex items-center justify-center mb-3 group border border-zinc-100 dark:border-zinc-800/60">
-                {% if product.primary_image %}
-                <img id="main-product-image" src="{{ product.primary_image.url }}" alt="{{ product.title }}" 
+                {% if product.primary_image_url %}
+                <img id="main-product-image" src="{{ product.primary_image_url }}" alt="{{ product.title }}" 
                     class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-[1.02]"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div class="hidden h-64 flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 text-center p-4">
@@ -47,15 +47,17 @@
             <!-- Gallery Thumbnails -->
             {% if product.images.all %}
             <div class="flex items-center gap-2.5 overflow-x-auto pb-1 pt-1 no-scrollbar">
-                {% if product.primary_image %}
-                <button type="button" onclick="swapImage('{{ product.primary_image.url }}', this)" class="thumb-btn w-16 h-16 rounded-xl border-2 border-black dark:border-white p-1 bg-zinc-50 dark:bg-zinc-800/80 overflow-hidden flex-shrink-0 focus:outline-none transition">
-                    <img src="{{ product.primary_image.url }}" alt="Primary" class="w-full h-full object-contain">
+                {% if product.primary_image_url %}
+                <button type="button" onclick="swapImage('{{ product.primary_image_url }}', this)" class="thumb-btn w-16 h-16 rounded-xl border-2 border-black dark:border-white p-1 bg-zinc-50 dark:bg-zinc-800/80 overflow-hidden flex-shrink-0 focus:outline-none transition">
+                    <img src="{{ product.primary_image_url }}" alt="Primary" class="w-full h-full object-contain">
                 </button>
                 {% endif %}
                 {% for img in product.images.all %}
-                <button type="button" onclick="swapImage('{{ img.image.url }}', this)" class="thumb-btn w-16 h-16 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 p-1 bg-zinc-50 dark:bg-zinc-800/80 overflow-hidden flex-shrink-0 focus:outline-none transition">
-                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:'Product gallery' }}" class="w-full h-full object-contain">
+                {% if img.image_url %}
+                <button type="button" onclick="swapImage('{{ img.image_url }}', this)" class="thumb-btn w-16 h-16 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 p-1 bg-zinc-50 dark:bg-zinc-800/80 overflow-hidden flex-shrink-0 focus:outline-none transition">
+                    <img src="{{ img.image_url }}" alt="{{ img.alt_text|default:'Product gallery' }}" class="w-full h-full object-contain">
                 </button>
+                {% endif %}
                 {% endfor %}
             </div>
             {% endif %}
@@ -478,11 +480,11 @@
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-3 card-hover flex flex-col justify-between transition-colors shadow-sm">
                 <div>
                     <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl aspect-[4/3] p-2 mb-2.5 text-center flex items-center justify-center overflow-hidden">
-                        {% if rel.primary_image %}
-                        <img src="{{ rel.primary_image.url }}" alt="{{ rel.title }}" class="h-full w-full object-contain">
+                        {% if rel.primary_image_url %}
+                        <img src="{{ rel.primary_image_url }}" alt="{{ rel.title }}" class="h-full w-full object-contain">
                         {% else %}
                         <div class="h-32 flex items-center justify-center text-zinc-300 dark:text-zinc-600">
-                            <i class="fa-brands fa-apple text-3xl"></i>
+                            <i class="fa-solid fa-mobile-screen text-3xl"></i>
                         </div>
                         {% endif %}
                     </div>
