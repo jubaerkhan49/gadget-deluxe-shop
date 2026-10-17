@@ -1,7 +1,6 @@
 # Gadget Deluxe — Used iPhone E-Commerce Store
 
-**Domain:** `https://gadgetdeluxe.shop`  
-**Focus:** Exclusively used and refurbished premium iPhones (**iPhone 14 Pro, iPhone 14 Pro Max, iPhone 15 Pro, iPhone 15 Pro Max, iPhone 16 Pro, iPhone 16 Pro Max**).
+**Focus:** Exclusively used and premium iPhones (**iPhone 14 Pro, iPhone 14 Pro Max, iPhone 15 Pro, iPhone 15 Pro Max, iPhone 16 Pro, iPhone 16 Pro Max**).
 
 ---
 
