@@ -364,6 +364,15 @@
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
+    // Convert HEIC/HEIF blob to standard JPEG blob for full browser & canvas compatibility
+    async function convertHeicToJpegBlob(file) {
+        if (!window.heic2any) {
+            throw new Error('HEIC conversion library (heic2any) is unavailable.');
+        }
+        const result = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+        return Array.isArray(result) ? result[0] : result;
+    }
+
     // Helper to render preview for standard images or HEIC files
     function displayFilePreview(file, imgElem, wrapperElem) {
         const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
@@ -374,25 +383,22 @@
             if (!badge) {
                 badge = document.createElement('div');
                 badge.className = 'heic-badge w-full h-full flex flex-col items-center justify-center text-zinc-600 dark:text-zinc-300 text-center p-1';
-                badge.innerHTML = '<i class="fa-solid fa-mobile-screen text-lg mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC</span><span class="text-[8px] text-zinc-400">decoding...</span>';
+                badge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC</span><span class="text-[8px] text-zinc-400">decoding...</span>';
                 wrapperElem.appendChild(badge);
             }
 
-            if (window.heic2any) {
-                heic2any({ blob: file, toType: 'image/jpeg', quality: 0.75 })
-                    .then(function (result) {
-                        const blob = Array.isArray(result) ? result[0] : result;
-                        imgElem.src = URL.createObjectURL(blob);
-                        imgElem.style.display = 'block';
-                        if (badge) badge.remove();
-                    })
-                    .catch(function (err) {
-                        console.warn('HEIC preview conversion notice:', err);
-                        if (badge) {
-                            badge.innerHTML = '<i class="fa-solid fa-mobile-screen text-xl mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC Photo</span>';
-                        }
-                    });
-            }
+            convertHeicToJpegBlob(file)
+                .then(function (blob) {
+                    imgElem.src = URL.createObjectURL(blob);
+                    imgElem.style.display = 'block';
+                    if (badge) badge.remove();
+                })
+                .catch(function (err) {
+                    console.warn('HEIC preview conversion notice:', err);
+                    if (badge) {
+                        badge.innerHTML = '<i class="fa-solid fa-mobile-screen text-xl mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC Photo</span>';
+                    }
+                });
         } else {
             imgElem.src = URL.createObjectURL(file);
             imgElem.style.display = 'block';
@@ -413,21 +419,85 @@
 
     let currentPrimaryFile = null;
     let currentPrimaryObjectUrl = null;
+    let convertedJpegBlob = null;
     let cropperInstance = null;
 
+    function showCropStudioLoading(show, title, sub) {
+        const overlay = document.getElementById('cropperLoadingOverlay');
+        const titleEl = document.getElementById('cropperLoadingTitle');
+        const subEl = document.getElementById('cropperLoadingSub');
+        if (!overlay) return;
+        if (show) {
+            if (title && titleEl) titleEl.textContent = title;
+            if (sub && subEl) subEl.textContent = sub;
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
+    }
+
+    function openCropStudioSkeleton() {
+        const modal = document.getElementById('cropStudioModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            syncLiveCardMetadata();
+        }
+    }
+
     if (primaryInput) {
-        primaryInput.addEventListener('change', function () {
+        primaryInput.addEventListener('change', async function () {
             if (this.files && this.files[0]) {
                 currentPrimaryFile = this.files[0];
                 primaryPreviewFileName.textContent = currentPrimaryFile.name;
                 primaryPreviewFileSize.textContent = formatBytes(currentPrimaryFile.size);
-                displayFilePreview(currentPrimaryFile, primaryPreviewImg, primaryPreviewImgWrapper);
                 primaryPreviewCard.classList.remove('hidden');
 
-                // Auto-open Crop Studio so admin can frame/crop the phone in real time
-                if (currentPrimaryObjectUrl) URL.revokeObjectURL(currentPrimaryObjectUrl);
-                currentPrimaryObjectUrl = URL.createObjectURL(currentPrimaryFile);
-                setTimeout(() => openCropStudioWithUrl(currentPrimaryObjectUrl), 150);
+                const isHeic = currentPrimaryFile.name.toLowerCase().endsWith('.heic') || 
+                               currentPrimaryFile.name.toLowerCase().endsWith('.heif');
+
+                if (isHeic) {
+                    // Show converting indicator on thumbnail preview
+                    primaryPreviewImg.style.display = 'none';
+                    let badge = primaryPreviewImgWrapper.querySelector('.heic-badge');
+                    if (!badge) {
+                        badge = document.createElement('div');
+                        badge.className = 'heic-badge w-full h-full flex flex-col items-center justify-center text-zinc-600 dark:text-zinc-300 text-center p-1';
+                        badge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">Decoding HEIC...</span>';
+                        primaryPreviewImgWrapper.appendChild(badge);
+                    }
+
+                    // Open Crop Studio modal immediately with sleek loading state
+                    openCropStudioSkeleton();
+                    showCropStudioLoading(true, 'Decoding iPhone HEIC Photo...', 'Converting full-resolution image for framing & crop studio...');
+
+                    try {
+                        const jpegBlob = await convertHeicToJpegBlob(currentPrimaryFile);
+                        convertedJpegBlob = jpegBlob;
+                        if (currentPrimaryObjectUrl) URL.revokeObjectURL(currentPrimaryObjectUrl);
+                        currentPrimaryObjectUrl = URL.createObjectURL(jpegBlob);
+
+                        primaryPreviewImg.src = currentPrimaryObjectUrl;
+                        primaryPreviewImg.style.display = 'block';
+                        if (badge) badge.remove();
+
+                        // Load converted JPEG into Cropper Studio
+                        openCropStudioWithUrl(currentPrimaryObjectUrl);
+                    } catch (err) {
+                        console.error('HEIC decoding error:', err);
+                        showCropStudioLoading(false);
+                        closeCropStudio();
+                        if (badge) {
+                            badge.innerHTML = '<i class="fa-solid fa-mobile-screen text-xl mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC Ready</span>';
+                        }
+                    }
+                } else {
+                    convertedJpegBlob = null;
+                    if (currentPrimaryObjectUrl) URL.revokeObjectURL(currentPrimaryObjectUrl);
+                    currentPrimaryObjectUrl = URL.createObjectURL(currentPrimaryFile);
+                    displayFilePreview(currentPrimaryFile, primaryPreviewImg, primaryPreviewImgWrapper);
+                    openCropStudioWithUrl(currentPrimaryObjectUrl);
+                }
             } else {
                 primaryPreviewCard.classList.add('hidden');
                 currentPrimaryFile = null;
@@ -442,6 +512,7 @@
             primaryPreviewCard.classList.add('hidden');
             primaryPreviewImg.src = '';
             currentPrimaryFile = null;
+            convertedJpegBlob = null;
             if (currentPrimaryObjectUrl) {
                 URL.revokeObjectURL(currentPrimaryObjectUrl);
                 currentPrimaryObjectUrl = null;
@@ -450,7 +521,32 @@
     }
 
     // Crop Studio Modal Controls
-    window.openCropStudioFromCurrent = function () {
+    window.openCropStudioFromCurrent = async function () {
+        if (currentPrimaryFile) {
+            const isHeic = currentPrimaryFile.name.toLowerCase().endsWith('.heic') || 
+                           currentPrimaryFile.name.toLowerCase().endsWith('.heif');
+            if (isHeic) {
+                if (currentPrimaryObjectUrl && convertedJpegBlob) {
+                    openCropStudioWithUrl(currentPrimaryObjectUrl);
+                } else {
+                    openCropStudioSkeleton();
+                    showCropStudioLoading(true, 'Decoding iPhone HEIC Photo...', 'Converting for framing & crop studio...');
+                    try {
+                        const jpegBlob = await convertHeicToJpegBlob(currentPrimaryFile);
+                        convertedJpegBlob = jpegBlob;
+                        if (currentPrimaryObjectUrl) URL.revokeObjectURL(currentPrimaryObjectUrl);
+                        currentPrimaryObjectUrl = URL.createObjectURL(jpegBlob);
+                        openCropStudioWithUrl(currentPrimaryObjectUrl);
+                    } catch (e) {
+                        showCropStudioLoading(false);
+                        closeCropStudio();
+                        alert('Could not decode HEIC image for framing.');
+                    }
+                }
+                return;
+            }
+        }
+
         if (currentPrimaryObjectUrl) {
             openCropStudioWithUrl(currentPrimaryObjectUrl);
         } else if (currentPrimaryFile) {
@@ -486,6 +582,7 @@
 
         // Initialize Cropper once image is ready
         cropperImg.onload = function () {
+            showCropStudioLoading(false);
             if (cropperInstance) cropperInstance.destroy();
             cropperInstance = new Cropper(cropperImg, {
                 aspectRatio: 4 / 3, // Website storefront card ratio
@@ -503,7 +600,12 @@
             });
         };
 
-        if (cropperImg.complete) {
+        cropperImg.onerror = function () {
+            showCropStudioLoading(false);
+            console.error('Failed to load image in cropper:', imageUrl);
+        };
+
+        if (cropperImg.complete && cropperImg.naturalWidth > 0) {
             cropperImg.onload();
         }
     };
@@ -512,6 +614,7 @@
         const modal = document.getElementById('cropStudioModal');
         if (modal) modal.classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
+        showCropStudioLoading(false);
         if (cropperInstance) {
             cropperInstance.destroy();
             cropperInstance = null;
@@ -785,6 +888,14 @@
             <!-- Left: Cropper Container (7 cols) -->
             <div class="lg:col-span-7 flex flex-col gap-3">
                 <div class="relative bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 flex items-center justify-center h-[320px] sm:h-[380px]">
+                    <!-- Loading Overlay for HEIC conversion -->
+                    <div id="cropperLoadingOverlay" class="absolute inset-0 bg-zinc-950/90 backdrop-blur-xs hidden flex flex-col items-center justify-center gap-3 z-30 text-center p-4">
+                        <div class="w-9 h-9 border-3 border-zinc-700 border-t-brand-blue rounded-full animate-spin"></div>
+                        <div class="space-y-0.5">
+                            <p class="text-xs font-bold text-white" id="cropperLoadingTitle">Decoding iPhone HEIC Photo...</p>
+                            <p class="text-[11px] text-zinc-400" id="cropperLoadingSub">Preparing high-resolution framing studio...</p>
+                        </div>
+                    </div>
                     <img id="cropperImage" class="max-w-full max-h-full block" alt="Crop image">
                 </div>
 
