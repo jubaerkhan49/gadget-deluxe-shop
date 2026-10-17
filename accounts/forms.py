@@ -64,8 +64,14 @@ class CustomerLoginForm(AuthenticationForm):
         self.fields['username'].widget.attrs.update({
             'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
             'placeholder': 'Username or Email',
+            'autocomplete': 'off',
+            'readonly': 'readonly',
+            'onfocus': "this.removeAttribute('readonly');",
         })
         self.fields['password'].widget.attrs.update({
             'class': 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none transition',
             'placeholder': '••••••••',
+            'autocomplete': 'new-password',
+            'readonly': 'readonly',
+            'onfocus': "this.removeAttribute('readonly');",
         })

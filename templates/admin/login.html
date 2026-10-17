@@ -87,6 +87,16 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
+
+        /* Suppress browser autofill blue/yellow background */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+            -webkit-text-fill-color: inherit !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
     </style>
 </head>
 
@@ -192,8 +202,11 @@
                 {% endif %}
 
                 <!-- Login Form -->
-                <form action="{{ app_path }}" method="post" id="login-form" class="space-y-4">
+                <form action="{{ app_path }}" method="post" id="login-form" autocomplete="off" class="space-y-4">
                     {% csrf_token %}
+                    <!-- Decoy inputs to trap aggressive browser autofill -->
+                    <input type="text" name="fake_admin_user" style="display:none !important;" tabindex="-1" autocomplete="off">
+                    <input type="password" name="fake_admin_pass" style="display:none !important;" tabindex="-1" autocomplete="new-password">
 
                     <!-- Hidden Next Field: default to Shop Admin Dashboard -->
                     <input type="hidden" name="next"
@@ -210,8 +223,8 @@
                                 <i class="fa-regular fa-user"></i>
                             </span>
                             <input type="text" name="username" id="id_username" autofocus autocapitalize="none"
-                                autocomplete="username" maxlength="150" required
-                                value="{{ form.username.value|default:'' }}" placeholder="e.g. username"
+                                autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" maxlength="150" required
+                                value="{% if form.errors %}{{ form.username.value|default:'' }}{% endif %}" placeholder="e.g. username"
                                 class="w-full pl-9 pr-3.5 py-3 bg-zinc-50 dark:bg-zinc-900/90 border {% if form.username.errors %}border-rose-500 focus:ring-rose-500{% else %}border-zinc-200 dark:border-zinc-800 focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white{% endif %} rounded-xl text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition">
                         </div>
                         {% if form.username.errors %}
@@ -240,8 +253,8 @@
                                 class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500 text-xs">
                                 <i class="fa-solid fa-lock"></i>
                             </span>
-                            <input type="password" name="password" id="id_password" autocomplete="current-password"
-                                required placeholder="••••••••••••"
+                            <input type="password" name="password" id="id_password" autocomplete="new-password"
+                                readonly onfocus="this.removeAttribute('readonly');" required placeholder="••••••••••••"
                                 class="w-full pl-9 pr-10 py-3 bg-zinc-50 dark:bg-zinc-900/90 border {% if form.password.errors %}border-rose-500 focus:ring-rose-500{% else %}border-zinc-200 dark:border-zinc-800 focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white{% endif %} rounded-xl text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition">
                             <!-- Password Toggle Eye -->
                             <button type="button" id="togglePasswordBtn"
@@ -326,6 +339,20 @@
                 submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> <span>Authenticating...</span>';
             });
         }
+
+        // Clear browser autofill on load
+        window.addEventListener('DOMContentLoaded', function () {
+            const u = document.getElementById('id_username');
+            const p = document.getElementById('id_password');
+            {% if not form.errors %}
+            if (u) u.value = '';
+            if (p) p.value = '';
+            setTimeout(function () {
+                if (u && !u.matches(':focus')) u.value = '';
+                if (p && !p.matches(':focus')) p.value = '';
+            }, 60);
+            {% endif %}
+        });
     </script>
 </body>
 

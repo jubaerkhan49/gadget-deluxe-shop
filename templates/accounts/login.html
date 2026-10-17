@@ -23,8 +23,24 @@
             </p>
         </div>
 
-        <form method="POST" action="{% url 'accounts:login' %}" class="space-y-4">
+        <style>
+            /* Suppress browser autofill blue/yellow backgrounds */
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover, 
+            input:-webkit-autofill:focus, 
+            input:-webkit-autofill:active {
+                -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+                -webkit-text-fill-color: inherit !important;
+                transition: background-color 5000s ease-in-out 0s;
+            }
+        </style>
+
+        <form method="POST" action="{% url 'accounts:login' %}" autocomplete="off" class="space-y-4" id="customerLoginForm">
             {% csrf_token %}
+            <!-- Decoy inputs to trap aggressive browser autofill -->
+            <input type="text" name="fake_username_remember" style="display:none !important;" tabindex="-1" autocomplete="off">
+            <input type="password" name="fake_password_remember" style="display:none !important;" tabindex="-1" autocomplete="new-password">
+
             {% if request.GET.next %}
             <input type="hidden" name="next" value="{{ request.GET.next }}">
             {% endif %}
@@ -45,6 +61,23 @@
                 {% if is_bangla %}লগইন করুন{% else %}Sign In{% endif %}
             </button>
         </form>
+
+        <script>
+            // Ensure fields are completely cleared on page load
+            window.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('customerLoginForm');
+                if (form) {
+                    const u = form.querySelector('input[name="username"]');
+                    const p = form.querySelector('input[name="password"]');
+                    if (u) u.value = '';
+                    if (p) p.value = '';
+                    setTimeout(function () {
+                        if (u && !u.matches(':focus')) u.value = '';
+                        if (p && !p.matches(':focus')) p.value = '';
+                    }, 50);
+                }
+            });
+        </script>
 
         <div class="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-3 text-center text-xs text-zinc-500 dark:text-zinc-400">
             <div>
