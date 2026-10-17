@@ -222,7 +222,8 @@
                     <a href="{% url 'accounts:profile' %}"
                         class="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition shadow-sm">
                         <i class="fa-regular fa-user text-sm"></i>
-                        <span class="hidden sm:inline">{{ user.first_name|default:user.username|truncatechars:12 }}</span>
+                        <span class="hidden sm:inline">{{ user.first_name|default:user.username|truncatechars:12
+                            }}</span>
                     </a>
                 </div>
                 {% else %}
@@ -251,15 +252,18 @@
             </a>
             <a href="{% url 'store:product_list' %}"
                 class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <i class="fa-solid fa-mobile-screen w-6 text-zinc-400"></i> {% if is_bangla %}সব আইফোন (iPhone 14/15/16 Pro){% else %}All iPhones (14/15/16 Pro){% endif %}
+                <i class="fa-solid fa-mobile-screen w-6 text-zinc-400"></i> {% if is_bangla %}সব আইফোন (iPhone 14/15/16
+                Pro){% else %}All iPhones (14/15/16 Pro){% endif %}
             </a>
             <a href="{% url 'store:faq' %}"
                 class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <i class="fa-regular fa-circle-question w-6 text-zinc-400"></i> {% if is_bangla %}সাধারণ জিজ্ঞাসা (FAQ){% else %}FAQ{% endif %}
+                <i class="fa-regular fa-circle-question w-6 text-zinc-400"></i> {% if is_bangla %}সাধারণ জিজ্ঞাসা
+                (FAQ){% else %}FAQ{% endif %}
             </a>
             <a href="{% url 'orders:track_order' %}"
                 class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <i class="fa-solid fa-truck-fast w-6 text-zinc-400"></i> {% if is_bangla %}অর্ডার ট্র্যাক করুন{% else %}Track Order{% endif %}
+                <i class="fa-solid fa-truck-fast w-6 text-zinc-400"></i> {% if is_bangla %}অর্ডার ট্র্যাক করুন{% else
+                %}Track Order{% endif %}
             </a>
             <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                 {% if user.is_authenticated %}
@@ -322,8 +326,11 @@
                         <i class="fa-solid fa-microchip"></i>
                     </div>
                     <div>
-                        <div class="font-semibold text-white text-sm">{% if is_bangla %}সতর্কতার সাথে পরীক্ষিত{% else %}Carefully Tested{% endif %}</div>
-                        <div class="text-zinc-500 text-[11px]">{% if is_bangla %}ডেলিভারির পূর্বে প্রতিটি ফোন নিখুঁতভাবে চেক/পরীক্ষিত হয়{% else %}Each phone is carefully checked/tested before shipment{% endif %}</div>
+                        <div class="font-semibold text-white text-sm">{% if is_bangla %}সতর্কতার সাথে পরীক্ষিত{% else
+                            %}Carefully Tested{% endif %}</div>
+                        <div class="text-zinc-500 text-[11px]">{% if is_bangla %}ডেলিভারির পূর্বে প্রতিটি ফোন নিখুঁতভাবে
+                            চেক/পরীক্ষিত হয়{% else %}Each phone is carefully checked/tested before shipment{% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-center md:justify-start gap-3.5">
@@ -425,7 +432,8 @@
 
                 <!-- Col 4: Office Address -->
                 <div>
-                    <div class="font-semibold text-white text-xs uppercase tracking-wider mb-3">{% if is_bangla %}অফিস ঠিকানা{% else %}Office Address{% endif %}</div>
+                    <div class="font-semibold text-white text-xs uppercase tracking-wider mb-3">{% if is_bangla %}অফিস
+                        ঠিকানা{% else %}Office Address{% endif %}</div>
                     <p class="text-zinc-400 mb-2 leading-relaxed">
                         <i class="fa-solid fa-location-dot mr-2 text-zinc-500"></i>
                         {% if is_bangla %}
@@ -453,8 +461,7 @@
             <div
                 class="mt-12 pt-6 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between text-zinc-500 text-[11px] gap-4">
                 <div>
-                    &copy; 2026 Gadget Deluxe (<a href="https://gadgetdeluxe.shop"
-                        class="hover:text-zinc-400">gadgetdeluxe.shop</a>). All rights reserved.
+                    &copy; 2026 Gadget Deluxe. All rights reserved.
                 </div>
                 <div class="flex items-center gap-4">
                     <a href="{% url 'store:faq' %}" class="hover:text-zinc-300">Warranty Policy</a>
