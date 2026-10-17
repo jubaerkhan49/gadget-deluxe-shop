@@ -2,15 +2,18 @@
 {% load i18n %}
 <!DOCTYPE html>
 <html lang="{{ current_language|default:'en' }}" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Gadget Deluxe | Quality Used iPhones, Carefully Checked{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Buy genuine used & refurbished iPhone 14 Pro, 15 Pro, 16 Pro and Pro Max models in Bangladesh with 7-day replacement warranty. 100% tested & original.{% endblock %}">
-    
+    <meta name="description"
+        content="{% block meta_description %}Buy genuine used & refurbished iPhone 14 Pro, 15 Pro, 16 Pro and Pro Max models in Bangladesh with 7-day replacement warranty. 100% tested & original.{% endblock %}">
+
     <!-- OpenGraph / Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
-    
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+
     <!-- Theme Initializer (Prevent flash of unstyled theme) -->
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -55,41 +58,48 @@
             }
         }
     </script>
-    
+
     <!-- Icons FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom Style -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
+
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-full flex flex-col bg-[#fbfbfd] dark:bg-zinc-950 text-[#1d1d1f] dark:text-zinc-100 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200 {% if is_bangla %}lang-bn{% endif %}">
+
+<body
+    class="min-h-full flex flex-col bg-[#fbfbfd] dark:bg-zinc-950 text-[#1d1d1f] dark:text-zinc-100 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200 {% if is_bangla %}lang-bn{% endif %}">
 
     <!-- Top Announcement Bar -->
-    <div class="bg-zinc-900 text-white text-xs py-2 px-4 text-center font-medium tracking-wide border-b border-zinc-800">
+    <div
+        class="bg-zinc-900 text-white text-xs py-2 px-4 text-center font-medium tracking-wide border-b border-zinc-800">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <span class="hidden sm:inline text-zinc-400">
                 <i class="fa-solid fa-shield-check text-emerald-400 mr-1.5"></i>
                 {% if is_bangla %}
-                    {{ store_settings.warranty_badge_bn }}
+                {{ store_settings.warranty_badge_bn }}
                 {% else %}
-                    {{ store_settings.warranty_badge_en }}
+                {{ store_settings.warranty_badge_en }}
                 {% endif %}
             </span>
             <div class="mx-auto sm:mx-0 flex items-center gap-4">
-                <a href="tel:{{ store_settings.phone_number }}" class="hover:text-zinc-200 transition flex items-center gap-1.5">
+                <a href="tel:{{ store_settings.phone_number }}"
+                    class="hover:text-zinc-200 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-phone text-[10px] text-zinc-400"></i> {{ store_settings.phone_number }}
                 </a>
                 <span class="text-zinc-600">•</span>
-                <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}" target="_blank" class="hover:text-emerald-400 transition flex items-center gap-1">
+                <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}" target="_blank"
+                    class="hover:text-emerald-400 transition flex items-center gap-1">
                     <i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp
                 </a>
             </div>
-            
+
             <!-- Controls: Theme Toggle & Language Switcher -->
             <div class="flex items-center gap-3 text-xs font-semibold">
                 <!-- Theme Toggle Button -->
-                <button type="button" id="site-theme-toggle" class="px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition flex items-center gap-1 text-[11px]" title="Toggle Dark / Light Theme">
+                <button type="button" id="site-theme-toggle"
+                    class="px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition flex items-center gap-1 text-[11px]"
+                    title="Toggle Dark / Light Theme">
                     <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
                     <i class="fa-solid fa-moon dark:hidden text-zinc-300"></i>
                     <span class="hidden md:inline dark:hidden">Dark</span>
@@ -98,11 +108,13 @@
 
                 <!-- Language Switcher in Top Bar -->
                 <div class="flex items-center gap-1.5">
-                    <a href="{% url 'store:switch_language' 'en' %}" class="px-2 py-0.5 rounded transition {% if not is_bangla %}bg-zinc-800 text-white font-bold{% else %}text-zinc-400 hover:text-white{% endif %}">
+                    <a href="{% url 'store:switch_language' 'en' %}"
+                        class="px-2 py-0.5 rounded transition {% if not is_bangla %}bg-zinc-800 text-white font-bold{% else %}text-zinc-400 hover:text-white{% endif %}">
                         EN
                     </a>
                     <span class="text-zinc-600">|</span>
-                    <a href="{% url 'store:switch_language' 'bn' %}" class="px-2 py-0.5 rounded transition {% if is_bangla %}bg-zinc-800 text-white font-bold{% else %}text-zinc-400 hover:text-white{% endif %}">
+                    <a href="{% url 'store:switch_language' 'bn' %}"
+                        class="px-2 py-0.5 rounded transition {% if is_bangla %}bg-zinc-800 text-white font-bold{% else %}text-zinc-400 hover:text-white{% endif %}">
                         বাংলা
                     </a>
                 </div>
@@ -111,43 +123,57 @@
     </div>
 
     <!-- Main Navigation Bar -->
-    <header class="sticky top-0 z-50 glass-nav border-b border-zinc-200/80 dark:border-zinc-800/80 transition-all duration-200">
+    <header
+        class="sticky top-0 z-50 glass-nav border-b border-zinc-200/80 dark:border-zinc-800/80 transition-all duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            
+
             <!-- Logo -->
             <a href="{% url 'store:home' %}" class="flex items-center gap-2.5 group">
-                <div class="w-9 h-9 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition">
+                <div
+                    class="w-9 h-9 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition">
                     <i class="fa-brands fa-apple text-xl mb-0.5"></i>
                 </div>
                 <div>
-                    <span class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white block leading-tight">Gadget Deluxe</span>
-                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium tracking-wider uppercase block">Used iPhones Only</span>
+                    <span
+                        class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white block leading-tight">Gadget
+                        Deluxe</span>
+                    <span
+                        class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium tracking-wider uppercase block">Used
+                        iPhones Only</span>
                 </div>
             </a>
 
             <!-- Desktop Nav Links -->
-            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                <a href="{% url 'store:home' %}" class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+            <nav
+                class="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <a href="{% url 'store:home' %}"
+                    class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                     {% if is_bangla %}হোম{% else %}Home{% endif %}
                 </a>
 
                 <!-- All iPhones with Hover Dropdown -->
                 <div class="relative group">
-                    <a href="{% url 'store:product_list' %}" class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition inline-flex items-center gap-1.5">
+                    <a href="{% url 'store:product_list' %}"
+                        class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition inline-flex items-center gap-1.5">
                         <span>{% if is_bangla %}আইফোন সংগ্রহ{% else %}All iPhones{% endif %}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform duration-200 group-hover:rotate-180"></i>
+                        <i
+                            class="fa-solid fa-chevron-down text-[10px] text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-transform duration-200 group-hover:rotate-180"></i>
                     </a>
 
                     <!-- Hover Dropdown Menu (Horizontal) -->
-                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/90 dark:border-zinc-800 p-1.5 flex items-center gap-1 whitespace-nowrap">
-                            <a href="{% url 'store:product_list' %}" class="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-zinc-900 dark:text-white rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                    <div
+                        class="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div
+                            class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/90 dark:border-zinc-800 p-1.5 flex items-center gap-1 whitespace-nowrap">
+                            <a href="{% url 'store:product_list' %}"
+                                class="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-zinc-900 dark:text-white rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                                 <i class="fa-brands fa-apple text-xs"></i>
                                 <span>{% if is_bangla %}সব মডেল{% else %}All Models{% endif %}</span>
                             </a>
                             <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-0.5"></div>
                             {% for m in nav_models %}
-                            <a href="{% url 'store:product_list' %}?model={{ m.slug }}" class="px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-black dark:hover:text-white transition">
+                            <a href="{% url 'store:product_list' %}?model={{ m.slug }}"
+                                class="px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-black dark:hover:text-white transition">
                                 {{ m.name }}
                             </a>
                             {% endfor %}
@@ -155,10 +181,12 @@
                     </div>
                 </div>
 
-                <a href="{% url 'store:faq' %}" class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <a href="{% url 'store:faq' %}"
+                    class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                     {% if is_bangla %}সাধারণ জিজ্ঞাসা (FAQ){% else %}FAQ{% endif %}
                 </a>
-                <a href="{% url 'orders:track_order' %}" class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <a href="{% url 'orders:track_order' %}"
+                    class="px-3.5 py-2 rounded-xl hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                     <i class="fa-solid fa-location-dot text-xs mr-1 text-zinc-400"></i>
                     {% if is_bangla %}অর্ডার ট্র্যাকিং{% else %}Track Order{% endif %}
                 </a>
@@ -168,10 +196,13 @@
             <!-- Right Actions: Cart, Account, Mobile Menu -->
             <div class="flex items-center gap-3">
                 <!-- Cart Button -->
-                <a href="{% url 'orders:cart_detail' %}" class="relative p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition flex items-center justify-center shadow-sm" title="Shopping Cart">
+                <a href="{% url 'orders:cart_detail' %}"
+                    class="relative p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition flex items-center justify-center shadow-sm"
+                    title="Shopping Cart">
                     <i class="fa-solid fa-bag-shopping text-base"></i>
                     {% if cart|length > 0 %}
-                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-black dark:bg-white text-white dark:text-black text-[11px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 animate-pulse">
+                    <span
+                        class="absolute -top-1 -right-1 w-5 h-5 bg-black dark:bg-white text-white dark:text-black text-[11px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 animate-pulse">
                         {{ cart|length }}
                     </span>
                     {% endif %}
@@ -181,52 +212,70 @@
                 {% if user.is_authenticated %}
                 <div class="flex items-center gap-2">
                     {% if user.is_staff %}
-                    <a href="{% url 'dashboard:home' %}" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 text-xs font-bold transition shadow-sm" title="Store Manager Dashboard">
+                    <a href="{% url 'dashboard:home' %}"
+                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 text-xs font-bold transition shadow-sm"
+                        title="Store Manager Dashboard">
                         <i class="fa-solid fa-gauge-high text-xs"></i>
                         <span class="hidden sm:inline">Admin</span>
                     </a>
                     {% endif %}
-                    <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition shadow-sm">
+                    <a href="{% url 'accounts:profile' %}"
+                        class="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition shadow-sm">
                         <i class="fa-regular fa-user text-sm"></i>
-                        <span class="hidden sm:inline">{{ user.first_name|default:user.username|truncatechars:12 }}</span>
+                        <span class="hidden sm:inline">{{ user.first_name|default:user.username|truncatechars:12
+                            }}</span>
                     </a>
                 </div>
                 {% else %}
-                <a href="{% url 'accounts:login' %}" class="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+                <a href="{% url 'accounts:login' %}"
+                    class="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                     <i class="fa-regular fa-user text-sm"></i>
                     {% if is_bangla %}লগইন{% else %}Sign In{% endif %}
                 </a>
                 {% endif %}
 
                 <!-- Mobile Menu Button -->
-                <button type="button" id="mobile-menu-btn" class="md:hidden p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition" aria-label="Toggle Navigation">
+                <button type="button" id="mobile-menu-btn"
+                    class="md:hidden p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
+                    aria-label="Toggle Navigation">
                     <i class="fa-solid fa-bars text-base" id="mobile-menu-icon"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Drawer -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 pt-3 pb-5 space-y-2">
-            <a href="{% url 'store:home' %}" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+        <div id="mobile-menu"
+            class="hidden md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 pt-3 pb-5 space-y-2">
+            <a href="{% url 'store:home' %}"
+                class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                 <i class="fa-solid fa-house w-6 text-zinc-400"></i> {% if is_bangla %}হোম{% else %}Home{% endif %}
             </a>
-            <a href="{% url 'store:product_list' %}" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <i class="fa-solid fa-mobile-screen w-6 text-zinc-400"></i> {% if is_bangla %}সব আইফোন (iPhone 14/15/16 Pro){% else %}All iPhones (14/15/16 Pro){% endif %}
+            <a href="{% url 'store:product_list' %}"
+                class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                <i class="fa-solid fa-mobile-screen w-6 text-zinc-400"></i> {% if is_bangla %}সব আইফোন (iPhone 14/15/16
+                Pro){% else %}All iPhones (14/15/16 Pro){% endif %}
             </a>
-            <a href="{% url 'store:faq' %}" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <i class="fa-regular fa-circle-question w-6 text-zinc-400"></i> {% if is_bangla %}সাধারণ জিজ্ঞাসা (FAQ){% else %}FAQ{% endif %}
+            <a href="{% url 'store:faq' %}"
+                class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                <i class="fa-regular fa-circle-question w-6 text-zinc-400"></i> {% if is_bangla %}সাধারণ জিজ্ঞাসা
+                (FAQ){% else %}FAQ{% endif %}
             </a>
-            <a href="{% url 'orders:track_order' %}" class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <i class="fa-solid fa-truck-fast w-6 text-zinc-400"></i> {% if is_bangla %}অর্ডার ট্র্যাক করুন{% else %}Track Order{% endif %}
+            <a href="{% url 'orders:track_order' %}"
+                class="block px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                <i class="fa-solid fa-truck-fast w-6 text-zinc-400"></i> {% if is_bangla %}অর্ডার ট্র্যাক করুন{% else
+                %}Track Order{% endif %}
             </a>
             <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                 {% if user.is_authenticated %}
-                <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-white">
+                <a href="{% url 'accounts:profile' %}"
+                    class="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-white">
                     <i class="fa-regular fa-user-circle text-lg text-zinc-500"></i> My Account
                 </a>
-                <a href="{% url 'accounts:logout' %}" class="text-xs text-rose-600 dark:text-rose-400 font-medium">Logout</a>
+                <a href="{% url 'accounts:logout' %}"
+                    class="text-xs text-rose-600 dark:text-rose-400 font-medium">Logout</a>
                 {% else %}
-                <a href="{% url 'accounts:login' %}" class="w-full py-2.5 bg-black dark:bg-white text-white dark:text-black text-center rounded-xl text-xs font-bold">
+                <a href="{% url 'accounts:login' %}"
+                    class="w-full py-2.5 bg-black dark:bg-white text-white dark:text-black text-center rounded-xl text-xs font-bold">
                     {% if is_bangla %}লগইন বা রেজিস্টার{% else %}Sign In / Register{% endif %}
                 </a>
                 {% endif %}
@@ -238,7 +287,8 @@
     {% if messages %}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         {% for message in messages %}
-        <div class="p-4 mb-3 rounded-2xl flex items-center justify-between shadow-sm border text-sm font-medium
+        <div
+            class="p-4 mb-3 rounded-2xl flex items-center justify-between shadow-sm border text-sm font-medium
             {% if message.tags == 'error' %}bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300
             {% elif message.tags == 'success' %}bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300
             {% elif message.tags == 'warning' %}bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300
@@ -246,11 +296,13 @@
             <div class="flex items-center gap-3">
                 {% if message.tags == 'error' %}<i class="fa-solid fa-circle-exclamation text-rose-500 text-base"></i>
                 {% elif message.tags == 'success' %}<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
-                {% elif message.tags == 'warning' %}<i class="fa-solid fa-triangle-exclamation text-amber-500 text-base"></i>
+                {% elif message.tags == 'warning' %}<i
+                    class="fa-solid fa-triangle-exclamation text-amber-500 text-base"></i>
                 {% else %}<i class="fa-solid fa-circle-info text-zinc-500 text-base"></i>{% endif %}
                 <span>{{ message }}</span>
             </div>
-            <button type="button" onclick="this.parentElement.remove()" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 ml-4">
+            <button type="button" onclick="this.parentElement.remove()"
+                class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 ml-4">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -269,16 +321,21 @@
         <div class="border-b border-zinc-900 py-8 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 text-center md:text-left">
                 <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-emerald-400 text-lg">
+                    <div
+                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-emerald-400 text-lg">
                         <i class="fa-solid fa-microchip"></i>
                     </div>
                     <div>
-                        <div class="font-semibold text-white text-sm">{% if is_bangla %}সতর্কতার সাথে পরীক্ষিত{% else %}Carefully Tested{% endif %}</div>
-                        <div class="text-zinc-500 text-[11px]">{% if is_bangla %}ডেলিভারির পূর্বে প্রতিটি ফোন নিখুঁতভাবে চেক/পরীক্ষিত হয়{% else %}Each phone is carefully checked/tested before shipment{% endif %}</div>
+                        <div class="font-semibold text-white text-sm">{% if is_bangla %}সতর্কতার সাথে পরীক্ষিত{% else
+                            %}Carefully Tested{% endif %}</div>
+                        <div class="text-zinc-500 text-[11px]">{% if is_bangla %}ডেলিভারির পূর্বে প্রতিটি ফোন নিখুঁতভাবে
+                            চেক/পরীক্ষিত হয়{% else %}Each phone is carefully checked/tested before shipment{% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-blue-400 text-lg">
+                    <div
+                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-blue-400 text-lg">
                         <i class="fa-solid fa-rotate-left"></i>
                     </div>
                     <div>
@@ -287,7 +344,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-amber-400 text-lg">
+                    <div
+                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-amber-400 text-lg">
                         <i class="fa-solid fa-truck-fast"></i>
                     </div>
                     <div>
@@ -296,7 +354,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-purple-400 text-lg">
+                    <div
+                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-purple-400 text-lg">
                         <i class="fa-solid fa-hand-holding-dollar"></i>
                     </div>
                     <div>
@@ -319,9 +378,11 @@
                     </div>
                     <p class="text-zinc-400 text-xs leading-relaxed">
                         {% if is_bangla %}
-                        শুধুমাত্র প্রিমিয়াম ব্যবহৃত আইফোন (iPhone 14 Pro, 15 Pro, 16 Pro সিরিজ)-এর বিশ্বস্ত ও নিবেদিত অনলাইন শপ।
+                        শুধুমাত্র প্রিমিয়াম ব্যবহৃত আইফোন (iPhone 14 Pro, 15 Pro, 16 Pro সিরিজ)-এর বিশ্বস্ত ও নিবেদিত
+                        অনলাইন শপ।
                         {% else %}
-                        Your trusted destination exclusively for quality checked used & refurbished Pro-series iPhones in Bangladesh.
+                        Your trusted destination exclusively for quality checked used & refurbished Pro-series iPhones
+                        in Bangladesh.
                         {% endif %}
                     </p>
                 </div>
@@ -330,12 +391,18 @@
                 <div>
                     <div class="font-semibold text-white text-xs uppercase tracking-wider mb-3">iPhones in Stock</div>
                     <ul class="space-y-2 text-zinc-400">
-                        <li><a href="{% url 'store:product_list' %}?model=iphone-16-pro-max" class="hover:text-white transition">iPhone 16 Pro Max</a></li>
-                        <li><a href="{% url 'store:product_list' %}?model=iphone-16-pro" class="hover:text-white transition">iPhone 16 Pro</a></li>
-                        <li><a href="{% url 'store:product_list' %}?model=iphone-15-pro-max" class="hover:text-white transition">iPhone 15 Pro Max</a></li>
-                        <li><a href="{% url 'store:product_list' %}?model=iphone-15-pro" class="hover:text-white transition">iPhone 15 Pro</a></li>
-                        <li><a href="{% url 'store:product_list' %}?model=iphone-14-pro-max" class="hover:text-white transition">iPhone 14 Pro Max</a></li>
-                        <li><a href="{% url 'store:product_list' %}?model=iphone-14-pro" class="hover:text-white transition">iPhone 14 Pro</a></li>
+                        <li><a href="{% url 'store:product_list' %}?model=iphone-16-pro-max"
+                                class="hover:text-white transition">iPhone 16 Pro Max</a></li>
+                        <li><a href="{% url 'store:product_list' %}?model=iphone-16-pro"
+                                class="hover:text-white transition">iPhone 16 Pro</a></li>
+                        <li><a href="{% url 'store:product_list' %}?model=iphone-15-pro-max"
+                                class="hover:text-white transition">iPhone 15 Pro Max</a></li>
+                        <li><a href="{% url 'store:product_list' %}?model=iphone-15-pro"
+                                class="hover:text-white transition">iPhone 15 Pro</a></li>
+                        <li><a href="{% url 'store:product_list' %}?model=iphone-14-pro-max"
+                                class="hover:text-white transition">iPhone 14 Pro Max</a></li>
+                        <li><a href="{% url 'store:product_list' %}?model=iphone-14-pro"
+                                class="hover:text-white transition">iPhone 14 Pro</a></li>
                     </ul>
                 </div>
 
@@ -343,9 +410,12 @@
                 <div>
                     <div class="font-semibold text-white text-xs uppercase tracking-wider mb-3">Customer Support</div>
                     <ul class="space-y-2 text-zinc-400">
-                        <li><a href="{% url 'store:faq' %}" class="hover:text-white transition">Frequently Asked Questions</a></li>
-                        <li><a href="{% url 'orders:track_order' %}" class="hover:text-white transition">Track Your Order</a></li>
-                        <li><a href="{% url 'orders:cart_detail' %}" class="hover:text-white transition">View Cart & Checkout</a></li>
+                        <li><a href="{% url 'store:faq' %}" class="hover:text-white transition">Frequently Asked
+                                Questions</a></li>
+                        <li><a href="{% url 'orders:track_order' %}" class="hover:text-white transition">Track Your
+                                Order</a></li>
+                        <li><a href="{% url 'orders:cart_detail' %}" class="hover:text-white transition">View Cart &
+                                Checkout</a></li>
                         <li><a href="{% url 'accounts:login' %}" class="hover:text-white transition">My Account</a></li>
                     </ul>
                     <div class="mt-4 pt-4 border-t border-zinc-900">
@@ -362,7 +432,8 @@
 
                 <!-- Col 4: Office Address -->
                 <div>
-                    <div class="font-semibold text-white text-xs uppercase tracking-wider mb-3">{% if is_bangla %}অফিস ঠিকানা{% else %}Office Address{% endif %}</div>
+                    <div class="font-semibold text-white text-xs uppercase tracking-wider mb-3">{% if is_bangla %}অফিস
+                        ঠিকানা{% else %}Office Address{% endif %}</div>
                     <p class="text-zinc-400 mb-2 leading-relaxed">
                         <i class="fa-solid fa-location-dot mr-2 text-zinc-500"></i>
                         {% if is_bangla %}
@@ -374,31 +445,38 @@
                     <p class="text-zinc-400 mb-2">
                         <i class="fa-solid fa-phone mr-2 text-zinc-500"></i>
                         <a href="tel:+8801406169818" class="hover:text-white font-mono">+8801406169818</a>
-                        <span class="text-zinc-500 text-[11px] block sm:inline sm:ml-1">({% if is_bangla %}কল এবং হোয়াটসঅ্যাপ উভয়ই{% else %}call and whatsapp both{% endif %})</span>
+                        <span class="text-zinc-500 text-[11px] block sm:inline sm:ml-1">({% if is_bangla %}কল এবং
+                            হোয়াটসঅ্যাপ উভয়ই{% else %}call and whatsapp both{% endif %})</span>
                     </p>
                     <p class="text-zinc-400 mb-2">
                         <i class="fa-brands fa-whatsapp mr-2 text-emerald-400"></i>
-                        <a href="https://wa.me/8801406169818" target="_blank" class="hover:text-emerald-400 font-mono">+8801406169818</a>
+                        <a href="https://wa.me/8801406169818" target="_blank"
+                            class="hover:text-emerald-400 font-mono">+8801406169818</a>
                     </p>
                     <p class="text-zinc-400">
                         <i class="fa-regular fa-envelope mr-2 text-zinc-500"></i>
-                        <a href="mailto:{{ store_settings.email }}" class="hover:text-white">{{ store_settings.email }}</a>
+                        <a href="mailto:{{ store_settings.email }}" class="hover:text-white">{{ store_settings.email
+                            }}</a>
                     </p>
                 </div>
             </div>
 
-            <div class="mt-12 pt-6 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between text-zinc-500 text-[11px] gap-4">
+            <div
+                class="mt-12 pt-6 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between text-zinc-500 text-[11px] gap-4">
                 <div>
-                    &copy; 2026 Gadget Deluxe (<a href="https://gadgetdeluxe.shop" class="hover:text-zinc-400">gadgetdeluxe.shop</a>). All rights reserved.
+                    &copy; 2026 Gadget Deluxe (<a href="https://gadgetdeluxe.shop"
+                        class="hover:text-zinc-400">gadgetdeluxe.shop</a>). All rights reserved.
                 </div>
                 <div class="flex items-center gap-4">
                     <a href="{% url 'store:faq' %}" class="hover:text-zinc-300">Warranty Policy</a>
                     <span>•</span>
                     <a href="{% url 'store:faq' %}" class="hover:text-zinc-300">Testing Process</a>
                     <span>•</span>
-                    <a href="{% url 'store:switch_language' 'en' %}" class="{% if not is_bangla %}text-white font-bold{% else %}hover:text-zinc-300{% endif %}">English</a>
+                    <a href="{% url 'store:switch_language' 'en' %}"
+                        class="{% if not is_bangla %}text-white font-bold{% else %}hover:text-zinc-300{% endif %}">English</a>
                     <span>•</span>
-                    <a href="{% url 'store:switch_language' 'bn' %}" class="{% if is_bangla %}text-white font-bold{% else %}hover:text-zinc-300{% endif %}">বাংলা</a>
+                    <a href="{% url 'store:switch_language' 'bn' %}"
+                        class="{% if is_bangla %}text-white font-bold{% else %}hover:text-zinc-300{% endif %}">বাংলা</a>
                 </div>
             </div>
         </div>
@@ -435,4 +513,5 @@
     </script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>
