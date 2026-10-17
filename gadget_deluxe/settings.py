@@ -26,7 +26,7 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
     host.strip() 
-    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,gadgetdeluxe.shop,.onrender.com').split(',') 
+    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,gadgetdeluxe.shop,www.gadgetdeluxe.shop,.gadgetdeluxe.shop,.onrender.com').split(',') 
     if host.strip()
 ]
 
@@ -34,7 +34,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip() 
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS', 
-        'https://gadgetdeluxe.shop,https://*.onrender.com,http://localhost:8000,http://127.0.0.1:8000'
+        'https://gadgetdeluxe.shop,https://www.gadgetdeluxe.shop,https://*.onrender.com,http://localhost:8000,http://127.0.0.1:8000'
     ).split(',') 
     if origin.strip()
 ]
@@ -144,6 +144,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Media files (Product uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 # Authentication redirects
 LOGIN_URL = 'accounts:login'
