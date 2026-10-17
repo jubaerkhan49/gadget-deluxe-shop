@@ -117,12 +117,22 @@
             
             <!-- Product Photo (Clean, 100% text-free) -->
             <div class="relative bg-zinc-100 dark:bg-zinc-800/80 aspect-[4/3] w-full overflow-hidden">
-                <a href="{{ product.get_absolute_url }}" class="block h-full w-full">
+                <a href="{{ product.get_absolute_url }}" class="block h-full w-full relative">
                     {% if product.primary_image %}
-                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105" loading="lazy">
+                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" 
+                        class="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105" 
+                        loading="lazy"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="hidden h-full w-full flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/80 p-4 text-center">
+                        <i class="fa-solid fa-mobile-screen text-3xl mb-1.5 text-zinc-400 dark:text-zinc-500"></i>
+                        <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{ product.model.name }}</span>
+                        <span class="text-[10px] text-zinc-500">{{ product.storage }} • {{ product.color }}</span>
+                    </div>
                     {% else %}
-                    <div class="h-full w-full flex items-center justify-center text-zinc-300 dark:text-zinc-600 bg-zinc-50 dark:bg-zinc-950">
-                        <i class="fa-brands fa-apple text-4xl"></i>
+                    <div class="h-full w-full flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/80 p-4 text-center">
+                        <i class="fa-solid fa-mobile-screen text-3xl mb-1.5 text-zinc-400 dark:text-zinc-500"></i>
+                        <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{ product.model.name }}</span>
+                        <span class="text-[10px] text-zinc-500">{{ product.storage }} • {{ product.color }}</span>
                     </div>
                     {% endif %}
                 </a>
