@@ -338,6 +338,21 @@ def product_create(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
+            cropped_b64 = request.POST.get('cropped_primary_image_base64')
+            if cropped_b64 and 'base64,' in cropped_b64:
+                import base64
+                from django.core.files.base import ContentFile
+                try:
+                    header, encoded = cropped_b64.split(';base64,')
+                    ext = 'jpg'
+                    if 'png' in header:
+                        ext = 'png'
+                    elif 'webp' in header:
+                        ext = 'webp'
+                    decoded_bytes = base64.b64decode(encoded)
+                    product.primary_image.save(f"{product.slug or 'listing'}_cropped.{ext}", ContentFile(decoded_bytes), save=True)
+                except Exception:
+                    pass
 
             # Handle additional gallery images upload
             gallery_files = request.FILES.getlist('extra_images')
@@ -369,6 +384,21 @@ def product_edit(request, product_id):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
+            cropped_b64 = request.POST.get('cropped_primary_image_base64')
+            if cropped_b64 and 'base64,' in cropped_b64:
+                import base64
+                from django.core.files.base import ContentFile
+                try:
+                    header, encoded = cropped_b64.split(';base64,')
+                    ext = 'jpg'
+                    if 'png' in header:
+                        ext = 'png'
+                    elif 'webp' in header:
+                        ext = 'webp'
+                    decoded_bytes = base64.b64decode(encoded)
+                    product.primary_image.save(f"{product.slug or 'listing'}_cropped.{ext}", ContentFile(decoded_bytes), save=True)
+                except Exception:
+                    pass
             
             # Handle additional gallery images upload
             gallery_files = request.FILES.getlist('extra_images')
