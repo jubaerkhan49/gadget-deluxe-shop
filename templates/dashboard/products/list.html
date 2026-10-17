@@ -86,9 +86,11 @@
                             </div>
                         </td>
                         <td class="py-3.5 px-6">
-                            <div class="font-mono font-bold text-zinc-900 dark:text-white text-xs">{{ product.sku }}</div>
-                            <div class="font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5">{{ product.model.name }} {{ product.storage }}</div>
-                            <div class="text-[10px] text-zinc-500">{{ product.color }}</div>
+                            <div class="font-bold text-zinc-900 dark:text-white text-xs leading-snug">{{ product.title|default:product.model.name }}</div>
+                            <div class="flex items-center gap-1.5 mt-1">
+                                <span class="font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">{{ product.sku }}</span>
+                                <span class="text-[10px] text-zinc-500">{{ product.model.name }} &bull; {{ product.storage }} &bull; {{ product.color }}</span>
+                            </div>
                         </td>
                         <td class="py-3.5 px-6 text-zinc-600 dark:text-zinc-400">
                             <div class="font-medium text-zinc-800 dark:text-zinc-200">{{ product.get_condition_display }}</div>

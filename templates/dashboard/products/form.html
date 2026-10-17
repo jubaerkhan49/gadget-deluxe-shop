@@ -23,10 +23,12 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div>
-                <h1 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">
-                    {% if is_edit %}Edit Listing: {{ product.sku }}{% else %}Create New iPhone Listing{% endif %}
+                <h1 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white" id="listingHeading">
+                    {% if is_edit %}Edit Listing: {{ product.title|default:product.sku }}{% else %}Create New iPhone Listing{% endif %}
                 </h1>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">Configure device model, condition, battery health, cycle count, and pricing.</p>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    {% if is_edit %}<span class="font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded mr-1.5">{{ product.sku }}</span>{% endif %}Configure device model, condition, battery health, cycle count, and pricing.
+                </p>
             </div>
         </div>
 

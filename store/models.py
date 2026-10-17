@@ -229,13 +229,23 @@ class Product(models.Model):
         return f"{self.title} ({self.sku or self.id}) - ৳{self.price:,}"
 
     def save(self, *args, **kwargs):
+        clean_model = self.model.name.replace('iPhone ', '').replace(' ', '')
         if not self.sku:
-            clean_model = self.model.name.replace('iPhone ', '').replace(' ', '')
             rand_code = uuid.uuid4().hex[:4].upper()
             self.sku = f"GD-{clean_model}-{rand_code}"
+        elif not self.sku.startswith(f"GD-{clean_model}") and self.sku.startswith("GD-"):
+            # Model changed: update the SKU prefix while keeping or generating unique suffix
+            parts = self.sku.split('-')
+            suffix = parts[-1] if len(parts) > 1 else uuid.uuid4().hex[:4].upper()
+            new_sku = f"GD-{clean_model}-{suffix}"
+            if Product.objects.filter(sku=new_sku).exclude(id=self.id).exists():
+                new_sku = f"GD-{clean_model}-{uuid.uuid4().hex[:4].upper()}"
+            self.sku = new_sku
         
-        if not self.slug:
+        if not self.slug or (self.model and slugify(self.model.name) not in self.slug):
             base_slug = slugify(f"{self.model.name}-{self.storage}-{self.color}-{self.sku}")
+            if Product.objects.filter(slug=base_slug).exclude(id=self.id).exists():
+                base_slug = f"{base_slug}-{uuid.uuid4().hex[:4]}"
             self.slug = base_slug
 
         # Process / convert HEIC/HEIF primary image
