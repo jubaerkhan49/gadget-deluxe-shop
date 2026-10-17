@@ -294,3 +294,15 @@ class DashboardTestCase(TestCase):
         self.assertEqual(del_res.status_code, 302)
         self.assertFalse(Review.objects.filter(id=rev.id).exists())
 
+    def test_admin_login_page_redesign(self):
+        """Verify redesigned admin login page renders successfully with luxury branding"""
+        res = self.client.get(reverse('admin:login'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Gadget Deluxe")
+        self.assertContains(res, "Staff Administration")
+        self.assertContains(res, "id_username")
+        self.assertContains(res, "id_password")
+        self.assertContains(res, "togglePasswordBtn")
+        self.assertTemplateUsed(res, 'admin/login.html')
+
+

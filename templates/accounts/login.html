@@ -46,11 +46,19 @@
             </button>
         </form>
 
-        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-5 text-center text-xs text-zinc-500 dark:text-zinc-400">
-            Don't have an account? 
-            <a href="{% url 'accounts:register' %}" class="font-bold text-black dark:text-white hover:underline">
-                Create an Account
-            </a>
+        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-3 text-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div>
+                Don't have an account? 
+                <a href="{% url 'accounts:register' %}" class="font-bold text-black dark:text-white hover:underline">
+                    Create an Account
+                </a>
+            </div>
+            <div class="pt-2">
+                <a href="{% url 'admin:login' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white text-[11px] font-semibold transition">
+                    <i class="fa-solid fa-lock text-[10px]"></i>
+                    <span>Store Manager or Staff? Enter Admin Portal →</span>
+                </a>
+            </div>
         </div>
 
     </div>

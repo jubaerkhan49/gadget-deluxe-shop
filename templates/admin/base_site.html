@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Gadget Deluxe Admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name" style="display: flex; align-items: center; gap: 10px;">
+    <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #ffffff; color: #000000; border-radius: 8px; font-weight: bold; font-size: 14px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                <line x1="10" y1="5" x2="14" y2="5"></line>
+            </svg>
+        </span>
+        <span style="font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: #ffffff;">
+            {{ site_header|default:'Gadget Deluxe Administration' }}
+        </span>
+    </a>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<div style="float: right; display: flex; align-items: center; gap: 12px; margin-top: 10px; margin-right: 15px;">
+    <a href="{% url 'dashboard:home' %}" style="font-size: 12px; font-weight: 600; color: #38bdf8; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(56, 189, 248, 0.1);">
+        📊 Store Dashboard
+    </a>
+    <a href="{% url 'store:home' %}" target="_blank" style="font-size: 12px; font-weight: 600; color: #a1a1aa; text-decoration: none;">
+        View Live Store ↗
+    </a>
+</div>
+{% endblock %}
