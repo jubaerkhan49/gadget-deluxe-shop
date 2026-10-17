@@ -324,15 +324,17 @@ class DashboardTestCase(TestCase):
         self.assertContains(res, "id_email")
         self.assertContains(res, "id_otp")
 
-        # 2. Request OTP via AJAX POST
-        otp_res = self.client.post(reverse('dashboard:send_admin_otp'), data={'email': 'newboss@gadgetdeluxe.shop'})
+        # 2. Request OTP via AJAX POST - must be sent to current email
+        otp_res = self.client.post(reverse('dashboard:send_admin_otp'), data={'email': 'anyother@example.com'})
         self.assertEqual(otp_res.status_code, 200)
         otp_data = otp_res.json()
         self.assertTrue(otp_data['success'])
+        self.assertEqual(otp_data['current_email'], self.admin_user.email)
         
-        # Verify OTP is stored in session
+        # Verify OTP is stored in session for current email
         session = self.client.session
         self.assertIn('admin_otp', session)
+        self.assertEqual(session['admin_otp']['email'], self.admin_user.email)
         generated_otp = session['admin_otp']['code']
 
         # 3. Submit credentials update with invalid OTP -> should fail

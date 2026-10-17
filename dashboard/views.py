@@ -502,15 +502,18 @@ def store_settings_view(request):
 @staff_member_required
 def send_admin_otp_view(request):
     """
-    Generate and dispatch a 6-digit OTP code to the administrator's email
-    for verifying username, email, or password modifications.
+    Generate and dispatch a 6-digit OTP code to the administrator's CURRENT registered email
+    (seed: emondeveloper@gmail.com) for verifying username, email, or password modifications.
     """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Only POST method is allowed.'}, status=405)
 
-    target_email = request.POST.get('email', '').strip() or request.user.email
-    if not target_email or '@' not in target_email:
-        return JsonResponse({'success': False, 'message': 'Please provide a valid email address.'}, status=400)
+    # Security requirement: OTP is ALWAYS sent to the CURRENT registered email first
+    current_email = (request.user.email or 'emondeveloper@gmail.com').strip()
+
+    if not request.user.email:
+        request.user.email = current_email
+        request.user.save(update_fields=['email'])
 
     # Generate 6-digit cryptographic OTP code
     otp_code = f"{secrets.randbelow(900000) + 100000}"
@@ -518,7 +521,7 @@ def send_admin_otp_view(request):
     # Save to admin session with 10-minute expiry
     request.session['admin_otp'] = {
         'code': otp_code,
-        'email': target_email,
+        'email': current_email,
         'expires_at': (timezone.now() + timedelta(minutes=10)).isoformat(),
         'created_at': timezone.now().isoformat(),
     }
@@ -531,7 +534,7 @@ def send_admin_otp_view(request):
         f"Your verification code to modify your Gadget Deluxe administrator credentials "
         f"(username, email, or password) is:\n\n"
         f"    {otp_code}\n\n"
-        f"This code will expire in 10 minutes.\n\n"
+        f"This code was sent to your current registered admin email ({current_email}) and will expire in 10 minutes.\n\n"
         f"If you did not initiate this request, please review your store account security immediately.\n\n"
         f"— Gadget Deluxe Security Team\n"
         f"https://www.gadgetdeluxe.shop"
@@ -543,19 +546,18 @@ def send_admin_otp_view(request):
             subject=subject,
             message=body_text,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[target_email],
+            recipient_list=[current_email],
             fail_silently=False,
         )
         sent_successfully = True
     except Exception as e:
-        # In development or if SMTP is offline, log OTP to console
-        print(f"[SECURITY OTP] Failed to send email via SMTP: {e}. Active OTP for {target_email} is: {otp_code}")
+        print(f"[SECURITY OTP] Failed to send email via SMTP: {e}. Active OTP for {current_email} is: {otp_code}")
 
-    msg = f"A 6-digit verification code has been dispatched to {target_email}."
+    msg = f"A 6-digit verification code has been dispatched to your current email: {current_email}."
     return JsonResponse({
         'success': True,
         'message': msg,
-        'email': target_email,
+        'current_email': current_email,
         'dev_otp': otp_code if (settings.DEBUG or not sent_successfully) else None,
     })
 
@@ -567,6 +569,10 @@ def change_password_view(request):
     and password directly from the shop admin panel with Email OTP verification.
     """
     user = request.user
+    if not user.email:
+        user.email = 'emondeveloper@gmail.com'
+        user.save(update_fields=['email'])
+
     if request.method == 'POST':
         new_username = request.POST.get('username', '').strip()
         new_email = request.POST.get('email', '').strip()
@@ -581,17 +587,17 @@ def change_password_view(request):
         if not user.check_password(current_password):
             errors.append("Current admin password is incorrect.")
 
-        # 2. Validate OTP
+        # 2. Validate OTP sent to CURRENT email
         otp_session = request.session.get('admin_otp')
         if not otp_session:
-            errors.append("No verification code found. Please click 'Send OTP' to your email first.")
+            errors.append(f"No verification code found. Please click 'Send OTP' to your current email ({user.email}) first.")
         else:
             try:
                 expires_at = timezone.datetime.fromisoformat(otp_session['expires_at'])
                 if timezone.now() > expires_at:
                     errors.append("Verification code has expired. Please request a new OTP.")
                 elif otp_session['code'] != otp_entered:
-                    errors.append("Invalid verification code (OTP). Please check your email and try again.")
+                    errors.append(f"Invalid verification code (OTP). Please check your current registered email ({user.email}) and try again.")
             except Exception:
                 errors.append("Invalid OTP session. Please request a new OTP.")
 
@@ -616,6 +622,7 @@ def change_password_view(request):
             for err in errors:
                 messages.error(request, err)
         else:
+            old_email = user.email
             # Apply Changes
             user.username = new_username
             user.email = new_email
@@ -629,7 +636,11 @@ def change_password_view(request):
 
             # Keep user authenticated
             update_session_auth_hash(request, user)
-            messages.success(request, "Administrator credentials successfully verified and updated!")
+
+            if old_email != new_email:
+                messages.success(request, f"Admin credentials updated! Registered security email changed to {new_email}.")
+            else:
+                messages.success(request, "Administrator credentials successfully verified and updated!")
             return redirect('dashboard:change_password')
 
     return render(request, 'dashboard/change_password.html', {
