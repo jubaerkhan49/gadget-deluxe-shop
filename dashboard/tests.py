@@ -305,4 +305,42 @@ class DashboardTestCase(TestCase):
         self.assertContains(res, "togglePasswordBtn")
         self.assertTemplateUsed(res, 'admin/login.html')
 
+    def test_admin_login_redirects_to_shop_admin(self):
+        """Staff admin login should redirect directly to /shop-admin/"""
+        # When already logged in as staff and accessing admin login:
+        self.client.force_login(self.admin_user)
+        res = self.client.get(reverse('admin:login'))
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, reverse('dashboard:home'))
+
+    def test_change_password_view(self):
+        """Test staff can change password from shop admin panel"""
+        self.client.force_login(self.admin_user)
+        # GET page
+        res = self.client.get(reverse('dashboard:change_password'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Change Admin Password")
+        self.assertContains(res, "id_old_password")
+
+        # POST valid password change
+        post_data = {
+            'old_password': 'BossPass123!',
+            'new_password1': 'NewSecurePass2026!#',
+            'new_password2': 'NewSecurePass2026!#',
+        }
+        post_res = self.client.post(reverse('dashboard:change_password'), data=post_data)
+        self.assertEqual(post_res.status_code, 302)
+        self.admin_user.refresh_from_db()
+        self.assertTrue(self.admin_user.check_password('NewSecurePass2026!#'))
+
+    def test_product_form_photo_preview_markup(self):
+        """Ensure photo preview cards, gallery uploader, and scripts are present in product form"""
+        self.client.force_login(self.admin_user)
+        res = self.client.get(reverse('dashboard:product_edit', kwargs={'product_id': self.product.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "primaryImagePreviewCard")
+        self.assertContains(res, "galleryLivePreviewContainer")
+        self.assertContains(res, "heic2any")
+
+
 

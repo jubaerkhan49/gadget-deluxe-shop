@@ -210,37 +210,86 @@
             </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <!-- Primary Featured Photo -->
                 <div class="sm:col-span-2">
                     <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Primary Featured Photo</label>
                     {{ form.primary_image }}
+                    {% if form.primary_image.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.primary_image.errors.0 }}</p>{% endif %}
+
+                    <!-- Live Preview for Primary Photo -->
+                    <div id="primaryImagePreviewCard" class="hidden mt-3 p-3.5 bg-zinc-50 dark:bg-zinc-950/80 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <div id="primaryPreviewImgWrapper" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+                                <img id="primaryPreviewImg" class="w-full h-full object-contain" alt="Primary preview">
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">New Photo Selected (Live Preview)</span>
+                                </div>
+                                <div id="primaryPreviewFileName" class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[200px] sm:max-w-xs"></div>
+                                <div id="primaryPreviewFileSize" class="text-[11px] text-zinc-500 dark:text-zinc-400"></div>
+                            </div>
+                        </div>
+                        <button type="button" id="clearPrimaryImageBtn" class="px-2.5 py-1.5 rounded-lg bg-zinc-200/80 dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-zinc-600 dark:text-zinc-400 text-xs font-semibold transition" title="Clear selection">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="hidden sm:inline ml-1">Remove</span>
+                        </button>
+                    </div>
+
+                    <!-- Current Saved Photo (if editing) -->
                     {% if is_edit and product.primary_image %}
-                    <div class="mt-2 flex items-center gap-3">
-                        <img src="{{ product.primary_image.url }}" class="w-16 h-16 object-contain bg-zinc-50 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                        <span class="text-zinc-500 text-[11px]">Current Primary Photo</span>
+                    <div id="currentPrimaryPhotoWrapper" class="mt-2.5 flex items-center gap-3">
+                        <img src="{{ product.primary_image.url }}" class="w-14 h-14 object-contain bg-zinc-50 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                        <div>
+                            <span class="text-zinc-600 dark:text-zinc-300 text-[11px] block font-bold">Current Primary Photo</span>
+                            <span class="text-zinc-400 text-[10px] block">Selecting a new photo above will replace this upon saving.</span>
+                        </div>
                     </div>
                     {% endif %}
                 </div>
 
-                {% if is_edit %}
                 <!-- Additional Gallery Photos Upload -->
                 <div class="sm:col-span-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
-                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Add More Gallery Photos (Multiple Selection, supports HEIC / JPG / PNG)</label>
-                    <input type="file" name="extra_images" multiple accept="image/*,.heic,.heif,.HEIC,.HEIF" class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100">
-                    
-                    {% if product.images.all %}
-                    <div class="mt-4 flex flex-wrap gap-3">
-                        {% for img in product.images.all %}
-                        <div class="relative w-20 h-20 bg-zinc-50 dark:bg-zinc-950 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 group">
-                            <img src="{{ img.image.url }}" class="w-full h-full object-contain">
-                            <a href="{% url 'dashboard:product_image_delete' img.id %}" class="absolute -top-2 -right-2 w-6 h-6 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow" title="Delete Photo">
-                                <i class="fa-solid fa-xmark"></i>
-                            </a>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block font-bold text-zinc-700 dark:text-zinc-300">
+                            Add More Gallery Photos (Multiple Selection, supports HEIC / JPG / PNG)
+                        </label>
+                        <span class="text-[11px] text-zinc-500 dark:text-zinc-400">Select multiple files at once</span>
+                    </div>
+                    <input type="file" name="extra_images" id="id_extra_images" multiple accept="image/*,.heic,.heif,.HEIC,.HEIF" class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100">
+
+                    <!-- Gallery Live Preview Grid -->
+                    <div id="galleryLivePreviewContainer" class="hidden mt-3 p-4 bg-zinc-50 dark:bg-zinc-950/80 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span id="gallerySelectionCount" class="text-xs font-bold text-zinc-900 dark:text-zinc-100"></span>
+                            </div>
+                            <button type="button" id="clearGalleryImagesBtn" class="text-[11px] font-semibold text-rose-500 hover:underline">
+                                Clear Selection
+                            </button>
                         </div>
-                        {% endfor %}
+                        <div id="galleryPreviewThumbnails" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
+                    </div>
+
+                    <!-- Existing Saved Gallery Photos (if editing) -->
+                    {% if is_edit and product.images.all %}
+                    <div class="mt-4">
+                        <div class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 mb-2">Saved Gallery ({{ product.images.count }} photos):</div>
+                        <div class="flex flex-wrap gap-3">
+                            {% for img in product.images.all %}
+                            <div class="relative w-20 h-20 bg-zinc-50 dark:bg-zinc-950 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 group shadow-sm">
+                                <img src="{{ img.image.url }}" class="w-full h-full object-contain">
+                                <a href="{% url 'dashboard:product_image_delete' img.id %}" class="absolute -top-2 -right-2 w-6 h-6 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow hover:bg-rose-700 transition" title="Delete Photo">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                     {% endif %}
                 </div>
-                {% endif %}
 
                 <div>
                     <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Device Description & Test Notes (English)</label>
@@ -268,4 +317,139 @@
     </form>
 
 </div>
+
+<!-- Client-side HEIC Support for instant in-browser preview -->
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+
+<script>
+    // Utility to format bytes into readable sizes
+    function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // Helper to render preview for standard images or HEIC files
+    function displayFilePreview(file, imgElem, wrapperElem) {
+        const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+        
+        if (isHeic) {
+            imgElem.style.display = 'none';
+            let badge = wrapperElem.querySelector('.heic-badge');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'heic-badge w-full h-full flex flex-col items-center justify-center text-zinc-600 dark:text-zinc-300 text-center p-1';
+                badge.innerHTML = '<i class="fa-solid fa-mobile-screen text-lg mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC</span><span class="text-[8px] text-zinc-400">decoding...</span>';
+                wrapperElem.appendChild(badge);
+            }
+
+            if (window.heic2any) {
+                heic2any({ blob: file, toType: 'image/jpeg', quality: 0.75 })
+                    .then(function (result) {
+                        const blob = Array.isArray(result) ? result[0] : result;
+                        imgElem.src = URL.createObjectURL(blob);
+                        imgElem.style.display = 'block';
+                        if (badge) badge.remove();
+                    })
+                    .catch(function (err) {
+                        console.warn('HEIC preview conversion notice:', err);
+                        if (badge) {
+                            badge.innerHTML = '<i class="fa-solid fa-mobile-screen text-xl mb-0.5 text-brand-blue"></i><span class="text-[9px] font-bold">HEIC Photo</span>';
+                        }
+                    });
+            }
+        } else {
+            imgElem.src = URL.createObjectURL(file);
+            imgElem.style.display = 'block';
+            const badge = wrapperElem.querySelector('.heic-badge');
+            if (badge) badge.remove();
+        }
+    }
+
+    // 1. Primary Photo Preview Handler
+    const primaryInput = document.getElementById('id_primary_image');
+    const primaryPreviewCard = document.getElementById('primaryImagePreviewCard');
+    const primaryPreviewImg = document.getElementById('primaryPreviewImg');
+    const primaryPreviewImgWrapper = document.getElementById('primaryPreviewImgWrapper');
+    const primaryPreviewFileName = document.getElementById('primaryPreviewFileName');
+    const primaryPreviewFileSize = document.getElementById('primaryPreviewFileSize');
+    const clearPrimaryBtn = document.getElementById('clearPrimaryImageBtn');
+
+    if (primaryInput) {
+        primaryInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                primaryPreviewFileName.textContent = file.name;
+                primaryPreviewFileSize.textContent = formatBytes(file.size);
+                displayFilePreview(file, primaryPreviewImg, primaryPreviewImgWrapper);
+                primaryPreviewCard.classList.remove('hidden');
+            } else {
+                primaryPreviewCard.classList.add('hidden');
+            }
+        });
+    }
+
+    if (clearPrimaryBtn && primaryInput) {
+        clearPrimaryBtn.addEventListener('click', function () {
+            primaryInput.value = '';
+            primaryPreviewCard.classList.add('hidden');
+            primaryPreviewImg.src = '';
+        });
+    }
+
+    // 2. Gallery Additional Photos Preview Handler
+    const galleryInput = document.getElementById('id_extra_images');
+    const galleryContainer = document.getElementById('galleryLivePreviewContainer');
+    const galleryCountBadge = document.getElementById('gallerySelectionCount');
+    const galleryThumbnails = document.getElementById('galleryPreviewThumbnails');
+    const clearGalleryBtn = document.getElementById('clearGalleryImagesBtn');
+
+    if (galleryInput && galleryContainer && galleryThumbnails) {
+        galleryInput.addEventListener('change', function () {
+            const files = this.files;
+            galleryThumbnails.innerHTML = '';
+
+            if (files && files.length > 0) {
+                galleryCountBadge.textContent = `${files.length} new photo${files.length > 1 ? 's' : ''} selected for upload:`;
+                galleryContainer.classList.remove('hidden');
+
+                Array.from(files).forEach(function (file, index) {
+                    const card = document.createElement('div');
+                    card.className = 'relative bg-white dark:bg-zinc-900 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-between h-24 sm:h-28 overflow-hidden group';
+
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'w-full flex-1 flex items-center justify-center overflow-hidden';
+
+                    const img = document.createElement('img');
+                    img.className = 'w-full h-full object-contain';
+                    img.alt = file.name;
+                    imgWrapper.appendChild(img);
+
+                    const nameLabel = document.createElement('div');
+                    nameLabel.className = 'w-full text-[9px] text-zinc-600 dark:text-zinc-400 truncate text-center pt-1 font-medium';
+                    nameLabel.textContent = file.name;
+                    nameLabel.title = `${file.name} (${formatBytes(file.size)})`;
+
+                    card.appendChild(imgWrapper);
+                    card.appendChild(nameLabel);
+                    galleryThumbnails.appendChild(card);
+
+                    displayFilePreview(file, img, imgWrapper);
+                });
+            } else {
+                galleryContainer.classList.add('hidden');
+            }
+        });
+    }
+
+    if (clearGalleryBtn && galleryInput) {
+        clearGalleryBtn.addEventListener('click', function () {
+            galleryInput.value = '';
+            galleryContainer.classList.add('hidden');
+            galleryThumbnails.innerHTML = '';
+        });
+    }
+</script>
 {% endblock %}

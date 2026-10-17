@@ -175,10 +175,8 @@
                 <form action="{{ app_path }}" method="post" id="login-form" class="space-y-4">
                     {% csrf_token %}
 
-                    <!-- Hidden Next Field -->
-                    {% if next %}
-                    <input type="hidden" name="next" value="{{ next }}">
-                    {% endif %}
+                    <!-- Hidden Next Field: default to Shop Admin Dashboard -->
+                    <input type="hidden" name="next" value="{% if next and next != '/admin/' and next != '/admin' %}{{ next }}{% else %}{% url 'dashboard:home' %}{% endif %}">
 
                     <!-- Username Field -->
                     <div class="space-y-1.5">

@@ -134,6 +134,11 @@
                         <i class="fa-solid fa-sliders text-sm"></i>
                         <span>Payment & Settings</span>
                     </a>
+
+                    <a href="{% url 'dashboard:change_password' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition {% if request.resolver_match.url_name == 'change_password' %}bg-black text-white dark:bg-white dark:text-black font-bold shadow-sm{% else %}text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60{% endif %}">
+                        <i class="fa-solid fa-key text-sm"></i>
+                        <span>Change Password</span>
+                    </a>
                 </nav>
 
             </div>
@@ -145,9 +150,14 @@
                         <div class="font-bold text-zinc-900 dark:text-white">{{ request.user.username }}</div>
                         <div class="text-[10px] text-zinc-500">Store Administrator</div>
                     </div>
-                    <a href="{% url 'accounts:logout' %}" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-zinc-500 transition" title="Logout">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    </a>
+                    <div class="flex items-center gap-1.5">
+                        <a href="{% url 'dashboard:change_password' %}" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition text-xs" title="Change Admin Password">
+                            <i class="fa-solid fa-key"></i>
+                        </a>
+                        <a href="{% url 'accounts:logout' %}" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 text-zinc-500 transition text-xs" title="Logout">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </aside>

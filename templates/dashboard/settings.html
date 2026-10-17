@@ -178,5 +178,49 @@
 
     </form>
 
+    <!-- Administrator Security & Password Card -->
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl space-y-4 shadow-sm mt-8">
+        <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+            <div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-brand-blue"></i>
+                    Administrator Account Security
+                </h2>
+                <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    Logged in as <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ request.user.username }}</span>. Change your administrator password below.
+                </p>
+            </div>
+            <a href="{% url 'dashboard:change_password' %}" class="px-3.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-xs font-bold text-zinc-700 dark:text-zinc-300 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-[11px]"></i>
+                <span>Password Page</span>
+            </a>
+        </div>
+
+        <form method="POST" action="{% url 'dashboard:change_password' %}" class="space-y-4 pt-1">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Current Password *</label>
+                    <input type="password" name="old_password" required autocomplete="current-password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-xs placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition">
+                </div>
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">New Password *</label>
+                    <input type="password" name="new_password1" required autocomplete="new-password" placeholder="Min. 8 characters" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-xs placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition">
+                </div>
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Confirm New Password *</label>
+                    <input type="password" name="new_password2" required autocomplete="new-password" placeholder="Confirm password" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-xs placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end pt-2">
+                <button type="submit" class="px-6 py-2.5 bg-zinc-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-extrabold text-xs rounded-xl transition shadow flex items-center gap-2">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Update Admin Password</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
 </div>
 {% endblock %}

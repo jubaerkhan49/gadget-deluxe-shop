@@ -7,6 +7,8 @@ from django.http import HttpResponse, JsonResponse
 from datetime import timedelta
 import csv
 
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from store.models import Product, ProductImage, FAQ, StoreSettings, IPhoneModel, Review
 from orders.models import Order, OrderItem
@@ -333,6 +335,14 @@ def product_create(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
+
+            # Handle additional gallery images upload
+            gallery_files = request.FILES.getlist('extra_images')
+            from store.image_utils import process_image_file
+            for f in gallery_files:
+                converted_f = process_image_file(f)
+                ProductImage.objects.create(product=product, image=converted_f)
+
             messages.success(request, f"New listing '{product.title}' created successfully with SKU {product.sku}.")
             return redirect('dashboard:product_edit', product_id=product.id)
     else:
@@ -477,7 +487,34 @@ def store_settings_view(request):
     else:
         form = StoreSettingsForm(instance=settings_obj)
 
-    return render(request, 'dashboard/settings.html', {'form': form, 'settings': settings_obj})
+    password_form = PasswordChangeForm(user=request.user)
+
+    return render(request, 'dashboard/settings.html', {
+        'form': form,
+        'settings': settings_obj,
+        'password_form': password_form,
+    })
+
+
+@staff_member_required
+def change_password_view(request):
+    """
+    Allow staff members and store administrators to change their password
+    directly from the shop admin panel.
+    """
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Prevent user from being logged out
+            messages.success(request, "Your administrator password has been updated successfully!")
+            return redirect('dashboard:settings')
+        else:
+            messages.error(request, "Could not update password. Please check the errors below.")
+    else:
+        form = PasswordChangeForm(user=request.user)
+
+    return render(request, 'dashboard/change_password.html', {'form': form})
 
 
 # ==============================================================================

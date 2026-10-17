@@ -25,6 +25,8 @@ def register_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('dashboard:home')
         return redirect('accounts:profile')
 
     if request.method == 'POST':
@@ -33,7 +35,11 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, f"Welcome back, {user.first_name or user.username}!")
-            next_url = request.GET.get('next') or request.POST.get('next') or 'accounts:profile'
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if not next_url or next_url in ('accounts:profile', '/account/profile/'):
+                if user.is_staff:
+                    return redirect('dashboard:home')
+                return redirect('accounts:profile')
             return redirect(next_url)
         else:
             messages.error(request, "Invalid username/email or password. Please try again.")

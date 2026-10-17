@@ -35,7 +35,8 @@ urlpatterns = [
     path('reviews/<int:review_id>/toggle/', views.review_toggle_approval, name='review_toggle_approval'),
     path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
 
-    # Settings
+    # Settings & Security
     path('settings/', views.store_settings_view, name='settings'),
+    path('password/change/', views.change_password_view, name='change_password'),
 ]
 
