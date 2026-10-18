@@ -211,9 +211,20 @@ class DashboardTestCase(TestCase):
         self.assertEqual(settings.delivery_charge_inside_dhaka, Decimal(120))
 
     def test_visitor_tracking_middleware(self):
-        # Visiting public homepage should record PageVisit
+        # 1. Visiting public homepage as anonymous user should record PageVisit
         self.client.get(reverse('store:home'))
         self.assertTrue(PageVisit.objects.filter(path=reverse('store:home')).exists())
+        initial_count = PageVisit.objects.count()
+
+        # 2. Staff user visits should NOT increment PageVisit count
+        self.client.force_login(self.admin_user)
+        self.client.get(reverse('store:home'))
+        self.assertEqual(PageVisit.objects.count(), initial_count)
+
+        # 3. Bot visits should NOT be recorded
+        self.client.logout()
+        self.client.get(reverse('store:home'), HTTP_USER_AGENT='Googlebot/2.1 (+http://www.google.com/bot.html)')
+        self.assertEqual(PageVisit.objects.count(), initial_count)
 
     def test_customer_list_and_detail(self):
         from store.models import Review
