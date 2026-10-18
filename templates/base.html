@@ -68,13 +68,14 @@
 </head>
 
 <body
-    class="min-h-full flex flex-col bg-[#fbfbfd] dark:bg-zinc-950 text-[#1d1d1f] dark:text-zinc-100 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200 {% if is_bangla %}lang-bn{% endif %}">
+    class="min-h-full w-full overflow-x-hidden flex flex-col bg-[#fbfbfd] dark:bg-zinc-950 text-[#1d1d1f] dark:text-zinc-100 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200 {% if is_bangla %}lang-bn{% endif %}">
 
     <!-- Top Announcement Bar -->
     <div
-        class="bg-zinc-900 text-white text-xs py-2 px-4 text-center font-medium tracking-wide border-b border-zinc-800">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <span class="hidden sm:inline text-zinc-400">
+        class="bg-zinc-900 text-white text-xs py-1.5 sm:py-2 px-3 sm:px-4 font-medium tracking-wide border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <!-- Warranty Badge (Desktop) -->
+            <span class="hidden md:inline text-zinc-400 truncate text-xs">
                 <i class="fa-solid fa-shield-check text-emerald-400 mr-1.5"></i>
                 {% if is_bangla %}
                 {{ store_settings.warranty_badge_bn }}
@@ -82,24 +83,29 @@
                 {{ store_settings.warranty_badge_en }}
                 {% endif %}
             </span>
-            <div class="mx-auto sm:mx-0 flex items-center gap-4">
+
+            <!-- Contacts: Phone & WhatsApp -->
+            <div class="flex items-center gap-2.5 sm:gap-4 shrink-0 text-[11px] sm:text-xs">
                 <a href="tel:{{ store_settings.phone_number }}"
-                    class="hover:text-zinc-200 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-phone text-[10px] text-zinc-400"></i> {{ store_settings.phone_number }}
+                    class="hover:text-zinc-200 transition flex items-center gap-1 text-zinc-300"
+                    title="Call Support">
+                    <i class="fa-solid fa-phone text-[10px] text-zinc-400"></i>
+                    <span class="hidden sm:inline">{{ store_settings.phone_number }}</span>
+                    <span class="sm:hidden font-semibold">Call</span>
                 </a>
-                <span class="text-zinc-600">•</span>
+                <span class="text-zinc-700">•</span>
                 <a href="https://wa.me/{{ store_settings.whatsapp_number|cut:' '|cut:'+'|cut:'-' }}" target="_blank"
-                    class="hover:text-emerald-400 transition flex items-center gap-1">
-                    <i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp
+                    class="hover:text-emerald-400 transition flex items-center gap-1 font-semibold text-emerald-400">
+                    <i class="fa-brands fa-whatsapp text-xs sm:text-sm"></i> WhatsApp
                 </a>
             </div>
 
             <!-- Controls: Theme Toggle & Language Switcher -->
-            <div class="flex items-center gap-3 text-xs font-semibold">
+            <div class="flex items-center gap-1.5 sm:gap-2.5 text-xs font-semibold shrink-0">
                 <!-- Theme Toggle Button -->
                 <button type="button" id="site-theme-toggle"
-                    class="px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition flex items-center gap-1 text-[11px]"
-                    title="Toggle Dark / Light Theme">
+                    class="p-1 sm:px-2 sm:py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition flex items-center gap-1 text-[11px]"
+                    title="Toggle Dark / Light Theme" aria-label="Toggle theme">
                     <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
                     <i class="fa-solid fa-moon dark:hidden text-zinc-300"></i>
                     <span class="hidden md:inline dark:hidden">Dark</span>
@@ -107,14 +113,14 @@
                 </button>
 
                 <!-- Language Switcher in Top Bar -->
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1 text-[11px] sm:text-xs bg-zinc-800/90 rounded-lg p-0.5 border border-zinc-700/60">
                     <a href="{% url 'store:switch_language' 'en' %}"
-                        class="px-2 py-0.5 rounded transition {% if not is_bangla %}bg-zinc-800 text-white font-bold{% else %}text-zinc-400 hover:text-white{% endif %}">
+                        class="px-2 py-0.5 rounded transition {% if not is_bangla %}bg-zinc-700 text-white font-bold shadow-xs{% else %}text-zinc-400 hover:text-white{% endif %}">
                         EN
                     </a>
                     <span class="text-zinc-600">|</span>
                     <a href="{% url 'store:switch_language' 'bn' %}"
-                        class="px-2 py-0.5 rounded transition {% if is_bangla %}bg-zinc-800 text-white font-bold{% else %}text-zinc-400 hover:text-white{% endif %}">
+                        class="px-2 py-0.5 rounded transition {% if is_bangla %}bg-zinc-700 text-white font-bold shadow-xs{% else %}text-zinc-400 hover:text-white{% endif %}">
                         বাংলা
                     </a>
                 </div>
@@ -319,45 +325,64 @@
     <footer class="bg-zinc-950 text-zinc-400 text-xs border-t border-zinc-900 mt-20">
         <!-- Trust Banner in Footer -->
         <div class="border-b border-zinc-900 py-8 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 text-center md:text-left">
-                <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div
-                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-emerald-400 text-lg">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-6">
+                <!-- 1. Carefully Tested -->
+                <div class="flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition shadow-sm text-left">
+                    <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400 text-lg shrink-0 shadow-inner">
                         <i class="fa-solid fa-microchip"></i>
                     </div>
-                    <div>
-                        <div class="font-semibold text-white text-sm">{% if is_bangla %}সতর্কতার সাথে পরীক্ষিত{% else %}Carefully Tested{% endif %}</div>
-                        <div class="text-zinc-500 text-[11px]">{% if is_bangla %}ডেলিভারির পূর্বে প্রতিটি ফোন নিখুঁতভাবে চেক/পরীক্ষিত হয়{% else %}Each phone is carefully checked/tested before shipment{% endif %}</div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-white text-sm leading-snug">
+                            {% if is_bangla %}সতর্কতার সাথে পরীক্ষিত{% else %}Carefully Tested{% endif %}
+                        </div>
+                        <div class="text-zinc-400 text-[11px] sm:text-xs mt-0.5 leading-tight">
+                            {% if is_bangla %}নিখুঁত মাল্টি-পয়েন্ট হার্ডওয়্যার চেক{% else %}Multi-point hardware check{% endif %}
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div
-                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-blue-400 text-lg">
+
+                <!-- 2. 7-Day Replacement -->
+                <div class="flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition shadow-sm text-left">
+                    <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-blue-400 text-lg shrink-0 shadow-inner">
                         <i class="fa-solid fa-rotate-left"></i>
                     </div>
-                    <div>
-                        <div class="font-semibold text-white text-sm">7-Day Replacement</div>
-                        <div class="text-zinc-500 text-[11px]">Hassle-free hardware warranty</div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-white text-sm leading-snug">
+                            {% if is_bangla %}৭ দিনের রিপ্লেসমেন্ট{% else %}7-Day Replacement{% endif %}
+                        </div>
+                        <div class="text-zinc-400 text-[11px] sm:text-xs mt-0.5 leading-tight">
+                            {% if is_bangla %}সহজ হার্ডওয়্যার ওয়ারেন্টি{% else %}Hassle-free hardware warranty{% endif %}
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div
-                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-amber-400 text-lg">
+
+                <!-- 3. Fast Courier Delivery -->
+                <div class="flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition shadow-sm text-left">
+                    <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400 text-lg shrink-0 shadow-inner">
                         <i class="fa-solid fa-truck-fast"></i>
                     </div>
-                    <div>
-                        <div class="font-semibold text-white text-sm">Fast Courier Delivery</div>
-                        <div class="text-zinc-500 text-[11px]">Inside Dhaka 24h, Nationwide 48h</div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-white text-sm leading-snug">
+                            {% if is_bangla %}দ্রুত কুরিয়ার ডেলিভারি{% else %}Fast Courier Delivery{% endif %}
+                        </div>
+                        <div class="text-zinc-400 text-[11px] sm:text-xs mt-0.5 leading-tight">
+                            {% if is_bangla %}ঢাকায় ২৪ ঘণ্টা, সারাদেশে ৪৮ ঘণ্টা{% else %}Inside Dhaka 24h, Nationwide 48h{% endif %}
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-center md:justify-start gap-3.5">
-                    <div
-                        class="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-purple-400 text-lg">
+
+                <!-- 4. Cash on Delivery -->
+                <div class="flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition shadow-sm text-left">
+                    <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-purple-400 text-lg shrink-0 shadow-inner">
                         <i class="fa-solid fa-hand-holding-dollar"></i>
                     </div>
-                    <div>
-                        <div class="font-semibold text-white text-sm">Cash on Delivery</div>
-                        <div class="text-zinc-500 text-[11px]">Check phone before final payment</div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-white text-sm leading-snug">
+                            {% if is_bangla %}ক্যাশ অন ডেলিভারি{% else %}Cash on Delivery{% endif %}
+                        </div>
+                        <div class="text-zinc-400 text-[11px] sm:text-xs mt-0.5 leading-tight">
+                            {% if is_bangla %}হাতে পেয়ে চেক করে পেমেন্ট{% else %}Check phone before final payment{% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
