@@ -48,10 +48,12 @@ def process_image_file(image_file, max_dimension=2000, quality=90):
         img.save(output, format='JPEG', quality=quality, optimize=True)
         output.seek(0)
 
-        # Generate new filename with .jpg extension
+        # Generate new safe, compact filename with .jpg extension
+        import re, uuid
         orig_name = getattr(image_file, 'name', 'photo.heic')
         base_name, _ = os.path.splitext(orig_name)
-        new_name = f"{base_name}.jpg"
+        safe_base = re.sub(r'[^a-zA-Z0-9_-]', '_', base_name)[:30].strip('_') or 'phone'
+        new_name = f"{safe_base}_{uuid.uuid4().hex[:6]}.jpg"
 
         return ContentFile(output.getvalue(), name=new_name)
 

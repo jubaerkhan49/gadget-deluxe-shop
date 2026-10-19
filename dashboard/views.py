@@ -380,7 +380,8 @@ def product_create(request):
                     elif 'webp' in header:
                         ext = 'webp'
                     decoded_bytes = base64.b64decode(encoded)
-                    product.primary_image.save(f"{product.slug or 'listing'}_cropped.{ext}", ContentFile(decoded_bytes), save=True)
+                    clean_tag = (product.sku or f"prod_{product.id or 'img'}").replace(' ', '_')[:25]
+                    product.primary_image.save(f"{clean_tag}_crop_{uuid.uuid4().hex[:6]}.{ext}", ContentFile(decoded_bytes), save=True)
                 except Exception:
                     pass
 
@@ -426,7 +427,8 @@ def product_edit(request, product_id):
                     elif 'webp' in header:
                         ext = 'webp'
                     decoded_bytes = base64.b64decode(encoded)
-                    product.primary_image.save(f"{product.slug or 'listing'}_cropped.{ext}", ContentFile(decoded_bytes), save=True)
+                    clean_tag = (product.sku or f"prod_{product.id or 'img'}").replace(' ', '_')[:25]
+                    product.primary_image.save(f"{clean_tag}_crop_{uuid.uuid4().hex[:6]}.{ext}", ContentFile(decoded_bytes), save=True)
                 except Exception:
                     pass
             

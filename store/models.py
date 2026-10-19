@@ -207,7 +207,7 @@ class Product(models.Model):
     )
     description_bn = models.TextField(blank=True, help_text="বাংলা বিবরণ")
 
-    primary_image = models.ImageField(upload_to='products/', blank=True, null=True)
+    primary_image = models.ImageField(upload_to='products/', blank=True, null=True, max_length=500)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='available')
     featured = models.BooleanField(default=False, help_text="Feature on Homepage")
     warranty_info = models.CharField(
@@ -348,7 +348,7 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/gallery/')
+    image = models.ImageField(upload_to='products/gallery/', max_length=500)
     alt_text = models.CharField(max_length=150, blank=True)
     order = models.PositiveIntegerField(default=0)
 
