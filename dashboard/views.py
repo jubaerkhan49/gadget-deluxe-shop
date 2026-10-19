@@ -264,6 +264,28 @@ def order_detail(request, order_id):
 
 
 @staff_member_required
+def order_delete(request, order_id):
+    """
+    Permanently deletes an order and releases any reserved products back to available.
+    """
+    order = get_object_or_404(Order, id=order_id)
+    order_num = order.order_number
+
+    if request.method == 'POST':
+        # Release any products currently reserved by this order back to available
+        for item in order.items.all():
+            if item.product and item.product.status == 'reserved':
+                item.product.status = 'available'
+                item.product.save(update_fields=['status'])
+
+        order.delete()
+        messages.success(request, f"Order #{order_num} has been permanently deleted.")
+        return redirect('dashboard:order_list')
+
+    return redirect('dashboard:order_detail', order_id=order.id)
+
+
+@staff_member_required
 def order_export_csv(request):
     """
     Export orders list to CSV spreadsheet.

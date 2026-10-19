@@ -35,6 +35,10 @@
                 <i class="fa-solid fa-print text-xs"></i>
                 <span>Print Invoice</span>
             </button>
+            <button type="button" onclick="openDeleteOrderModal('{{ order.order_number|escapejs }}', '{{ order.full_name|escapejs }}', '৳{{ order.total_amount|floatformat:0 }}', '{% url 'dashboard:order_delete' order.id %}')" class="px-3.5 py-2 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                <i class="fa-regular fa-trash-can text-xs"></i>
+                <span>Delete</span>
+            </button>
         </div>
     </div>
 
@@ -180,4 +184,95 @@
     </div>
 
 </div>
+
+<!-- Delete Order Confirmation Modal Dialog -->
+<div id="deleteOrderModalBackdrop" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity duration-200" onclick="handleOrderBackdropClick(event)">
+    <div id="deleteOrderModalCard" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-center transform scale-95 transition-all duration-200">
+        
+        <!-- Close Button -->
+        <button type="button" onclick="closeDeleteOrderModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center justify-center text-xs transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Danger Icon -->
+        <div class="w-14 h-14 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl mx-auto border border-rose-200 dark:border-rose-900 mb-3.5 shadow-sm">
+            <i class="fa-regular fa-trash-can"></i>
+        </div>
+
+        <!-- Title & Subtitle -->
+        <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">Delete Customer Order?</h3>
+        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            Are you sure you want to permanently delete this order? Any reserved products will be automatically released back to available.
+        </p>
+
+        <!-- Order Details Summary Box -->
+        <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-2xl p-4 border border-zinc-200/80 dark:border-zinc-800 my-4 text-left flex items-center justify-between">
+            <div>
+                <div id="modalOrderNumber" class="font-mono font-bold text-sm text-zinc-900 dark:text-white"></div>
+                <div id="modalOrderCustomer" class="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-0.5"></div>
+            </div>
+            <div id="modalOrderTotal" class="font-black text-base text-zinc-900 dark:text-white"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <form id="deleteOrderForm" method="POST" class="flex items-center gap-3 pt-1">
+            {% csrf_token %}
+            <button type="button" onclick="closeDeleteOrderModal()" class="w-1/2 py-2.5 px-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold text-xs rounded-xl transition cursor-pointer">
+                Cancel
+            </button>
+            <button type="submit" class="w-1/2 py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition shadow-md shadow-rose-600/25 flex items-center justify-center gap-1.5 cursor-pointer">
+                <i class="fa-regular fa-trash-can"></i>
+                <span>Yes, Delete</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openDeleteOrderModal(orderNumber, customerName, totalAmount, deleteUrl) {
+    const backdrop = document.getElementById('deleteOrderModalBackdrop');
+    const card = document.getElementById('deleteOrderModalCard');
+    const form = document.getElementById('deleteOrderForm');
+    const numEl = document.getElementById('modalOrderNumber');
+    const custEl = document.getElementById('modalOrderCustomer');
+    const totalEl = document.getElementById('modalOrderTotal');
+
+    form.action = deleteUrl;
+    numEl.textContent = '#' + orderNumber;
+    custEl.textContent = customerName;
+    totalEl.textContent = totalAmount;
+
+    backdrop.classList.remove('hidden');
+    setTimeout(() => {
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+    }, 10);
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeDeleteOrderModal() {
+    const backdrop = document.getElementById('deleteOrderModalBackdrop');
+    const card = document.getElementById('deleteOrderModalCard');
+    if (!backdrop) return;
+
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    setTimeout(() => {
+        backdrop.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }, 150);
+}
+
+function handleOrderBackdropClick(event) {
+    if (event.target === document.getElementById('deleteOrderModalBackdrop')) {
+        closeDeleteOrderModal();
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeDeleteOrderModal();
+    }
+});
+</script>
 {% endblock %}

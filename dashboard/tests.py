@@ -102,6 +102,36 @@ class DashboardTestCase(TestCase):
         self.assertEqual(response['Content-Type'], 'text/csv')
         self.assertContains(response, self.order.order_number)
 
+    def test_order_delete(self):
+        # Create an OrderItem with reserved product
+        self.product.status = 'reserved'
+        self.product.save()
+        OrderItem.objects.create(
+            order=self.order,
+            product=self.product,
+            product_title=self.product.title,
+            product_model=self.product.model.name,
+            product_storage=self.product.storage,
+            product_color=self.product.color,
+            product_condition=self.product.condition,
+            price=self.product.price,
+            quantity=1
+        )
+
+        # Anonymous cannot delete
+        anon_res = self.client.post(reverse('dashboard:order_delete', kwargs={'order_id': self.order.id}))
+        self.assertEqual(anon_res.status_code, 302)
+        self.assertTrue(Order.objects.filter(id=self.order.id).exists())
+
+        # Admin delete succeeds
+        self.client.force_login(self.admin_user)
+        res = self.client.post(reverse('dashboard:order_delete', kwargs={'order_id': self.order.id}))
+        self.assertEqual(res.status_code, 302)
+        self.assertFalse(Order.objects.filter(id=self.order.id).exists())
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.status, 'available')
+
+
     def test_product_crud(self):
         self.client.force_login(self.admin_user)
         # Create product
