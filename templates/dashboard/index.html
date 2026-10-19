@@ -59,14 +59,14 @@
         <!-- Visitor Traffic -->
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl space-y-2 shadow-sm">
             <div class="flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                <span>Total Visits (Pageviews)</span>
+                <span>Total Visits (Unique Devices)</span>
                 <div class="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                     <i class="fa-solid fa-users text-xs"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-zinc-900 dark:text-white">{{ total_page_views }}</div>
+            <div class="text-2xl font-black text-zinc-900 dark:text-white">{{ total_unique_visitors }}</div>
             <div class="text-[11px] text-zinc-500">
-                Today: <strong class="text-zinc-800 dark:text-white">{{ visits_today }}</strong> ({{ unique_visitors_today }} Unique Users)
+                Today: <strong class="text-zinc-800 dark:text-white">{{ unique_visitors_today }} Devices</strong> ({{ visits_today }} Hits) • {{ total_page_views }} Pageviews
             </div>
         </div>
 

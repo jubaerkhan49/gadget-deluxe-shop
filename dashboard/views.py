@@ -54,12 +54,18 @@ def dashboard_home(request):
         'bank': all_orders.filter(payment_method='bank_transfer').exclude(order_status='cancelled').aggregate(total=Sum('total_amount'))['total'] or 0,
     }
 
-    # 3. Visitor & Traffic Analytics
+    # 3. Visitor & Traffic Analytics (Counted as different IP address / different device visit count)
+    total_unique_visitors = PageVisit.objects.values('ip_address', 'user_agent').order_by().distinct().count()
+    total_unique_ips = PageVisit.objects.values('ip_address').exclude(ip_address__isnull=True).exclude(ip_address='').order_by().distinct().count()
     total_page_views = PageVisit.objects.count()
-    visits_today = PageVisit.objects.filter(timestamp__gte=today_start).count()
-    unique_visitors_today = PageVisit.objects.filter(timestamp__gte=today_start).values('session_key').distinct().count()
-    unique_visitors_week = PageVisit.objects.filter(timestamp__gte=week_ago).values('session_key').distinct().count()
-    unique_visitors_month = PageVisit.objects.filter(timestamp__gte=month_start).values('session_key').distinct().count()
+
+    today_visits_qs = PageVisit.objects.filter(timestamp__gte=today_start)
+    unique_visitors_today = today_visits_qs.values('ip_address', 'user_agent').order_by().distinct().count()
+    visits_today = today_visits_qs.count()
+
+    unique_visitors_week = PageVisit.objects.filter(timestamp__gte=week_ago).values('ip_address', 'user_agent').order_by().distinct().count()
+    unique_visitors_month = PageVisit.objects.filter(timestamp__gte=month_start).values('ip_address', 'user_agent').order_by().distinct().count()
+
 
     # 4. Inventory Health
     all_products = Product.objects.all()
@@ -99,6 +105,8 @@ def dashboard_home(request):
         'unpaid_total': unpaid_total,
         'cash_flow_methods': cash_flow_methods,
 
+        'total_unique_visitors': total_unique_visitors,
+        'total_unique_ips': total_unique_ips,
         'total_page_views': total_page_views,
         'visits_today': visits_today,
         'unique_visitors_today': unique_visitors_today,
@@ -135,7 +143,7 @@ def analytics_view(request):
         target_date = (now - timedelta(days=i)).date()
         day_visits = PageVisit.objects.filter(timestamp__date=target_date)
         views_count = day_visits.count()
-        uniques_count = day_visits.values('session_key').distinct().count()
+        uniques_count = day_visits.values('ip_address', 'user_agent').order_by().distinct().count()
         
         traffic_labels.append(target_date.strftime('%d %b'))
         traffic_views.append(views_count)

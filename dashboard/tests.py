@@ -52,12 +52,19 @@ class DashboardTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_admin_dashboard_home(self):
+        # Create 2 visits from same device and 1 from different device
+        PageVisit.objects.create(ip_address='203.0.113.10', user_agent='iPhone Safari', path='/')
+        PageVisit.objects.create(ip_address='203.0.113.10', user_agent='iPhone Safari', path='/product/1/')
+        PageVisit.objects.create(ip_address='203.0.113.20', user_agent='Android Chrome', path='/')
+
         self.client.force_login(self.admin_user)
         response = self.client.get(reverse('dashboard:home'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dashboard Overview")
         self.assertContains(response, "Gross Sales")
         self.assertContains(response, "115100")
+        self.assertEqual(response.context['total_unique_visitors'], 2)
+        self.assertEqual(response.context['total_page_views'], 3)
 
     def test_analytics_view(self):
         self.client.force_login(self.admin_user)
