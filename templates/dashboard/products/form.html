@@ -322,15 +322,39 @@
                     {% endif %}
                 </div>
 
-                <div>
-                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Device Description & Test Notes (English)</label>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block font-bold text-zinc-700 dark:text-zinc-300">Device Description & Test Notes (English)</label>
+                        <span class="text-[11px] text-zinc-400">Supports long paragraphs & bullet points</span>
+                    </div>
+                    <!-- Quick bullet templates -->
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span class="text-zinc-400 text-[10px]">Shortcuts:</span>
+                        <button type="button" onclick="insertBullet('id_description', '🔋 Battery Health: ')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">🔋 Battery</button>
+                        <button type="button" onclick="insertBullet('id_description', '🔄 Cycle Count: ')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">🔄 Cycle</button>
+                        <button type="button" onclick="insertBullet('id_description', '✅ 100% Genuine & Tested Hardware')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">✅ Hardware</button>
+                        <button type="button" onclick="insertBullet('id_description', '📦 With Box & Original Cable')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">📦 Box</button>
+                        <button type="button" onclick="insertBullet('id_description', '🛡️ 7 Days Replacement Warranty')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">🛡️ Warranty</button>
+                    </div>
                     {{ form.description }}
                 </div>
 
-                <div>
-                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">বিবরণ ও টেস্ট নোট (বাংলা)</label>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block font-bold text-zinc-700 dark:text-zinc-300">বিবরণ ও টেস্ট নোট (বাংলা)</label>
+                        <span class="text-[11px] text-zinc-400">বিস্তারিত বিবরণ ও পয়েন্টসমূহ</span>
+                    </div>
+                    <!-- Quick bullet templates for Bangla -->
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span class="text-zinc-400 text-[10px]">শর্টকাট:</span>
+                        <button type="button" onclick="insertBullet('id_description_bn', '🔋 ব্যাটারি হেলথ: ')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">🔋 ব্যাটারি</button>
+                        <button type="button" onclick="insertBullet('id_description_bn', '✅ সম্পূর্ণ অরিজিনাল ও টেস্টেড')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">✅ অরিজিনাল</button>
+                        <button type="button" onclick="insertBullet('id_description_bn', '📦 বক্স ও অরিজিনাল কেবল সহ')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">📦 বক্স সহ</button>
+                        <button type="button" onclick="insertBullet('id_description_bn', '🛡️ ৭ দিনের রিপ্লেসমেন্ট গ্যারান্টি')" class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition cursor-pointer">🛡️ ওয়ারেন্টি</button>
+                    </div>
                     {{ form.description_bn }}
                 </div>
+
             </div>
         </div>
 
@@ -355,6 +379,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
 <script>
+    // Helper to insert bullet shortcuts into description textareas
+    function insertBullet(fieldId, text) {
+        const el = document.getElementById(fieldId);
+        if (!el) return;
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const val = el.value;
+        const prefix = (val.length > 0 && !val.endsWith('\n')) ? '\n' : '';
+        el.value = val.substring(0, start) + prefix + text + '\n' + val.substring(end);
+        el.focus();
+        const nextPos = start + prefix.length + text.length;
+        el.setSelectionRange(nextPos, nextPos);
+    }
+
     // Utility to format bytes into readable sizes
     function formatBytes(bytes) {
         if (!bytes || bytes === 0) return '0 Bytes';

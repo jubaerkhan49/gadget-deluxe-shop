@@ -295,21 +295,16 @@
     </div>
 
     <!-- 2nd Row: Device Note & Details Section (Full Width) -->
-    {% if product.description %}
+    <!-- 2nd Row: Device Note & Details Section (Full Width) -->
+    {% if product.description or product.description_bn %}
     <div class="mt-6 bg-white dark:bg-zinc-900 p-5 sm:p-6 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm transition-colors">
-        <div class="flex items-center gap-2 mb-2.5">
+        <div class="flex items-center gap-2 mb-3">
             <i class="fa-solid fa-note-sticky text-zinc-400 dark:text-zinc-500"></i>
             <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm uppercase tracking-wider">
-                Device Note & Details
+                {% if is_bangla %}ডিভাইস বিবরণ ও টেস্ট নোট{% else %}Device Note & Details{% endif %}
             </h3>
         </div>
-        <p class="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-            {% if is_bangla and product.description_bn %}
-                {{ product.description_bn }}
-            {% else %}
-                {{ product.description }}
-            {% endif %}
-        </p>
+        <div class="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line font-normal">{% if is_bangla and product.description_bn %}{{ product.description_bn }}{% else %}{{ product.description|default:product.description_bn }}{% endif %}</div>
     </div>
     {% endif %}
 

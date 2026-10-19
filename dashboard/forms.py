@@ -84,8 +84,16 @@ class ProductForm(forms.ModelForm):
                 'class': 'w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100',
                 'accept': 'image/*,.heic,.heif,.HEIC,.HEIF'
             }),
-            'description': forms.Textarea(attrs={'class': TEXTAREA_CLASSES, 'rows': 3, 'placeholder': 'Inspection test results, body condition details...'}),
-            'description_bn': forms.Textarea(attrs={'class': TEXTAREA_CLASSES, 'rows': 3, 'placeholder': 'বাংলা বিবরণ...'}),
+            'description': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm leading-relaxed placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition resize-y min-h-[180px]',
+                'rows': 8,
+                'placeholder': 'Detailed device description, inspection test results, cosmetic condition, battery health history, accessories included...'
+            }),
+            'description_bn': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm leading-relaxed placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition resize-y min-h-[180px]',
+                'rows': 8,
+                'placeholder': 'বিস্তারিত ডিভাইসের বিবরণ, বডি কন্ডিশন, ব্যাটারি ও পারফরম্যান্স নোট, বক্স বা আনুষাঙ্গিক কি কি পাবেন...'
+            }),
             'status': forms.Select(attrs={'class': SELECT_CLASSES}),
             'featured': forms.CheckboxInput(attrs={'class': 'w-4 h-4 text-black rounded border-zinc-300 dark:border-zinc-700 focus:ring-black'}),
         }
