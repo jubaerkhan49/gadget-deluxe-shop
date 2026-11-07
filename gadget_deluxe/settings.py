@@ -1,6 +1,6 @@
 """
 Django settings for gadget_deluxe project.
-E-commerce website exclusively for used/refurbished iPhones:
+E-commerce website exclusively for used iPhones:
 iPhone 14 Pro, 14 Pro Max, 15 Pro, 15 Pro Max, 16 Pro, 16 Pro Max.
 """
 

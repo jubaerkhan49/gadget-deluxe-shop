@@ -302,8 +302,8 @@ class Command(BaseCommand):
         faq_data = [
             (
                 'quality',
-                'Are these iPhones used or refurbished?',
-                'এগুলো কি ব্যবহৃত (Used) নাকি রিফার্বিশড আইফোন?',
+                'Are these iPhones genuine pre-owned devices?',
+                'এগুলো কি আসল ব্যবহৃত (Pre-owned) আইফোন?',
                 'All iPhones listed at Gadget Deluxe are genuine pre-owned devices exclusively from verified sources (USA, Singapore, Japan). Each unit is individually photographed, inspected, and tested across 52 hardware checkpoints.',
                 'গ্যাজেট ডিলাক্সের প্রতিটি আইফোন সরাসরি যাচাইকৃত সোর্স (ইউএসএ, সিঙ্গাপুর, জাপান) থেকে সংগৃহীত অরিজিনাল ব্যবহৃত ডিভাইস। প্রতিটি ফোন ৫২টি হার্ডওয়্যার পয়েন্টে টেস্ট করে ওয়েবসাইটে লিস্ট করা হয়।'
             ),
